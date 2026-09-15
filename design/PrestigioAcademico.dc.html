@@ -1,0 +1,270 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&amp;display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #F5EFDF; }
+  .pa-root { font-family: 'Source Serif 4', Georgia, serif; background: #F5EFDF; color: #1B1710; width: 100%; position: relative; }
+  .pa-display { font-family: 'Cormorant Garamond', Georgia, serif; }
+  .pa-link { color: #1B1710; text-decoration: none; }
+  .pa-link:hover { color: {{accent}}; }
+  .pa-btn-solid:hover { background: #1B1710; }
+  .pa-btn-outline:hover { background: rgba(27,23,16,0.05); }
+  .pa-chapter:hover { background: rgba(184,145,47,0.05); }
+  .pa-smallcaps { font-variant: small-caps; letter-spacing: 0.06em; }
+  .pa-leader { border-bottom: 1px dotted #A79A7E; flex: 1; margin: 0 8px; transform: translateY(-4px); }
+</style>
+</helmet>
+
+<div class="pa-root">
+
+  <!-- PAPER GRAIN -->
+  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; mix-blend-mode: multiply; pointer-events: none; z-index: 0;" preserveAspectRatio="none">
+    <filter id="paGrain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0"></feColorMatrix></filter>
+    <rect width="100%" height="100%" filter="url(#paGrain)"></rect>
+  </svg>
+
+  <!-- NAV -->
+  <div style="position: relative; z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: 22px 64px; border-bottom: 1px solid #D8CCA4;">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <svg width="34" height="34" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="54" fill="none" stroke="{{accent}}" stroke-width="1.5"></circle>
+        <path d="M60,34 L80,42 L80,64 C80,82 70,92 60,98 C50,92 40,82 40,64 L40,42 Z" fill="#142244" stroke="{{accent}}" stroke-width="1.5"></path>
+        <text x="60" y="76" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="30" font-weight="700" fill="#F5EFDF">K</text>
+      </svg>
+      <div class="pa-display pa-smallcaps" style="font-size: 19px; font-weight: 700; letter-spacing: 0.08em;">KUN University AI</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 34px;">
+      <a href="#programas" class="pa-link pa-smallcaps" style="font-size: 13px; font-weight: 600;">Programas</a>
+      <a href="#continua" class="pa-link pa-smallcaps" style="font-size: 13px; font-weight: 600;">Educación continua</a>
+      <a href="#comunidad" class="pa-link pa-smallcaps" style="font-size: 13px; font-weight: 600;">Comunidad</a>
+      <a href="#registro" class="pa-btn-solid" style="padding: 10px 22px; background: #142244; color: #F5EFDF; border: 1px solid #142244; font-size: 13px; font-weight: 600; text-decoration: none; transition: background 0.15s;">Certifícate gratis</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div style="position: relative; z-index: 5; max-width: 900px; margin: 0 auto; padding: 76px 56px 56px; text-align: center;">
+    <svg width="120" height="140" viewBox="0 0 120 140" style="margin: 0 auto 32px; display: block;">
+      <sc-for list="{{ticks}}" as="t" hint-placeholder-count="40">
+        <line x1="60" y1="4" x2="60" y2="10" stroke="{{accent}}" stroke-width="1.2" style="transform-origin: 60px 60px; transform: rotate({{t.deg}}deg);"></line>
+      </sc-for>
+      <circle cx="60" cy="60" r="44" fill="none" stroke="{{accent}}" stroke-width="1"></circle>
+      <path d="M60,34 L80,42 L80,64 C80,82 70,92 60,98 C50,92 40,82 40,64 L40,42 Z" fill="#142244" stroke="{{accent}}" stroke-width="1.6"></path>
+      <path d="M60,42 L62,47 L67,47 L63,50 L64.5,55 L60,52 L55.5,55 L57,50 L53,47 L58,47 Z" fill="{{accent}}"></path>
+      <text x="60" y="82" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="30" font-weight="700" fill="#F5EFDF">K</text>
+      <path d="M46,108 Q40,116 34,121" fill="none" stroke="{{accent}}" stroke-width="1.4"></path>
+      <ellipse cx="44" cy="110" rx="5" ry="2.1" fill="{{accent}}" transform="rotate(-25 44 110)"></ellipse>
+      <ellipse cx="40" cy="114" rx="5" ry="2.1" fill="{{accent}}" transform="rotate(-45 40 114)"></ellipse>
+      <ellipse cx="35.5" cy="118.5" rx="5" ry="2.1" fill="{{accent}}" transform="rotate(-65 35.5 118.5)"></ellipse>
+      <path d="M74,108 Q80,116 86,121" fill="none" stroke="{{accent}}" stroke-width="1.4"></path>
+      <ellipse cx="76" cy="110" rx="5" ry="2.1" fill="{{accent}}" transform="rotate(25 76 110)"></ellipse>
+      <ellipse cx="80" cy="114" rx="5" ry="2.1" fill="{{accent}}" transform="rotate(45 80 114)"></ellipse>
+      <ellipse cx="84.5" cy="118.5" rx="5" ry="2.1" fill="{{accent}}" transform="rotate(65 84.5 118.5)"></ellipse>
+    </svg>
+
+    <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 28px;">
+      <div style="width: 44px; height: 1px; background: {{accent}};"></div>
+      <div class="pa-smallcaps" style="font-size: 12px; font-weight: 700; letter-spacing: 0.18em; color: {{accent}};">Educación superior IA-Native · Florida</div>
+      <div style="width: 44px; height: 1px; background: {{accent}};"></div>
+    </div>
+
+    <h1 class="pa-display" style="font-size: 76px; line-height: 1.06; font-weight: 600; margin: 0 0 26px;">La universidad que se <em style="font-style: italic; color: #6E1423;">rediseña</em>,<br>no al revés.</h1>
+    <div style="font-size: 18px; line-height: 1.7; color: #4A4230; max-width: 560px; margin: 0 auto 40px; font-style: italic;">KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los semestres.</div>
+
+    <div style="display: flex; gap: 16px; justify-content: center; margin-bottom: 56px;">
+      <a href="#programas" class="pa-btn-solid" style="padding: 15px 30px; background: #142244; color: #F5EFDF; border: 1px solid #142244; font-size: 14px; font-weight: 600; letter-spacing: 0.02em; text-decoration: none; transition: background 0.15s;">Explora los programas</a>
+      <a href="#continua" class="pa-btn-outline" style="padding: 15px 30px; background: transparent; color: #1B1710; border: 1px solid #1B1710; font-size: 14px; font-weight: 600; letter-spacing: 0.02em; text-decoration: none; transition: background 0.15s;">Certifícate gratis en 40 horas</a>
+    </div>
+
+    <div style="border-top: 1px solid #D8CCA4; border-bottom: 1px solid #D8CCA4; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));">
+      <div style="padding: 24px 12px; border-right: 1px solid #D8CCA4;">
+        <div class="pa-display" style="font-size: 38px; font-weight: 700; color: {{accent}};">IV</div>
+        <div class="pa-smallcaps" style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #6B6152; margin-top: 4px;">Escuelas</div>
+      </div>
+      <div style="padding: 24px 12px; border-right: 1px solid #D8CCA4;">
+        <div class="pa-display" style="font-size: 38px; font-weight: 700; color: {{accent}};">XI</div>
+        <div class="pa-smallcaps" style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #6B6152; margin-top: 4px;">Programas</div>
+      </div>
+      <div style="padding: 24px 12px; border-right: 1px solid #D8CCA4;">
+        <div class="pa-display" style="font-size: 38px; font-weight: 700; color: {{accent}};">VI</div>
+        <div class="pa-smallcaps" style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #6B6152; margin-top: 4px;">Certif. IA</div>
+      </div>
+      <div style="padding: 24px 12px;">
+        <div class="pa-display" style="font-size: 38px; font-weight: 700; color: {{accent}};">100%</div>
+        <div class="pa-smallcaps" style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #6B6152; margin-top: 4px;">Online/Global</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IDENTIDAD -->
+  <div style="position: relative; z-index: 5; max-width: 1040px; margin: 0 auto; padding: 88px 56px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <div class="pa-smallcaps" style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: {{accent}}; margin-bottom: 14px;">Identidad estratégica</div>
+      <h2 class="pa-display" style="font-size: 40px; font-weight: 600; font-style: italic; margin: 0; max-width: 620px; margin: 0 auto;">No enseñamos lo que se enseñaba hace cinco años</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0;">
+      <div style="padding: 0 28px 0 0; border-right: 1px solid #D8CCA4; text-align: center;">
+        <div class="pa-display" style="font-size: 30px; font-weight: 600; color: {{accent}}; margin-bottom: 6px;">I</div>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#142244" stroke-width="1.3" style="margin-bottom: 16px;"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v3M12 18v3M3 12h3M18 12h3"></path><path d="M12 12l4-5"></path></svg>
+        <div style="font-size: 17px; font-weight: 600; margin-bottom: 10px;">Conocimiento de frontera, fácil de usar</div>
+        <div style="font-size: 14px; line-height: 1.65; color: #4A4230;">Hacemos que el conocimiento más avanzado del mundo sea fácil de entender y de aplicar — sin importar de dónde vengas.</div>
+      </div>
+      <div style="padding: 0 28px; border-right: 1px solid #D8CCA4; text-align: center;">
+        <div class="pa-display" style="font-size: 30px; font-weight: 600; color: {{accent}}; margin-bottom: 6px;">II</div>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#142244" stroke-width="1.3" style="margin-bottom: 16px;"><path d="M12 21V9"></path><path d="M12 13c0-4 3-5 6-5-.5 3-2 5-6 5z"></path><path d="M12 17c0-3-2.5-4-5-4 .5 2.5 2 4 5 4z"></path></svg>
+        <div style="font-size: 17px; font-weight: 600; margin-bottom: 10px;">Un currículo vivo, no un plan fijo</div>
+        <div style="font-size: 14px; line-height: 1.65; color: #4A4230;">Programas diseñados y actualizados con IA, validados por criterio experto humano. Cuando cambia la industria, el curso cambia con ella.</div>
+      </div>
+      <div style="padding: 0 0 0 28px; text-align: center;">
+        <div class="pa-display" style="font-size: 30px; font-weight: 600; color: {{accent}}; margin-bottom: 6px;">III</div>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#142244" stroke-width="1.3" style="margin-bottom: 16px;"><path d="M4 19.5V6a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0 0 4h13"></path></svg>
+        <div style="font-size: 17px; font-weight: 600; margin-bottom: 10px;">Comunidad antes que matrícula</div>
+        <div style="font-size: 14px; line-height: 1.65; color: #4A4230;">Certifícate en competencias reales desde el primer día, con o sin título. El valor se demuestra antes de pedirte que te matricules.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCUELAS: CATALOGO -->
+  <div id="programas" style="position: relative; z-index: 5; background: #142244; color: #F5EFDF; padding: 88px 0;">
+    <div style="max-width: 1040px; margin: 0 auto; padding: 0 56px;">
+      <div style="text-align: center; margin-bottom: 56px;">
+        <h2 class="pa-display" style="font-size: 46px; font-weight: 600; font-style: italic; margin: 0 0 14px;">Cuatro escuelas. Un mismo motor IA-Native.</h2>
+        <div style="font-size: 14px; color: #B9AE8C; max-width: 520px; margin: 0 auto;">Cada programa se rediseña continuamente con IA y expertos humanos para reflejar lo que la industria necesita hoy.</div>
+      </div>
+
+      <div class="pa-chapter" style="display: flex; gap: 28px; padding: 30px 8px; border-top: 1px solid rgba(245,239,223,0.2); transition: background 0.15s;">
+        <div class="pa-display" style="font-size: 26px; font-weight: 700; color: {{accent}}; width: 44px; flex-shrink: 0;">I</div>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.3" style="flex-shrink: 0; margin-top: 4px;"><path d="M12 2l3 4h4l-1 4 3 3-3 3 1 4h-4l-3 4-3-4H5l1-4-3-3 3-3-1-4h4z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>
+        <div style="flex: 1;">
+          <div style="font-size: 20px; font-weight: 600; margin-bottom: 4px;">Escuela de Ingeniería</div>
+          <div style="font-size: 13px; color: #B9AE8C; font-style: italic; margin-bottom: 14px;">Donde se construye la infraestructura del mundo digital: datos, inteligencia artificial y ciberseguridad.</div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Cybersecurity</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">BS</span></div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Data Science &amp; Applied AI</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">BS</span></div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Artificial Intelligence Engineering</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">MSAIE</span></div>
+        </div>
+      </div>
+
+      <div class="pa-chapter" style="display: flex; gap: 28px; padding: 30px 8px; border-top: 1px solid rgba(245,239,223,0.2); transition: background 0.15s;">
+        <div class="pa-display" style="font-size: 26px; font-weight: 700; color: {{accent}}; width: 44px; flex-shrink: 0;">II</div>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.3" style="flex-shrink: 0; margin-top: 4px;"><path d="M4 20V13M10 20V9M16 20V5M22 20V11"></path></svg>
+        <div style="flex: 1;">
+          <div style="font-size: 20px; font-weight: 600; margin-bottom: 4px;">Escuela de Transformación de Negocios</div>
+          <div style="font-size: 13px; color: #B9AE8C; font-style: italic; margin-bottom: 14px;">Para quienes quieren liderar organizaciones, no solo administrarlas.</div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Business Management and Entrepreneurship</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">BS</span></div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Management and Entrepreneurship</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">MSME</span></div>
+        </div>
+      </div>
+
+      <div class="pa-chapter" style="display: flex; gap: 28px; padding: 30px 8px; border-top: 1px solid rgba(245,239,223,0.2); transition: background 0.15s;">
+        <div class="pa-display" style="font-size: 26px; font-weight: 700; color: {{accent}}; width: 44px; flex-shrink: 0;">III</div>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.3" style="flex-shrink: 0; margin-top: 4px;"><path d="M12 21s-7-4.5-7-10a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.5-7 10-7 10a29 29 0 0 1-2-1.6"></path><path d="M6 12h2l1.5-3 2 5 1.5-2H15"></path></svg>
+        <div style="flex: 1;">
+          <div style="font-size: 20px; font-weight: 600; margin-bottom: 4px;">Escuela de Bienestar y Desarrollo Humano</div>
+          <div style="font-size: 13px; color: #B9AE8C; font-style: italic; margin-bottom: 14px;">La ciencia de vivir más y mejor, convertida en una industria de miles de millones de dólares.</div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Integrative Wellness and Human Performance</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">AAS</span></div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Aging Sciences and Health Management</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">BS</span></div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Applied Neuroscience</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">MS</span></div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Strategic Leadership for Aging Services &amp; Vitality Stewardship</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">MS</span></div>
+        </div>
+      </div>
+
+      <div class="pa-chapter" style="display: flex; gap: 28px; padding: 30px 8px 8px; border-top: 1px solid rgba(245,239,223,0.2); border-bottom: 1px solid rgba(245,239,223,0.2); transition: background 0.15s;">
+        <div class="pa-display" style="font-size: 26px; font-weight: 700; color: {{accent}}; width: 44px; flex-shrink: 0;">IV</div>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.3" style="flex-shrink: 0; margin-top: 4px;"><path d="M4 20l6-16 2 5 2-5 6 16"></path><path d="M8 20l4-10 4 10"></path></svg>
+        <div style="flex: 1;">
+          <div style="font-size: 20px; font-weight: 600; margin-bottom: 4px;">Escuela de Diseño y Tecnologías de Comunicación</div>
+          <div style="font-size: 13px; color: #B9AE8C; font-style: italic; margin-bottom: 14px;">Storytelling, diseño y tecnología para las industrias creativas del futuro.</div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Digital Media</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">BS</span></div>
+          <div style="display: flex; align-items: baseline; font-size: 13px; padding: 5px 0;"><span>Digital Media, Film &amp; Visual Design</span><span class="pa-leader" style="border-bottom-color: rgba(245,239,223,0.35);"></span><span class="pa-smallcaps" style="color: {{accent}};">MFA</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOTOR CURRICULAR -->
+  <div style="position: relative; z-index: 5; max-width: 1040px; margin: 0 auto; padding: 88px 56px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <h2 class="pa-display" style="font-size: 40px; font-weight: 600; font-style: italic; margin: 0;">Así se construye un curso en KUN</h2>
+    </div>
+    <div style="border: 1px solid #D8CCA4; padding: 48px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; position: relative;">
+      <div style="position: absolute; top: 24px; left: 24px; width: 14px; height: 14px; border-top: 1.5px solid {{accent}}; border-left: 1.5px solid {{accent}};"></div>
+      <div style="position: absolute; top: 24px; right: 24px; width: 14px; height: 14px; border-top: 1.5px solid {{accent}}; border-right: 1.5px solid {{accent}};"></div>
+      <div style="position: absolute; bottom: 24px; left: 24px; width: 14px; height: 14px; border-bottom: 1.5px solid {{accent}}; border-left: 1.5px solid {{accent}};"></div>
+      <div style="position: absolute; bottom: 24px; right: 24px; width: 14px; height: 14px; border-bottom: 1.5px solid {{accent}}; border-right: 1.5px solid {{accent}};"></div>
+      <div style="text-align: center;">
+        <div class="pa-display" style="font-size: 32px; font-weight: 700; color: {{accent}}; margin-bottom: 12px;">I</div>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#142244" stroke-width="1.3" style="margin-bottom: 16px;"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"></path></svg>
+        <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">La IA rastrea la frontera</div>
+        <div style="font-size: 13px; line-height: 1.65; color: #4A4230;">Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.</div>
+      </div>
+      <div style="text-align: center;">
+        <div class="pa-display" style="font-size: 32px; font-weight: 700; color: {{accent}}; margin-bottom: 12px;">II</div>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#142244" stroke-width="1.3" style="margin-bottom: 16px;"><path d="M12 3v18M5 7l-3 6a3.2 3.2 0 0 0 6 0zM19 7l-3 6a3.2 3.2 0 0 0 6 0z"></path><path d="M5 7h14M9 21h6"></path></svg>
+        <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">El criterio humano decide</div>
+        <div style="font-size: 13px; line-height: 1.65; color: #4A4230;">Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.</div>
+      </div>
+      <div style="text-align: center;">
+        <div class="pa-display" style="font-size: 32px; font-weight: 700; color: {{accent}}; margin-bottom: 12px;">III</div>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#142244" stroke-width="1.3" style="margin-bottom: 16px;"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+        <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Aprendes lo que el mercado necesita hoy</div>
+        <div style="font-size: 13px; line-height: 1.65; color: #4A4230;">No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTER: TRANSPARENCIA + CTA -->
+  <div id="registro" style="position: relative; z-index: 5; max-width: 1040px; margin: 0 auto; padding: 0 56px 40px;">
+    <div style="text-align: center; padding: 56px 40px; border: 1px solid #D8CCA4; margin-bottom: 40px;">
+      <h2 class="pa-display" style="font-size: 34px; font-weight: 600; font-style: italic; margin: 0 0 14px;">Antes de matricularte, síguenos</h2>
+      <div style="font-size: 14px; color: #4A4230; max-width: 480px; margin: 0 auto 28px;">El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real, sin necesidad de estar matriculado.</div>
+      <a href="#" class="pa-btn-solid" style="display: inline-block; padding: 14px 28px; background: #142244; color: #F5EFDF; border: 1px solid #142244; font-size: 14px; font-weight: 600; text-decoration: none; transition: background 0.15s;">Únete a la comunidad</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-bottom: 40px;">
+      <div style="display: flex; align-items: center; gap: 18px; padding: 20px; border: 1px solid #D8CCA4;">
+        <svg width="46" height="46" viewBox="0 0 46 46" style="flex-shrink: 0;"><polygon points="23,3 41,12 41,26 23,43 5,26 5,12" fill="none" stroke="#3F6B4A" stroke-width="1.6"></polygon><text x="23" y="27" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="10" font-weight="700" fill="#3F6B4A">ACTIVA</text></svg>
+        <div>
+          <div class="pa-smallcaps" style="font-size: 13px; font-weight: 700;">Florida CIE</div>
+          <div style="font-size: 12px; color: #6B6152; margin-top: 2px;">Comisión de Educación Independiente</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 18px; padding: 20px; border: 1px solid #D8CCA4;">
+        <svg width="46" height="46" viewBox="0 0 46 46" style="flex-shrink: 0;"><polygon points="23,3 41,12 41,26 23,43 5,26 5,12" fill="none" stroke="#6E1423" stroke-width="1.6"></polygon><text x="23" y="24" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="8" font-weight="700" fill="#6E1423">EN</text><text x="23" y="32" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="8" font-weight="700" fill="#6E1423">PROCESO</text></svg>
+        <div>
+          <div class="pa-smallcaps" style="font-size: 13px; font-weight: 700;">SACSCOC</div>
+          <div style="font-size: 12px; color: #6B6152; margin-top: 2px;">Acreditación institucional en avance</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 24px; padding-bottom: 32px; border-top: 1px solid #D8CCA4;">
+      <div class="pa-smallcaps" style="font-size: 12px; color: #6B6152;">© 2026 KUN University AI · Knowledge · Union · Network</div>
+      <div style="display: flex; gap: 20px;">
+        <a href="#" class="pa-link pa-smallcaps" style="font-size: 12px;">YouTube</a>
+        <a href="#" class="pa-link pa-smallcaps" style="font-size: 12px;">LinkedIn</a>
+        <a href="#" class="pa-link pa-smallcaps" style="font-size: 12px;">Instagram</a>
+        <a href="#" class="pa-link pa-smallcaps" style="font-size: 12px;">X</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#B8912F","options":["#B8912F","#8C6239","#6E1423","#3F6B4A"],"section":"Metal / acento"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const ticks = [];
+    for (let i = 0; i < 40; i++) { ticks.push({ deg: i * 9 }); }
+    return { accent: this.props.accent ?? '#B8912F', ticks };
+  }
+}
+</script>
+</body>
+</html>

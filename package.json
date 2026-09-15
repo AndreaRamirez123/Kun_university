@@ -1,0 +1,19 @@
+{
+  "name": "kun-university",
+  "private": true,
+  "workspaces": [
+    "web",
+    "api"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c blue,green \"npm:dev:web\" \"npm:dev:api\"",
+    "dev:web": "npm run dev --workspace=web",
+    "dev:api": "npm run start:dev --workspace=api",
+    "build": "npm run build --workspace=web && npm run build --workspace=api",
+    "lint": "npm run lint --workspace=web && npm run lint --workspace=api",
+    "test": "npm test --workspace=api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

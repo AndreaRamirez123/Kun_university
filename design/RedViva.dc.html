@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #100B1E; }
+  .rv-root { font-family: 'Manrope', system-ui, sans-serif; background: #100B1E; color: #F1EEFB; width: 100%; position: relative; }
+  .rv-display { font-family: 'Space Grotesk', sans-serif; }
+  .rv-link { color: #A79EC4; text-decoration: none; }
+  .rv-link:hover { color: #F1EEFB; }
+  .rv-glass { background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.09); backdrop-filter: blur(6px); }
+  .rv-glass:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.16); }
+  .rv-cta:hover { filter: brightness(1.1); }
+  .rv-mesh { position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(560px 420px at 12% 8%, rgba(165,107,255,0.28), transparent 60%),
+      radial-gradient(620px 480px at 88% 22%, rgba(79,212,224,0.18), transparent 60%),
+      radial-gradient(700px 520px at 50% 95%, rgba(165,107,255,0.14), transparent 60%);
+  }
+</style>
+</helmet>
+
+<div class="rv-root">
+  <div class="rv-mesh"></div>
+
+  <!-- NAV -->
+  <div style="position: relative; z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: 26px 64px;">
+    <div class="rv-display" style="font-size: 22px; font-weight: 700; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="5" r="2.4" fill="{{accent}}"></circle><circle cx="19" cy="6" r="2.4" fill="{{accent2}}"></circle><circle cx="12" cy="18" r="2.4" fill="{{accent}}"></circle><path d="M6.6 6.4L11 16.2M17.6 7.4L12.6 16" stroke="rgba(241,238,251,0.4)" stroke-width="1.2"></path></svg>
+      KUN AI
+    </div>
+    <div style="display: flex; align-items: center; gap: 36px;">
+      <a href="#programas" class="rv-link" style="font-size: 14px; font-weight: 600;">Programas</a>
+      <a href="#continua" class="rv-link" style="font-size: 14px; font-weight: 600;">Educación continua</a>
+      <a href="#comunidad" class="rv-link" style="font-size: 14px; font-weight: 600;">Comunidad</a>
+      <a href="#registro" class="rv-cta" style="padding: 11px 20px; background: {{accent}}; color: #100B1E; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;">Certifícate gratis</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div style="position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 72px 64px 64px; text-align: center;">
+    <div style="display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 999px; margin-bottom: 32px;" class="rv-glass">
+      <div style="width: 6px; height: 6px; border-radius: 50%; background: {{accent2}};"></div>
+      <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: #C9C1E0;">EDUCACIÓN SUPERIOR IA-NATIVE</span>
+    </div>
+    <h1 class="rv-display" style="font-size: 82px; line-height: 1.03; font-weight: 700; letter-spacing: -0.02em; margin: 0 auto 28px; max-width: 900px;">La universidad que se <span style="background: linear-gradient(90deg, {{accent}}, {{accent2}}); -webkit-background-clip: text; background-clip: text; color: transparent;">rediseña</span>, no al revés.</h1>
+    <div style="font-size: 17px; line-height: 1.65; color: #A79EC4; max-width: 620px; margin: 0 auto 40px;">KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los semestres.</div>
+    <div style="display: flex; gap: 16px; justify-content: center;">
+      <a href="#programas" class="rv-cta" style="padding: 15px 28px; background: {{accent}}; color: #100B1E; border-radius: 999px; font-weight: 700; font-size: 15px; text-decoration: none;">Explora los programas</a>
+      <a href="#continua" class="rv-glass" style="padding: 15px 28px; color: #F1EEFB; border-radius: 999px; font-weight: 700; font-size: 15px; text-decoration: none;">Certifícate gratis en 40h</a>
+    </div>
+  </div>
+
+  <!-- RED VISUAL -->
+  <div style="position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 0 64px 72px;">
+    <div class="rv-glass" style="border-radius: 20px; padding: 48px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; position: relative;">
+      <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" viewBox="0 0 1000 140" preserveAspectRatio="none">
+        <line x1="125" y1="70" x2="375" y2="70" stroke="{{accent}}" stroke-width="1" opacity="0.35"></line>
+        <line x1="375" y1="70" x2="625" y2="70" stroke="{{accent2}}" stroke-width="1" opacity="0.35"></line>
+        <line x1="625" y1="70" x2="875" y2="70" stroke="{{accent}}" stroke-width="1" opacity="0.35"></line>
+      </svg>
+      <div style="position: relative; text-align: center;">
+        <div class="rv-display" style="font-size: 40px; font-weight: 700; color: {{accent}};">04</div>
+        <div style="font-size: 12px; color: #A79EC4; margin-top: 4px; font-weight: 600;">ESCUELAS</div>
+      </div>
+      <div style="position: relative; text-align: center;">
+        <div class="rv-display" style="font-size: 40px; font-weight: 700; color: {{accent2}};">11</div>
+        <div style="font-size: 12px; color: #A79EC4; margin-top: 4px; font-weight: 600;">PROGRAMAS</div>
+      </div>
+      <div style="position: relative; text-align: center;">
+        <div class="rv-display" style="font-size: 40px; font-weight: 700; color: {{accent}};">06</div>
+        <div style="font-size: 12px; color: #A79EC4; margin-top: 4px; font-weight: 600;">CERTIFICACIONES IA</div>
+      </div>
+      <div style="position: relative; text-align: center;">
+        <div class="rv-display" style="font-size: 40px; font-weight: 700; color: {{accent2}};">100%</div>
+        <div style="font-size: 12px; color: #A79EC4; margin-top: 4px; font-weight: 600;">ONLINE / GLOBAL</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IDENTIDAD -->
+  <div style="position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 40px 64px 96px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: {{accent2}}; margin-bottom: 14px;">Identidad estratégica</div>
+      <h2 class="rv-display" style="font-size: 38px; font-weight: 700; margin: 0;">No enseñamos lo que se enseñaba hace cinco años</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+      <div class="rv-glass" style="border-radius: 16px; padding: 32px;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, {{accent}}, transparent 70%); margin-bottom: 20px;"></div>
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">Conocimiento de frontera, fácil de usar</div>
+        <div style="font-size: 14px; line-height: 1.6; color: #A79EC4;">Hacemos que el conocimiento más avanzado del mundo sea fácil de entender y de aplicar — sin importar de dónde vengas.</div>
+      </div>
+      <div class="rv-glass" style="border-radius: 16px; padding: 32px;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, {{accent2}}, transparent 70%); margin-bottom: 20px;"></div>
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">Un currículo vivo, no un plan fijo</div>
+        <div style="font-size: 14px; line-height: 1.6; color: #A79EC4;">Programas diseñados y actualizados con IA, validados por criterio experto humano. Cuando cambia la industria, el curso cambia con ella.</div>
+      </div>
+      <div class="rv-glass" style="border-radius: 16px; padding: 32px;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, {{accent}}, transparent 70%); margin-bottom: 20px;"></div>
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">Comunidad antes que matrícula</div>
+        <div style="font-size: 14px; line-height: 1.6; color: #A79EC4;">Certifícate en competencias reales desde el primer día, con o sin título. El valor se demuestra antes de pedirte que te matricules.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCUELAS COMO RED -->
+  <div id="programas" style="position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 0 64px 96px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <h2 class="rv-display" style="font-size: 44px; font-weight: 700; margin: 0 0 14px;">Cuatro escuelas. Un mismo motor IA-Native.</h2>
+      <div style="font-size: 15px; color: #A79EC4; max-width: 560px; margin: 0 auto;">Cada programa se rediseña continuamente con IA y expertos humanos para reflejar lo que la industria necesita hoy.</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px;">
+      <div class="rv-glass" style="border-radius: 16px; padding: 32px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(165,107,255,0.25), transparent 70%);"></div>
+        <div style="font-size: 20px; font-weight: 700; margin-bottom: 8px; position: relative;">Escuela de Ingeniería</div>
+        <div style="font-size: 13px; color: #A79EC4; margin-bottom: 18px; position: relative;">Donde se construye la infraestructura del mundo digital: datos, inteligencia artificial y ciberseguridad.</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; position: relative;">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent}};"></span>Cybersecurity · BS</div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent}};"></span>Data Science &amp; Applied AI · BS</div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent}};"></span>Artificial Intelligence Engineering · MSAIE</div>
+        </div>
+      </div>
+      <div class="rv-glass" style="border-radius: 16px; padding: 32px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(79,212,224,0.22), transparent 70%);"></div>
+        <div style="font-size: 20px; font-weight: 700; margin-bottom: 8px; position: relative;">Escuela de Transformación de Negocios</div>
+        <div style="font-size: 13px; color: #A79EC4; margin-bottom: 18px; position: relative;">Para quienes quieren liderar organizaciones, no solo administrarlas.</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; position: relative;">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent2}};"></span>Business Management and Entrepreneurship · BS</div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent2}};"></span>Management and Entrepreneurship · MSME</div>
+        </div>
+      </div>
+      <div class="rv-glass" style="border-radius: 16px; padding: 32px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(165,107,255,0.25), transparent 70%);"></div>
+        <div style="font-size: 20px; font-weight: 700; margin-bottom: 8px; position: relative;">Escuela de Bienestar y Desarrollo Humano</div>
+        <div style="font-size: 13px; color: #A79EC4; margin-bottom: 18px; position: relative;">La ciencia de vivir más y mejor, convertida en una industria de miles de millones de dólares.</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; position: relative;">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent}};"></span>Integrative Wellness and Human Performance · AAS</div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent}};"></span>Aging Sciences and Health Management · BS</div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent}};"></span>Applied Neuroscience · MS</div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent}};"></span>Strategic Leadership for Aging Services &amp; Vitality Stewardship · MS</div>
+        </div>
+      </div>
+      <div class="rv-glass" style="border-radius: 16px; padding: 32px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(79,212,224,0.22), transparent 70%);"></div>
+        <div style="font-size: 20px; font-weight: 700; margin-bottom: 8px; position: relative;">Escuela de Diseño y Tecnologías de Comunicación</div>
+        <div style="font-size: 13px; color: #A79EC4; margin-bottom: 18px; position: relative;">Storytelling, diseño y tecnología para las industrias creativas del futuro.</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; position: relative;">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent2}};"></span>Digital Media · BS</div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: {{accent2}};"></span>Digital Media, Film &amp; Visual Design · MFA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOTOR CURRICULAR -->
+  <div style="position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 0 64px 96px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <h2 class="rv-display" style="font-size: 40px; font-weight: 700; margin: 0 0 14px;">Así se construye un curso en KUN</h2>
+    </div>
+    <div class="rv-glass" style="border-radius: 20px; padding: 48px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; position: relative;">
+      <svg style="position: absolute; top: 68px; left: 15%; right: 15%; width: 70%; height: 2px;" viewBox="0 0 700 4" preserveAspectRatio="none">
+        <line x1="0" y1="2" x2="700" y2="2" stroke="url(#rvgrad)" stroke-width="2"></line>
+        <defs><linearGradient id="rvgrad"><stop offset="0%" stop-color="{{accent}}"></stop><stop offset="100%" stop-color="{{accent2}}"></stop></linearGradient></defs>
+      </svg>
+      <div style="text-align: center; position: relative;">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: {{accent}}; color: #100B1E; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; margin: 0 auto 22px;" class="rv-display">01</div>
+        <div style="font-size: 17px; font-weight: 700; margin-bottom: 8px;">La IA rastrea la frontera</div>
+        <div style="font-size: 13px; line-height: 1.6; color: #A79EC4;">Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.</div>
+      </div>
+      <div style="text-align: center; position: relative;">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, {{accent}}, {{accent2}}); color: #100B1E; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; margin: 0 auto 22px;" class="rv-display">02</div>
+        <div style="font-size: 17px; font-weight: 700; margin-bottom: 8px;">El criterio humano decide</div>
+        <div style="font-size: 13px; line-height: 1.6; color: #A79EC4;">Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.</div>
+      </div>
+      <div style="text-align: center; position: relative;">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: {{accent2}}; color: #100B1E; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; margin: 0 auto 22px;" class="rv-display">03</div>
+        <div style="font-size: 17px; font-weight: 700; margin-bottom: 8px;">Aprendes lo que el mercado necesita hoy</div>
+        <div style="font-size: 13px; line-height: 1.6; color: #A79EC4;">No lo que se enseñaba hace cinco años, sino las competencias que las empresas buscan hoy.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA + TRANSPARENCIA -->
+  <div id="registro" style="position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 0 64px 64px;">
+    <div class="rv-glass" style="border-radius: 24px; padding: 56px; text-align: center; margin-bottom: 40px;">
+      <h2 class="rv-display" style="font-size: 36px; font-weight: 700; margin: 0 0 14px;">Antes de matricularte, síguenos</h2>
+      <div style="font-size: 15px; color: #A79EC4; max-width: 520px; margin: 0 auto 28px;">El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real, sin necesidad de estar matriculado.</div>
+      <a href="#" class="rv-cta" style="display: inline-block; padding: 15px 28px; background: {{accent}}; color: #100B1E; border-radius: 999px; font-weight: 700; font-size: 15px; text-decoration: none;">Únete a la comunidad</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 40px;">
+      <div class="rv-glass" style="border-radius: 14px; padding: 20px 24px;">
+        <div style="font-size: 13px; font-weight: 700;">Florida CIE</div>
+        <div style="font-size: 12px; color: #A79EC4; margin-top: 4px;">Comisión de Educación Independiente</div>
+      </div>
+      <div class="rv-glass" style="border-radius: 14px; padding: 20px 24px;">
+        <div style="font-size: 13px; font-weight: 700;">SACSCOC · en proceso</div>
+        <div style="font-size: 12px; color: #A79EC4; margin-top: 4px;">Acreditación institucional en avance</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 24px; padding-bottom: 32px; border-top: 1px solid rgba(255,255,255,0.09);">
+      <div style="font-size: 13px; color: #A79EC4;">© 2026 KUN University AI · Knowledge · Union · Network</div>
+      <div style="display: flex; gap: 22px;">
+        <a href="#" class="rv-link" style="font-size: 13px;">YouTube</a>
+        <a href="#" class="rv-link" style="font-size: 13px;">LinkedIn</a>
+        <a href="#" class="rv-link" style="font-size: 13px;">Instagram</a>
+        <a href="#" class="rv-link" style="font-size: 13px;">X</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#A56BFF","options":["#A56BFF","#4FD4E0","#FF6BAE","#FFC24B"],"section":"Tema"},"accent2":{"editor":"color","default":"#4FD4E0","section":"Tema"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#A56BFF', accent2: this.props.accent2 ?? '#4FD4E0' };
+  }
+}
+</script>
+</body>
+</html>

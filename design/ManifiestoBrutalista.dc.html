@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Work+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #F7F5F0; }
+  .mb-root { font-family: 'Work Sans', system-ui, sans-serif; background: #F7F5F0; color: #101010; width: 100%; }
+  .mb-display { font-family: 'Anton', sans-serif; text-transform: uppercase; }
+  .mb-link { color: #101010; text-decoration: none; }
+  .mb-link:hover { color: {{accent}}; }
+  .mb-cta:hover { filter: brightness(1.1); }
+  .mb-row:hover { background: #101010; color: #F7F5F0; }
+  .mb-row:hover .mb-num { color: {{accent}}; }
+  .mb-row:hover .mb-sub { color: #D8D3C6; }
+</style>
+</helmet>
+
+<div class="mb-root">
+
+  <!-- NAV -->
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 22px 56px; border-bottom: 3px solid #101010;">
+    <div class="mb-display" style="font-size: 24px; letter-spacing: 0.01em;">KUN UNIVERSITY AI</div>
+    <div style="display: flex; align-items: center; gap: 32px;">
+      <a href="#programas" class="mb-link" style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;">Programas</a>
+      <a href="#continua" class="mb-link" style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;">Educación continua</a>
+      <a href="#comunidad" class="mb-link" style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;">Comunidad</a>
+      <a href="#registro" class="mb-cta" style="padding: 12px 22px; background: {{accent}}; color: #101010; font-size: 14px; font-weight: 800; text-transform: uppercase; text-decoration: none; border: 3px solid #101010;">Certifícate gratis</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div style="padding: 64px 56px 0;">
+    <div style="font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+      <span style="width: 12px; height: 12px; background: {{accent}}; display: inline-block;"></span>
+      Educación superior IA-Native — Florida
+    </div>
+    <h1 class="mb-display" style="font-size: 148px; line-height: 0.86; margin: 0 0 40px; letter-spacing: -0.01em;">LA UNIVERSIDAD<br>QUE SE <span style="color: {{accent}};">REDISEÑA</span>,<br>NO AL REVÉS.</h1>
+  </div>
+
+  <div style="padding: 0 56px 56px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; border-bottom: 3px solid #101010; padding-bottom: 56px;">
+    <div style="font-size: 20px; line-height: 1.5; font-weight: 500; max-width: 680px;">KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los semestres.</div>
+    <div style="display: flex; flex-direction: column; gap: 14px; align-items: flex-start;">
+      <a href="#programas" class="mb-cta" style="padding: 18px 30px; background: #101010; color: #F7F5F0; font-size: 15px; font-weight: 800; text-transform: uppercase; text-decoration: none; width: 100%; text-align: center;">Explora los programas</a>
+      <a href="#continua" class="mb-cta" style="padding: 18px 30px; background: transparent; color: #101010; border: 3px solid #101010; font-size: 15px; font-weight: 800; text-transform: uppercase; text-decoration: none; width: 100%; text-align: center; box-sizing: border-box;">Certifícate gratis · 40h</a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));">
+    <div style="padding: 40px 32px; border-right: 3px solid #101010; border-bottom: 3px solid #101010;">
+      <div class="mb-display" style="font-size: 56px; line-height: 1;">04</div>
+      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 8px;">Escuelas</div>
+    </div>
+    <div style="padding: 40px 32px; border-right: 3px solid #101010; border-bottom: 3px solid #101010;">
+      <div class="mb-display" style="font-size: 56px; line-height: 1;">11</div>
+      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 8px;">Programas académicos</div>
+    </div>
+    <div style="padding: 40px 32px; border-right: 3px solid #101010; border-bottom: 3px solid #101010;">
+      <div class="mb-display" style="font-size: 56px; line-height: 1;">06</div>
+      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 8px;">Certificaciones IA</div>
+    </div>
+    <div style="padding: 40px 32px; border-bottom: 3px solid #101010; background: {{accent}};">
+      <div class="mb-display" style="font-size: 56px; line-height: 1;">100%</div>
+      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 8px;">Online / Global</div>
+    </div>
+  </div>
+
+  <!-- MANIFIESTO / IDENTIDAD -->
+  <div style="padding: 64px 56px; border-bottom: 3px solid #101010;">
+    <h2 class="mb-display" style="font-size: 48px; margin: 0 0 48px; max-width: 900px; line-height: 1.02;">NO ENSEÑAMOS LO QUE SE ENSEÑABA HACE CINCO AÑOS</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 3px solid #101010;">
+      <div style="padding: 32px 28px 0 0; border-right: 3px solid #101010;">
+        <div class="mb-display" style="font-size: 40px; color: {{accent}}; -webkit-text-stroke: 2px #101010;">01</div>
+        <div style="font-size: 18px; font-weight: 800; margin: 12px 0 10px; text-transform: uppercase;">Conocimiento de frontera, fácil de usar</div>
+        <div style="font-size: 14px; line-height: 1.6;">Hacemos que el conocimiento más avanzado del mundo sea fácil de entender y de aplicar — sin importar de dónde vengas.</div>
+      </div>
+      <div style="padding: 32px 28px 0; border-right: 3px solid #101010;">
+        <div class="mb-display" style="font-size: 40px; color: {{accent}}; -webkit-text-stroke: 2px #101010;">02</div>
+        <div style="font-size: 18px; font-weight: 800; margin: 12px 0 10px; text-transform: uppercase;">Un currículo vivo, no un plan fijo</div>
+        <div style="font-size: 14px; line-height: 1.6;">Programas diseñados y actualizados con IA, validados por criterio experto humano. Cuando cambia la industria, el curso cambia con ella.</div>
+      </div>
+      <div style="padding: 32px 0 0 28px;">
+        <div class="mb-display" style="font-size: 40px; color: {{accent}}; -webkit-text-stroke: 2px #101010;">03</div>
+        <div style="font-size: 18px; font-weight: 800; margin: 12px 0 10px; text-transform: uppercase;">Comunidad antes que matrícula</div>
+        <div style="font-size: 14px; line-height: 1.6;">Certifícate en competencias reales desde el primer día, con o sin título. El valor se demuestra antes de pedirte que te matricules.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCUELAS -->
+  <div id="programas" style="padding: 64px 56px; border-bottom: 3px solid #101010;">
+    <h2 class="mb-display" style="font-size: 48px; margin: 0 0 8px;">CUATRO ESCUELAS.</h2>
+    <h2 class="mb-display" style="font-size: 48px; margin: 0 0 48px;">UN MISMO MOTOR IA-NATIVE.</h2>
+
+    <div style="border-top: 3px solid #101010;">
+      <div class="mb-row" style="display: flex; align-items: center; gap: 40px; padding: 28px 0; border-bottom: 3px solid #101010; transition: all 0.1s;">
+        <div class="mb-num mb-display" style="font-size: 32px; width: 80px; flex-shrink: 0;">01</div>
+        <div style="width: 260px; flex-shrink: 0; font-size: 20px; font-weight: 800; text-transform: uppercase;">Ingeniería</div>
+        <div class="mb-sub" style="font-size: 14px; color: #4A4A4A; flex: 1;">Cybersecurity (BS) · Data Science &amp; Applied AI (BS) · Artificial Intelligence Engineering (MSAIE)</div>
+      </div>
+      <div class="mb-row" style="display: flex; align-items: center; gap: 40px; padding: 28px 0; border-bottom: 3px solid #101010; transition: all 0.1s;">
+        <div class="mb-num mb-display" style="font-size: 32px; width: 80px; flex-shrink: 0;">02</div>
+        <div style="width: 260px; flex-shrink: 0; font-size: 20px; font-weight: 800; text-transform: uppercase;">Transf. de Negocios</div>
+        <div class="mb-sub" style="font-size: 14px; color: #4A4A4A; flex: 1;">Business Management and Entrepreneurship (BS) · Management and Entrepreneurship (MSME)</div>
+      </div>
+      <div class="mb-row" style="display: flex; align-items: center; gap: 40px; padding: 28px 0; border-bottom: 3px solid #101010; transition: all 0.1s;">
+        <div class="mb-num mb-display" style="font-size: 32px; width: 80px; flex-shrink: 0;">03</div>
+        <div style="width: 260px; flex-shrink: 0; font-size: 20px; font-weight: 800; text-transform: uppercase;">Bienestar y Desarrollo Humano</div>
+        <div class="mb-sub" style="font-size: 14px; color: #4A4A4A; flex: 1;">Integrative Wellness (AAS) · Aging Sciences and Health Management (BS) · Applied Neuroscience (MS) · Strategic Leadership for Aging Services &amp; Vitality Stewardship (MS)</div>
+      </div>
+      <div class="mb-row" style="display: flex; align-items: center; gap: 40px; padding: 28px 0; transition: all 0.1s;">
+        <div class="mb-num mb-display" style="font-size: 32px; width: 80px; flex-shrink: 0;">04</div>
+        <div style="width: 260px; flex-shrink: 0; font-size: 20px; font-weight: 800; text-transform: uppercase;">Diseño y Tec. de Comunicación</div>
+        <div class="mb-sub" style="font-size: 14px; color: #4A4A4A; flex: 1;">Digital Media (BS) · Digital Media, Film &amp; Visual Design (MFA)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOTOR CURRICULAR -->
+  <div style="padding: 64px 56px; border-bottom: 3px solid #101010;">
+    <h2 class="mb-display" style="font-size: 48px; margin: 0 0 48px;">ASÍ SE CONSTRUYE UN CURSO EN KUN</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 3px solid #101010;">
+      <div style="padding: 32px; border-right: 3px solid #101010;">
+        <div class="mb-display" style="font-size: 64px; -webkit-text-fill-color: transparent; -webkit-text-stroke: 2px #101010; margin-bottom: 16px;">01</div>
+        <div style="font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;">La IA rastrea la frontera</div>
+        <div style="font-size: 13px; line-height: 1.6;">Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.</div>
+      </div>
+      <div style="padding: 32px; border-right: 3px solid #101010; background: {{accent}};">
+        <div class="mb-display" style="font-size: 64px; color: #101010; margin-bottom: 16px;">02</div>
+        <div style="font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;">El criterio humano decide</div>
+        <div style="font-size: 13px; line-height: 1.6;">Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.</div>
+      </div>
+      <div style="padding: 32px;">
+        <div class="mb-display" style="font-size: 64px; -webkit-text-fill-color: transparent; -webkit-text-stroke: 2px #101010; margin-bottom: 16px;">03</div>
+        <div style="font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;">Aprendes lo que el mercado necesita hoy</div>
+        <div style="font-size: 13px; line-height: 1.6;">No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA + TRANSPARENCIA -->
+  <div id="registro" style="padding: 64px 56px 40px;">
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center; padding: 48px; background: #101010; color: #F7F5F0; margin-bottom: 40px;">
+      <h2 class="mb-display" style="font-size: 44px; margin: 0; line-height: 1.05;">ANTES DE MATRICULARTE, SÍGUENOS.</h2>
+      <div>
+        <div style="font-size: 14px; line-height: 1.6; color: #D8D3C6; margin-bottom: 22px;">El valor se demuestra antes de pedirte que pagues por él. Clases abiertas y conversaciones con expertos, sin matrícula.</div>
+        <a href="#" class="mb-cta" style="display: inline-block; padding: 16px 26px; background: {{accent}}; color: #101010; font-size: 14px; font-weight: 800; text-transform: uppercase; text-decoration: none;">Únete a la comunidad</a>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 3px solid #101010; margin-bottom: 40px;">
+      <div style="padding: 22px 26px; border-right: 3px solid #101010;">
+        <div style="font-size: 13px; font-weight: 800; text-transform: uppercase;">Florida CIE</div>
+        <div style="font-size: 13px; color: #4A4A4A; margin-top: 4px;">Comisión de Educación Independiente</div>
+      </div>
+      <div style="padding: 22px 26px;">
+        <div style="font-size: 13px; font-weight: 800; text-transform: uppercase;">SACSCOC · en proceso</div>
+        <div style="font-size: 13px; color: #4A4A4A; margin-top: 4px;">Acreditación institucional en avance</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div style="font-size: 13px; font-weight: 600;">© 2026 KUN University AI · Knowledge · Union · Network</div>
+      <div style="display: flex; gap: 22px;">
+        <a href="#" class="mb-link" style="font-size: 13px; font-weight: 700; text-transform: uppercase;">YouTube</a>
+        <a href="#" class="mb-link" style="font-size: 13px; font-weight: 700; text-transform: uppercase;">LinkedIn</a>
+        <a href="#" class="mb-link" style="font-size: 13px; font-weight: 700; text-transform: uppercase;">Instagram</a>
+        <a href="#" class="mb-link" style="font-size: 13px; font-weight: 700; text-transform: uppercase;">X</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#FF4B12","options":["#FF4B12","#FFD400","#0038FF","#00C853"],"section":"Tema"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#FF4B12' };
+  }
+}
+</script>
+</body>
+</html>

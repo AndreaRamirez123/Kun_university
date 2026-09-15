@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #0A0714; }
+  .ac-root { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #0A0714; color: #F7F5FF; width: 100%; position: relative; overflow: hidden; }
+  .ac-display { font-family: 'Sora', sans-serif; }
+  .ac-link { color: #B3A8CF; text-decoration: none; }
+  .ac-link:hover { color: #F7F5FF; }
+  .ac-glass { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(14px); }
+  .ac-glass:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-3px); }
+  .ac-card { transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+  .ac-card:hover { box-shadow: 0 0 0 1px rgba(255,255,255,0.14), 0 24px 60px -20px rgba(193,59,255,0.45); }
+  .ac-cta:hover { filter: brightness(1.12); transform: translateY(-1px); }
+  @keyframes ac-float-a { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(60px, -40px) scale(1.08); } }
+  @keyframes ac-float-b { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-50px, 50px) scale(1.05); } }
+  @keyframes ac-float-c { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(40px, 60px) scale(0.95); } }
+  @keyframes ac-pulse { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52,231,228,0.6); } 50% { opacity: 0.55; box-shadow: 0 0 0 6px rgba(52,231,228,0); } }
+  @keyframes ac-spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .ac-blob-a { animation: ac-float-a 14s ease-in-out infinite; }
+  .ac-blob-b { animation: ac-float-b 18s ease-in-out infinite; }
+  .ac-blob-c { animation: ac-float-c 16s ease-in-out infinite; }
+  .ac-live-dot { animation: ac-pulse 2.2s ease-in-out infinite; }
+  .ac-ring { animation: ac-spin-slow 40s linear infinite; }
+</style>
+</helmet>
+
+<div class="ac-root">
+
+  <!-- AMBIENT AURORA -->
+  <div style="position: absolute; top: -220px; left: -160px; width: 620px; height: 620px; border-radius: 50%; background: {{accent}}; filter: blur(150px); opacity: 0.45; mix-blend-mode: screen; z-index: 0;" class="ac-blob-a"></div>
+  <div style="position: absolute; top: 60px; right: -220px; width: 700px; height: 700px; border-radius: 50%; background: {{accent2}}; filter: blur(160px); opacity: 0.35; mix-blend-mode: screen; z-index: 0;" class="ac-blob-b"></div>
+  <div style="position: absolute; top: 900px; left: 30%; width: 640px; height: 640px; border-radius: 50%; background: #FF3D7A; filter: blur(150px); opacity: 0.28; mix-blend-mode: screen; z-index: 0;" class="ac-blob-c"></div>
+
+  <!-- NAV -->
+  <div style="position: relative; z-index: 5; display: flex; justify-content: center; padding: 24px 0;">
+    <div class="ac-glass" style="display: flex; align-items: center; gap: 36px; padding: 12px 14px 12px 22px; border-radius: 999px;">
+      <div class="ac-display" style="font-size: 17px; font-weight: 800; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: {{accent2}};" class="ac-live-dot"></span>
+        KUN AI
+      </div>
+      <a href="#programas" class="ac-link" style="font-size: 13px; font-weight: 600;">Programas</a>
+      <a href="#continua" class="ac-link" style="font-size: 13px; font-weight: 600;">Educación continua</a>
+      <a href="#comunidad" class="ac-link" style="font-size: 13px; font-weight: 600;">Comunidad</a>
+      <a href="#registro" class="ac-cta" style="padding: 10px 20px; background: linear-gradient(120deg, {{accent}}, {{accent2}}); color: #0A0714; border-radius: 999px; font-size: 13px; font-weight: 800; text-decoration: none;">Certifícate gratis</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div style="position: relative; z-index: 5; max-width: 1180px; margin: 0 auto; padding: 72px 64px 56px; text-align: center;">
+    <div style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 999px; margin-bottom: 36px;" class="ac-glass">
+      <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; background: linear-gradient(120deg, {{accent}}, {{accent2}}); -webkit-background-clip: text; background-clip: text; color: transparent;">EDUCACIÓN SUPERIOR IA-NATIVE · FLORIDA</span>
+    </div>
+    <h1 class="ac-display" style="font-size: 96px; line-height: 1; font-weight: 800; letter-spacing: -0.03em; margin: 0 auto 30px; max-width: 980px;">La universidad que se <span style="background: linear-gradient(120deg, {{accent}} 10%, {{accent2}} 90%); -webkit-background-clip: text; background-clip: text; color: transparent;">rediseña</span>, no al revés.</h1>
+    <div style="font-size: 18px; line-height: 1.65; color: #C9BFE8; max-width: 640px; margin: 0 auto 44px;">KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los semestres.</div>
+    <div style="display: flex; gap: 16px; justify-content: center;">
+      <a href="#programas" class="ac-cta" style="padding: 17px 32px; background: linear-gradient(120deg, {{accent}}, {{accent2}}); color: #0A0714; border-radius: 999px; font-weight: 800; font-size: 16px; text-decoration: none; box-shadow: 0 20px 50px -14px rgba(193,59,255,0.55);">Explora los programas</a>
+      <a href="#continua" class="ac-glass" style="padding: 17px 32px; color: #F7F5FF; border-radius: 999px; font-weight: 700; font-size: 16px; text-decoration: none;">Certifícate gratis en 40 horas</a>
+    </div>
+  </div>
+
+  <!-- STATS ORBIT -->
+  <div style="position: relative; z-index: 5; max-width: 1180px; margin: 0 auto; padding: 0 64px 88px;">
+    <div style="position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px;">
+      <div style="position: absolute; top: -30px; right: 10%; width: 90px; height: 90px; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.18);" class="ac-ring"></div>
+      <div class="ac-glass ac-card" style="border-radius: 20px; padding: 30px 26px; position: relative;">
+        <div class="ac-display" style="font-size: 44px; font-weight: 800; color: {{accent2}};">04</div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #B3A8CF; margin-top: 6px;">Escuelas</div>
+      </div>
+      <div class="ac-glass ac-card" style="border-radius: 20px; padding: 30px 26px;">
+        <div class="ac-display" style="font-size: 44px; font-weight: 800; color: {{accent}};">11</div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #B3A8CF; margin-top: 6px;">Programas académicos</div>
+      </div>
+      <div class="ac-glass ac-card" style="border-radius: 20px; padding: 30px 26px;">
+        <div class="ac-display" style="font-size: 44px; font-weight: 800; color: {{accent2}};">06</div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #B3A8CF; margin-top: 6px;">Certificaciones IA</div>
+      </div>
+      <div class="ac-glass ac-card" style="border-radius: 20px; padding: 30px 26px;">
+        <div class="ac-display" style="font-size: 44px; font-weight: 800; color: {{accent}};">100%</div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #B3A8CF; margin-top: 6px;">Online / Global</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IDENTIDAD -->
+  <div style="position: relative; z-index: 5; max-width: 1180px; margin: 0 auto; padding: 0 64px 96px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: {{accent2}}; margin-bottom: 14px;">Identidad estratégica</div>
+      <h2 class="ac-display" style="font-size: 42px; font-weight: 800; margin: 0; letter-spacing: -0.01em;">No enseñamos lo que se enseñaba hace cinco años</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px;">
+      <div class="ac-glass ac-card" style="border-radius: 20px; padding: 34px;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, {{accent}}, {{accent2}}); margin-bottom: 22px;"></div>
+        <div style="font-size: 19px; font-weight: 700; margin-bottom: 10px;">Conocimiento de frontera, fácil de usar</div>
+        <div style="font-size: 14px; line-height: 1.6; color: #B3A8CF;">Hacemos que el conocimiento más avanzado del mundo sea fácil de entender y de aplicar — sin importar de dónde vengas.</div>
+      </div>
+      <div class="ac-glass ac-card" style="border-radius: 20px; padding: 34px;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, {{accent2}}, #FF3D7A); margin-bottom: 22px;"></div>
+        <div style="font-size: 19px; font-weight: 700; margin-bottom: 10px;">Un currículo vivo, no un plan fijo</div>
+        <div style="font-size: 14px; line-height: 1.6; color: #B3A8CF;">Programas diseñados y actualizados con IA, validados por criterio experto humano. Cuando cambia la industria, el curso cambia con ella.</div>
+      </div>
+      <div class="ac-glass ac-card" style="border-radius: 20px; padding: 34px;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #FF3D7A, {{accent}}); margin-bottom: 22px;"></div>
+        <div style="font-size: 19px; font-weight: 700; margin-bottom: 10px;">Comunidad antes que matrícula</div>
+        <div style="font-size: 14px; line-height: 1.6; color: #B3A8CF;">Certifícate en competencias reales desde el primer día, con o sin título. El valor se demuestra antes de pedirte que te matricules.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCUELAS -->
+  <div id="programas" style="position: relative; z-index: 5; max-width: 1180px; margin: 0 auto; padding: 0 64px 96px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <h2 class="ac-display" style="font-size: 48px; font-weight: 800; margin: 0 0 14px; letter-spacing: -0.01em;">Cuatro escuelas. <span style="background: linear-gradient(120deg, {{accent}}, {{accent2}}); -webkit-background-clip: text; background-clip: text; color: transparent;">Un mismo motor IA-Native.</span></h2>
+      <div style="font-size: 15px; color: #B3A8CF; max-width: 560px; margin: 0 auto;">Cada programa se rediseña continuamente con IA y expertos humanos para reflejar lo que la industria necesita hoy.</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px;">
+      <div class="ac-glass ac-card" style="border-radius: 22px; padding: 34px;">
+        <div style="font-size: 21px; font-weight: 700; margin-bottom: 8px;">Escuela de Ingeniería</div>
+        <div style="font-size: 13px; color: #B3A8CF; margin-bottom: 18px;">Donde se construye la infraestructura del mundo digital: datos, inteligencia artificial y ciberseguridad.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(52,231,228,0.14); color: {{accent2}}; border: 1px solid rgba(52,231,228,0.3);">Cybersecurity · BS</span>
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(52,231,228,0.14); color: {{accent2}}; border: 1px solid rgba(52,231,228,0.3);">Data Science &amp; Applied AI · BS</span>
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(52,231,228,0.14); color: {{accent2}}; border: 1px solid rgba(52,231,228,0.3);">AI Engineering · MSAIE</span>
+        </div>
+      </div>
+      <div class="ac-glass ac-card" style="border-radius: 22px; padding: 34px;">
+        <div style="font-size: 21px; font-weight: 700; margin-bottom: 8px;">Escuela de Transformación de Negocios</div>
+        <div style="font-size: 13px; color: #B3A8CF; margin-bottom: 18px;">Para quienes quieren liderar organizaciones, no solo administrarlas.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(193,59,255,0.14); color: {{accent}}; border: 1px solid rgba(193,59,255,0.3);">Business Mgmt &amp; Entrepreneurship · BS</span>
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(193,59,255,0.14); color: {{accent}}; border: 1px solid rgba(193,59,255,0.3);">Management &amp; Entrepreneurship · MSME</span>
+        </div>
+      </div>
+      <div class="ac-glass ac-card" style="border-radius: 22px; padding: 34px;">
+        <div style="font-size: 21px; font-weight: 700; margin-bottom: 8px;">Escuela de Bienestar y Desarrollo Humano</div>
+        <div style="font-size: 13px; color: #B3A8CF; margin-bottom: 18px;">La ciencia de vivir más y mejor, convertida en una industria de miles de millones de dólares.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,61,122,0.14); color: #FF3D7A; border: 1px solid rgba(255,61,122,0.3);">Integrative Wellness · AAS</span>
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,61,122,0.14); color: #FF3D7A; border: 1px solid rgba(255,61,122,0.3);">Aging Sciences &amp; Health Mgmt · BS</span>
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,61,122,0.14); color: #FF3D7A; border: 1px solid rgba(255,61,122,0.3);">Applied Neuroscience · MS</span>
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,61,122,0.14); color: #FF3D7A; border: 1px solid rgba(255,61,122,0.3);">Strategic Leadership Aging Services · MS</span>
+        </div>
+      </div>
+      <div class="ac-glass ac-card" style="border-radius: 22px; padding: 34px;">
+        <div style="font-size: 21px; font-weight: 700; margin-bottom: 8px;">Escuela de Diseño y Tecnologías de Comunicación</div>
+        <div style="font-size: 13px; color: #B3A8CF; margin-bottom: 18px;">Storytelling, diseño y tecnología para las industrias creativas del futuro.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(52,231,228,0.14); color: {{accent2}}; border: 1px solid rgba(52,231,228,0.3);">Digital Media · BS</span>
+          <span style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(52,231,228,0.14); color: {{accent2}}; border: 1px solid rgba(52,231,228,0.3);">Digital Media, Film &amp; Visual Design · MFA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOTOR CURRICULAR -->
+  <div style="position: relative; z-index: 5; max-width: 1180px; margin: 0 auto; padding: 0 64px 96px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <h2 class="ac-display" style="font-size: 42px; font-weight: 800; margin: 0;">Así se construye un curso en KUN</h2>
+    </div>
+    <div class="ac-glass" style="border-radius: 26px; padding: 52px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; position: relative;">
+      <div style="position: absolute; top: 78px; left: 16%; right: 16%; height: 2px; background: linear-gradient(90deg, {{accent}}, {{accent2}}); opacity: 0.5;"></div>
+      <div style="text-align: center; position: relative;">
+        <div class="ac-display" style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, {{accent}}, {{accent2}}); color: #0A0714; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; margin: 0 auto 24px; box-shadow: 0 0 40px -6px {{accent}};">01</div>
+        <div style="font-size: 17px; font-weight: 700; margin-bottom: 8px;">La IA rastrea la frontera</div>
+        <div style="font-size: 13px; line-height: 1.6; color: #B3A8CF;">Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.</div>
+      </div>
+      <div style="text-align: center; position: relative;">
+        <div class="ac-display" style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, {{accent2}}, #FF3D7A); color: #0A0714; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; margin: 0 auto 24px; box-shadow: 0 0 40px -6px {{accent2}};">02</div>
+        <div style="font-size: 17px; font-weight: 700; margin-bottom: 8px;">El criterio humano decide</div>
+        <div style="font-size: 13px; line-height: 1.6; color: #B3A8CF;">Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.</div>
+      </div>
+      <div style="text-align: center; position: relative;">
+        <div class="ac-display" style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #FF3D7A, {{accent}}); color: #0A0714; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; margin: 0 auto 24px; box-shadow: 0 0 40px -6px #FF3D7A;">03</div>
+        <div style="font-size: 17px; font-weight: 700; margin-bottom: 8px;">Aprendes lo que el mercado necesita hoy</div>
+        <div style="font-size: 13px; line-height: 1.6; color: #B3A8CF;">No lo que se enseñaba hace cinco años, sino las competencias que las empresas buscan hoy.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA + TRANSPARENCIA -->
+  <div id="registro" style="position: relative; z-index: 5; max-width: 1180px; margin: 0 auto; padding: 0 64px 64px;">
+    <div class="ac-glass" style="border-radius: 28px; padding: 60px; text-align: center; margin-bottom: 40px; position: relative; overflow: hidden;">
+      <div style="position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 360px; height: 360px; border-radius: 50%; background: linear-gradient(135deg, {{accent}}, {{accent2}}); filter: blur(90px); opacity: 0.35;"></div>
+      <h2 class="ac-display" style="position: relative; font-size: 38px; font-weight: 800; margin: 0 0 14px;">Antes de matricularte, síguenos</h2>
+      <div style="position: relative; font-size: 15px; color: #B3A8CF; max-width: 520px; margin: 0 auto 28px;">El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real, sin necesidad de estar matriculado.</div>
+      <a href="#" class="ac-cta" style="position: relative; display: inline-block; padding: 16px 30px; background: linear-gradient(120deg, {{accent}}, {{accent2}}); color: #0A0714; border-radius: 999px; font-weight: 800; font-size: 15px; text-decoration: none;">Únete a la comunidad</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 40px;">
+      <div class="ac-glass" style="border-radius: 16px; padding: 20px 24px;">
+        <div style="font-size: 13px; font-weight: 700;">Florida CIE</div>
+        <div style="font-size: 12px; color: #B3A8CF; margin-top: 4px;">Comisión de Educación Independiente</div>
+      </div>
+      <div class="ac-glass" style="border-radius: 16px; padding: 20px 24px;">
+        <div style="font-size: 13px; font-weight: 700;">SACSCOC · en proceso</div>
+        <div style="font-size: 12px; color: #B3A8CF; margin-top: 4px;">Acreditación institucional en avance</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 24px; padding-bottom: 32px; border-top: 1px solid rgba(255,255,255,0.1);">
+      <div style="font-size: 13px; color: #B3A8CF;">© 2026 KUN University AI · Knowledge · Union · Network</div>
+      <div style="display: flex; gap: 22px;">
+        <a href="#" class="ac-link" style="font-size: 13px;">YouTube</a>
+        <a href="#" class="ac-link" style="font-size: 13px;">LinkedIn</a>
+        <a href="#" class="ac-link" style="font-size: 13px;">Instagram</a>
+        <a href="#" class="ac-link" style="font-size: 13px;">X</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#C13BFF","options":["#C13BFF","#34E7E4","#FF3D7A","#FFD84D"],"section":"Tema"},"accent2":{"editor":"color","default":"#34E7E4","section":"Tema"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#C13BFF', accent2: this.props.accent2 ?? '#34E7E4' };
+  }
+}
+</script>
+</body>
+</html>

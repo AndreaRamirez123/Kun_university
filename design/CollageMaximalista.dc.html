@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #FFF9EC; }
+  .cm-root { font-family: 'DM Sans', system-ui, sans-serif; background: #FFF9EC; color: #10101A; width: 100%; overflow: hidden; }
+  .cm-display { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; }
+  .cm-link { color: #10101A; text-decoration: none; }
+  .cm-link:hover { color: #FF2E93; }
+  .cm-cta { --shadow-color: #10101A; box-shadow: 4px 4px 0 var(--shadow-color); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .cm-cta:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 var(--shadow-color); }
+  .cm-sticker { --shadow-color: #10101A; box-shadow: 7px 7px 0 var(--shadow-color); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .cm-sticker:hover { transform: rotate(0deg) scale(1.04); box-shadow: 11px 11px 0 var(--shadow-color); }
+  @keyframes cm-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .cm-ticker-track { display: flex; width: max-content; animation: cm-marquee 22s linear infinite; }
+  @keyframes cm-wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  .cm-wiggle { animation: cm-wiggle 3.5s ease-in-out infinite; }
+  .cm-tape { position: absolute; background: rgba(255, 249, 236, 0.82); box-shadow: 0 3px 10px rgba(16, 16, 26, 0.28); pointer-events: none; }
+  .cm-dots { position: absolute; inset: 0; background-image: radial-gradient(currentColor 1.6px, transparent 1.6px); background-size: 18px 18px; opacity: 0.16; pointer-events: none; }
+  .cm-torn-bottom { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 96% 92%, 92% 100%, 88% 92%, 84% 100%, 80% 92%, 76% 100%, 72% 92%, 68% 100%, 64% 92%, 60% 100%, 56% 92%, 52% 100%, 48% 92%, 44% 100%, 40% 92%, 36% 100%, 32% 92%, 28% 100%, 24% 92%, 20% 100%, 16% 92%, 12% 100%, 8% 92%, 4% 100%, 0% 92%); }
+  .cm-tilt-l { transition: transform 0.2s ease; }
+  .cm-tilt-l:hover { transform: scale(1.03) rotate(-1deg); }
+  .cm-tilt-r { transition: transform 0.2s ease; }
+  .cm-tilt-r:hover { transform: scale(1.03) rotate(1deg); }
+</style>
+</helmet>
+
+<div class="cm-root">
+
+  <!-- TICKER -->
+  <div style="background: #10101A; padding: 12px 0; overflow: hidden; white-space: nowrap;">
+    <div class="cm-ticker-track">
+      <span style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: {{accent}}; padding: 0 20px;" class="cm-display">★ IA-NATIVE</span>
+      <span style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #FFF9EC; padding: 0 20px;" class="cm-display">4 ESCUELAS</span>
+      <span style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: {{accent2}}; padding: 0 20px;" class="cm-display">★ 11 PROGRAMAS</span>
+      <span style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #FFF9EC; padding: 0 20px;" class="cm-display">100% ONLINE</span>
+      <span style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: {{accent}}; padding: 0 20px;" class="cm-display">★ IA-NATIVE</span>
+      <span style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #FFF9EC; padding: 0 20px;" class="cm-display">4 ESCUELAS</span>
+      <span style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: {{accent2}}; padding: 0 20px;" class="cm-display">★ 11 PROGRAMAS</span>
+      <span style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #FFF9EC; padding: 0 20px;" class="cm-display">100% ONLINE</span>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 22px 56px; border-bottom: 4px solid #10101A;">
+    <div class="cm-display" style="font-size: 22px;">KUN AI</div>
+    <div style="display: flex; align-items: center; gap: 30px;">
+      <a href="#programas" class="cm-link" style="font-size: 14px; font-weight: 700;">Programas</a>
+      <a href="#continua" class="cm-link" style="font-size: 14px; font-weight: 700;">Educación continua</a>
+      <a href="#comunidad" class="cm-link" style="font-size: 14px; font-weight: 700;">Comunidad</a>
+      <a href="#registro" class="cm-cta" style="padding: 11px 20px; background: {{accent}}; color: #10101A; font-size: 14px; font-weight: 800; text-decoration: none; border: 3px solid #10101A; border-radius: 999px;">Certifícate gratis</a>
+    </div>
+  </div>
+
+  <!-- HERO COLLAGE -->
+  <div style="position: relative; max-width: 1280px; margin: 0 auto; padding: 76px 56px 40px; overflow: hidden;">
+    <div class="cm-dots" style="top: -20px; left: -20px; right: auto; bottom: auto; width: 200px; height: 200px; color: #10101A; z-index: 0;"></div>
+    <div style="position: absolute; top: 100px; left: -30px; width: 780px; height: 300px; background: {{accent2}}; border: 4px solid #10101A; transform: rotate(-2.2deg); z-index: 0;"></div>
+
+    <div style="position: absolute; top: 40px; right: 80px; width: 132px; height: 132px; border-radius: 50%; background: {{accent2}}; border: 4px solid #10101A; display: flex; align-items: center; justify-content: center; text-align: center; transform: rotate(12deg); box-shadow: 6px 6px 0 #10101A; z-index: 2;" class="cm-wiggle">
+      <div class="cm-display" style="font-size: 13px; line-height: 1.2;">100%<br>ONLINE</div>
+    </div>
+    <svg width="30" height="30" viewBox="0 0 24 24" style="position: absolute; top: 210px; right: 220px; z-index: 2; transform: rotate(10deg);">
+      <path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" fill="{{accent}}" stroke="#10101A" stroke-width="1.5"/>
+    </svg>
+
+    <div style="position: relative; z-index: 1;">
+      <div style="position: relative; display: inline-block; margin-bottom: 28px;">
+        <div style="font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; background: #10101A; color: #FFF9EC; display: inline-block; padding: 7px 16px; transform: rotate(-2deg);" class="cm-sticker">Educación superior IA-Native · Florida</div>
+        <div class="cm-tape" style="top: -10px; left: -10px; width: 38px; height: 18px; transform: rotate(-35deg);"></div>
+      </div>
+      <h1 class="cm-display" style="font-size: 108px; line-height: 0.92; margin: 0 0 8px; max-width: 980px;">LA UNIVERSIDAD</h1>
+      <h1 class="cm-display" style="font-size: 108px; line-height: 0.92; margin: 0 0 8px; max-width: 980px;">QUE SE <span style="color: {{accent}}; -webkit-text-stroke: 3px #10101A;">REDISEÑA</span>,</h1>
+      <h1 class="cm-display" style="font-size: 108px; line-height: 0.92; margin: 0 0 36px; max-width: 980px;">NO AL REVÉS.</h1>
+      <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center;">
+        <div style="font-size: 18px; line-height: 1.55; font-weight: 500; max-width: 560px;">KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los semestres.</div>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <a href="#programas" class="cm-cta" style="padding: 17px 26px; background: #10101A; color: #FFF9EC; font-size: 15px; font-weight: 800; text-decoration: none; text-align: center; border: 3px solid #10101A; border-radius: 999px;">Explora los programas →</a>
+          <a href="#continua" class="cm-cta" style="padding: 17px 26px; background: {{accent2}}; color: #10101A; font-size: 15px; font-weight: 800; text-decoration: none; text-align: center; border: 3px solid #10101A; border-radius: 999px; --shadow-color: #10101A;">Certifícate gratis en 40 horas</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS BLOCKS -->
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 4px solid #10101A; border-bottom: 4px solid #10101A; margin-top: 56px; box-shadow: 0 10px 0 -6px rgba(16,16,26,0.25);">
+    <div class="cm-tilt-l" style="padding: 34px 26px; border-right: 4px solid #10101A; background: {{accent}};">
+      <div class="cm-display" style="font-size: 48px;">04</div>
+      <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; margin-top: 6px;">Escuelas</div>
+    </div>
+    <div style="padding: 34px 26px; border-right: 4px solid #10101A; background-image: radial-gradient(#10101A 1.6px, transparent 1.6px); background-size: 18px 18px; background-position: -6px -6px;">
+      <div class="cm-display" style="font-size: 48px;">11</div>
+      <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; margin-top: 6px;">Programas</div>
+    </div>
+    <div class="cm-tilt-r" style="padding: 34px 26px; border-right: 4px solid #10101A; background: {{accent2}};">
+      <div class="cm-display" style="font-size: 48px;">06</div>
+      <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; margin-top: 6px;">Certif. IA</div>
+    </div>
+    <div style="padding: 34px 26px; background-image: radial-gradient(#10101A 1.6px, transparent 1.6px); background-size: 18px 18px; background-position: -6px -6px;">
+      <div class="cm-display" style="font-size: 48px;">100%</div>
+      <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; margin-top: 6px;">Online</div>
+    </div>
+  </div>
+
+  <!-- IDENTIDAD -->
+  <div style="max-width: 1280px; margin: 0 auto; padding: 72px 56px; position: relative;">
+    <h2 class="cm-display" style="font-size: 46px; margin: 0 0 48px; max-width: 900px; line-height: 1.05;">NO ENSEÑAMOS LO QUE SE ENSEÑABA HACE CINCO AÑOS</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+      <div style="background: #10101A; color: #FFF9EC; border-radius: 22px; padding: 30px; transform: rotate(-1.5deg); --shadow-color: {{accent}}; position: relative;" class="cm-sticker">
+        <div class="cm-display" style="font-size: 30px; color: {{accent}};">01</div>
+        <div style="font-size: 18px; font-weight: 800; margin: 12px 0 10px;">Conocimiento de frontera, fácil de usar</div>
+        <div style="font-size: 13px; line-height: 1.6; color: #D8D3C0;">Hacemos que el conocimiento más avanzado del mundo sea fácil de entender y de aplicar — sin importar de dónde vengas.</div>
+        <svg width="22" height="22" viewBox="0 0 24 24" style="position: absolute; top: -10px; right: -8px; transform: rotate(14deg);"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" fill="{{accent}}" stroke="#10101A" stroke-width="1.2"/></svg>
+      </div>
+      <div style="background: {{accent}}; border-radius: 22px; padding: 30px; transform: rotate(1.5deg); border: 3px solid #10101A; --shadow-color: {{accent2}};" class="cm-sticker">
+        <div class="cm-display" style="font-size: 30px;">02</div>
+        <div style="font-size: 18px; font-weight: 800; margin: 12px 0 10px;">Un currículo vivo, no un plan fijo</div>
+        <div style="font-size: 13px; line-height: 1.6;">Programas diseñados y actualizados con IA, validados por criterio experto humano. Cuando cambia la industria, el curso cambia con ella.</div>
+      </div>
+      <div style="background: #10101A; color: #FFF9EC; border-radius: 22px; padding: 30px; transform: rotate(-1deg); --shadow-color: {{accent2}};" class="cm-sticker">
+        <div class="cm-display" style="font-size: 30px; color: {{accent2}};">03</div>
+        <div style="font-size: 18px; font-weight: 800; margin: 12px 0 10px;">Comunidad antes que matrícula</div>
+        <div style="font-size: 13px; line-height: 1.6; color: #D8D3C0;">Certifícate en competencias reales desde el primer día, con o sin título. El valor se demuestra antes de pedirte que te matricules.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCUELAS -->
+  <div id="programas" style="background: #10101A; color: #FFF9EC; padding: 80px 0; position: relative; overflow: hidden;">
+    <div class="cm-dots" style="top: -30px; right: -30px; left: auto; bottom: auto; width: 260px; height: 260px; color: #FFF9EC; opacity: 0.14;"></div>
+    <div style="position: absolute; top: 56px; left: 40px; width: 90px; height: 90px; border: 3px dashed {{accent2}}; border-radius: 50%; opacity: 0.6;"></div>
+    <div style="max-width: 1280px; margin: 0 auto; padding: 0 56px; position: relative; z-index: 1;">
+      <h2 class="cm-display" style="font-size: 50px; margin: 0 0 12px; color: {{accent}};">CUATRO ESCUELAS.</h2>
+      <h2 class="cm-display" style="font-size: 50px; margin: 0 0 52px;">UN MISMO MOTOR IA-NATIVE.</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px;">
+        <div class="cm-sticker" style="background: #FFF9EC; color: #10101A; border-radius: 20px; padding: 32px; border: 3px solid {{accent2}}; transform: rotate(-1.2deg); --shadow-color: {{accent2}};">
+          <div style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Escuela de Ingeniería</div>
+          <div style="font-size: 13px; color: #4A4636; margin-bottom: 16px;">Donde se construye la infraestructura del mundo digital: datos, inteligencia artificial y ciberseguridad.</div>
+          <div style="font-size: 12px; font-weight: 700; line-height: 2;">Cybersecurity · BS<br>Data Science &amp; Applied AI · BS<br>AI Engineering · MSAIE</div>
+        </div>
+        <div class="cm-sticker" style="background: #FFF9EC; color: #10101A; border-radius: 20px; padding: 32px; border: 3px solid {{accent}}; transform: rotate(1deg); --shadow-color: {{accent}};">
+          <div style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Transformación de Negocios</div>
+          <div style="font-size: 13px; color: #4A4636; margin-bottom: 16px;">Para quienes quieren liderar organizaciones, no solo administrarlas.</div>
+          <div style="font-size: 12px; font-weight: 700; line-height: 2;">Business Management &amp; Entrepreneurship · BS<br>Management and Entrepreneurship · MSME</div>
+        </div>
+        <div class="cm-sticker" style="background: #FFF9EC; color: #10101A; border-radius: 20px; padding: 32px; border: 3px solid {{accent}}; transform: rotate(-0.8deg); --shadow-color: {{accent}};">
+          <div style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Bienestar y Desarrollo Humano</div>
+          <div style="font-size: 13px; color: #4A4636; margin-bottom: 16px;">La ciencia de vivir más y mejor, convertida en una industria de miles de millones de dólares.</div>
+          <div style="font-size: 12px; font-weight: 700; line-height: 2;">Integrative Wellness · AAS<br>Aging Sciences &amp; Health Mgmt · BS<br>Applied Neuroscience · MS<br>Strategic Leadership Aging Services · MS</div>
+        </div>
+        <div class="cm-sticker" style="background: #FFF9EC; color: #10101A; border-radius: 20px; padding: 32px; border: 3px solid {{accent2}}; transform: rotate(1.3deg); --shadow-color: {{accent2}};">
+          <div style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Diseño y Tec. de Comunicación</div>
+          <div style="font-size: 13px; color: #4A4636; margin-bottom: 16px;">Storytelling, diseño y tecnología para las industrias creativas del futuro.</div>
+          <div style="font-size: 12px; font-weight: 700; line-height: 2;">Digital Media · BS<br>Digital Media, Film &amp; Visual Design · MFA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOTOR CURRICULAR -->
+  <div style="max-width: 1280px; margin: 0 auto; padding: 80px 56px;">
+    <h2 class="cm-display" style="font-size: 46px; margin: 0 0 48px;">ASÍ SE CONSTRUYE UN CURSO EN KUN</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+      <div style="border: 4px solid #10101A; border-radius: 20px; padding: 30px; transform: rotate(-1deg); --shadow-color: {{accent}};" class="cm-sticker">
+        <div class="cm-display" style="font-size: 46px; margin-bottom: 14px; color: {{accent}};">01</div>
+        <div style="font-size: 15px; font-weight: 800; margin-bottom: 8px;">LA IA RASTREA LA FRONTERA</div>
+        <div style="font-size: 13px; line-height: 1.6;">Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.</div>
+      </div>
+      <div style="border: 4px solid #10101A; border-radius: 20px; padding: 30px; background: {{accent}}; transform: rotate(1deg);" class="cm-sticker">
+        <div class="cm-display" style="font-size: 46px; margin-bottom: 14px;">02</div>
+        <div style="font-size: 15px; font-weight: 800; margin-bottom: 8px;">EL CRITERIO HUMANO DECIDE</div>
+        <div style="font-size: 13px; line-height: 1.6;">Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.</div>
+      </div>
+      <div style="border: 4px solid #10101A; border-radius: 20px; padding: 30px; transform: rotate(-0.5deg); --shadow-color: {{accent2}};" class="cm-sticker">
+        <div class="cm-display" style="font-size: 46px; margin-bottom: 14px; color: {{accent2}};">03</div>
+        <div style="font-size: 15px; font-weight: 800; margin-bottom: 8px;">APRENDES LO QUE EL MERCADO NECESITA HOY</div>
+        <div style="font-size: 13px; line-height: 1.6;">No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA + TRANSPARENCIA -->
+  <div id="registro" style="max-width: 1280px; margin: 0 auto; padding: 0 56px 80px;">
+    <div style="position: relative; display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center; background: {{accent2}}; border: 4px solid #10101A; border-radius: 28px; padding: 52px; margin-bottom: 40px; box-shadow: 10px 10px 0 #10101A;">
+      <div class="cm-dots" style="top: auto; bottom: -14px; left: auto; right: -14px; width: 160px; height: 160px; color: #10101A; opacity: 0.2;"></div>
+      <div class="cm-tape" style="top: -14px; right: 60px; width: 70px; height: 22px; transform: rotate(6deg);"></div>
+      <h2 class="cm-display" style="font-size: 42px; margin: 0; line-height: 1.05; position: relative; z-index: 1;">ANTES DE MATRICULARTE, SÍGUENOS</h2>
+      <div style="position: relative; z-index: 1;">
+        <div style="font-size: 14px; line-height: 1.6; margin-bottom: 22px; font-weight: 600;">El valor se demuestra antes de pedirte que pagues por él. Clases abiertas y conversaciones con expertos, sin matrícula.</div>
+        <a href="#" class="cm-cta" style="display: inline-block; padding: 15px 26px; background: #10101A; color: #FFF9EC; border-radius: 999px; font-size: 14px; font-weight: 800; text-decoration: none; border: 3px solid #10101A;">Únete a la comunidad</a>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 40px;">
+      <div style="border: 3px solid #10101A; border-radius: 16px; padding: 20px 24px; box-shadow: 5px 5px 0 #10101A;">
+        <div style="font-size: 13px; font-weight: 800;">FLORIDA CIE</div>
+        <div style="font-size: 12px; color: #4A4636; margin-top: 4px;">Comisión de Educación Independiente</div>
+      </div>
+      <div style="border: 3px solid #10101A; border-radius: 16px; padding: 20px 24px; box-shadow: 5px 5px 0 #10101A;">
+        <div style="font-size: 13px; font-weight: 800;">SACSCOC · EN PROCESO</div>
+        <div style="font-size: 12px; color: #4A4636; margin-top: 4px;">Acreditación institucional en avance</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 24px; border-top: 3px solid #10101A;">
+      <div style="font-size: 13px; font-weight: 600;">© 2026 KUN University AI · Knowledge · Union · Network</div>
+      <div style="display: flex; gap: 20px;">
+        <a href="#" class="cm-link" style="font-size: 13px; font-weight: 700;">YouTube</a>
+        <a href="#" class="cm-link" style="font-size: 13px; font-weight: 700;">LinkedIn</a>
+        <a href="#" class="cm-link" style="font-size: 13px; font-weight: 700;">Instagram</a>
+        <a href="#" class="cm-link" style="font-size: 13px; font-weight: 700;">X</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#FF2E93","options":["#FF2E93","#1435FF","#F4FF61","#00C853"],"section":"Tema"},"accent2":{"editor":"color","default":"#F4FF61","section":"Tema"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#FF2E93', accent2: this.props.accent2 ?? '#F4FF61' };
+  }
+}
+</script>
+</body>
+</html>

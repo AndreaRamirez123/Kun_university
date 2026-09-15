@@ -1,0 +1,404 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #FFFFFF; }
+  .pd-root { font-family: 'Inter', system-ui, sans-serif; background: #FFFFFF; color: #10182B; width: 100%; position: relative; }
+  .pd-display { font-family: 'Manrope', system-ui, sans-serif; letter-spacing: -0.01em; }
+  .pd-link { color: #10182B; text-decoration: none; font-weight: 600; }
+  .pd-link:hover { color: #0088A9; }
+  .pd-btn-grad { background: linear-gradient(135deg, #22D3EE, #06B6D4); color: #ffffff; border-radius: 10px; box-shadow: 0 10px 24px rgba(6,182,212,0.28); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .pd-btn-grad:hover { transform: translateY(-2px); box-shadow: 0 15px 32px rgba(6,182,212,0.38); }
+  .pd-btn-outline { border-radius: 10px; }
+  .pd-btn-outline:hover { background: #F4F7FD; }
+  .pd-eyebrow { text-transform: uppercase; letter-spacing: 0.08em; }
+  .pd-stat { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .pd-stat:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(16,24,43,0.08); }
+  .pd-icon-badge { border-radius: 12px; background: #EEF7FA; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; }
+  .pd-card { transition: transform 0.22s ease, box-shadow 0.22s ease; border: 1px solid #E4E9F2; border-radius: 18px; overflow: hidden; }
+  .pd-card:hover { transform: translateY(-6px); box-shadow: 0 24px 48px -16px rgba(16,24,43,0.22); }
+  .pd-tag { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #EEF7FA; color: #0088A9; }
+  .pd-arrow { width: 44px; height: 44px; border-radius: 12px; border: 1px solid #E4E9F2; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease; flex-shrink: 0; background: #FFFFFF; }
+  .pd-arrow:hover { background: #10182B; border-color: #10182B; }
+  .pd-arrow:hover svg { stroke: #F5EFDF; }
+  .pd-dot { width: 8px; height: 8px; border-radius: 50%; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; }
+  .pd-dot:hover { transform: scale(1.3); }
+  @keyframes pd-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .pd-ticker-track { display: flex; width: max-content; animation: pd-marquee 46s linear infinite; }
+</style>
+</helmet>
+
+<div class="pd-root">
+
+  <!-- NAV -->
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 56px; border-bottom: 1px solid #E4E9F2;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <svg width="34" height="34" viewBox="0 0 120 120">
+        <path d="M60,10 L100,28 L100,64 C100,92 82,108 60,116 C38,108 20,92 20,64 L20,28 Z" fill="#10182B" stroke="{{accent}}" stroke-width="3"></path>
+        <text x="60" y="76" text-anchor="middle" font-family="Manrope, sans-serif" font-size="34" font-weight="800" fill="{{accent}}">K</text>
+      </svg>
+      <div class="pd-display" style="font-size: 18px; font-weight: 800;">KUN University AI</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 32px;">
+      <a href="#programas" class="pd-link" style="font-size: 14px;">Programas</a>
+      <a href="#continua" class="pd-link" style="font-size: 14px;">Educación continua</a>
+      <a href="#comunidad" class="pd-link" style="font-size: 14px;">Comunidad</a>
+      <a href="#registro" class="pd-btn-grad" style="padding: 11px 22px; font-size: 14px; font-weight: 700; text-decoration: none;">Certifícate gratis</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div style="max-width: 1200px; margin: 0 auto; padding: 72px 56px 0;">
+    <div style="display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center;">
+      <div>
+        <div class="pd-tag pd-eyebrow" style="margin-bottom: 22px;">★ Educación superior IA-Native · Florida</div>
+        <h1 class="pd-display" style="font-size: 58px; line-height: 1.08; font-weight: 800; margin: 0 0 22px;">La universidad que se <span style="color: #0088A9;">rediseña</span>, no al revés.</h1>
+        <div style="font-size: 17px; line-height: 1.65; color: #4A5773; margin: 0 0 32px; max-width: 480px;">KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los semestres.</div>
+        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+          <a href="#programas" class="pd-btn-grad" style="padding: 15px 28px; font-size: 15px; font-weight: 700; text-decoration: none;">Explora los programas</a>
+          <a href="#continua" class="pd-btn-outline" style="padding: 15px 28px; background: transparent; color: #10182B; border: 1.5px solid #D6DCE8; font-size: 15px; font-weight: 700; text-decoration: none; transition: background 0.15s;">Certifícate gratis en 40h</a>
+        </div>
+      </div>
+
+      <!-- CODE MOCKUP -->
+      <div style="background: #10182B; border-radius: 18px; box-shadow: 0 24px 48px rgba(16,24,43,0.22); overflow: hidden;">
+        <div style="display: flex; align-items: center; gap: 7px; padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: #FF5F57;"></div>
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: #FEBC2E;"></div>
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: #28C840;"></div>
+          <div style="margin-left: 10px; font-size: 12px; color: #6B7690; font-family: 'Manrope', monospace;">curriculum.ai</div>
+        </div>
+        <div style="padding: 26px 24px; font-family: 'Manrope', monospace; font-size: 14px; line-height: 2; color: #C7CEDD;">
+          <div><span style="color: #FF7EDB;">class</span> <span style="color: #6DE1D2;">Student</span>:</div>
+          <div style="padding-left: 22px;"><span style="color: #FF7EDB;">def</span> <span style="color: #82AAFF;">learn</span>(self, topic):</div>
+          <div style="padding-left: 44px;"><span style="color: #FF7EDB;">return</span> ai.<span style="color: #82AAFF;">adapt</span>(</div>
+          <div style="padding-left: 66px;">topic, pace=<span style="color: #C3E88D;">"yours"</span></div>
+          <div style="padding-left: 44px;">)</div>
+          <div style="padding-top: 10px; color: #6B7690;"># actualizado esta semana</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin: 60px 0 0;">
+      <div class="pd-stat" style="padding: 24px; border: 1px solid #E4E9F2; border-radius: 14px;">
+        <div class="pd-display" style="font-size: 34px; font-weight: 800; color: #0088A9;">4</div>
+        <div class="pd-eyebrow" style="font-size: 11px; font-weight: 700; color: #6B7690; margin-top: 4px;">Escuelas</div>
+      </div>
+      <div class="pd-stat" style="padding: 24px; border: 1px solid #E4E9F2; border-radius: 14px;">
+        <div class="pd-display" style="font-size: 34px; font-weight: 800; color: #0088A9;">11</div>
+        <div class="pd-eyebrow" style="font-size: 11px; font-weight: 700; color: #6B7690; margin-top: 4px;">Programas</div>
+      </div>
+      <div class="pd-stat" style="padding: 24px; border: 1px solid #E4E9F2; border-radius: 14px;">
+        <div class="pd-display" style="font-size: 34px; font-weight: 800; color: #0088A9;">6</div>
+        <div class="pd-eyebrow" style="font-size: 11px; font-weight: 700; color: #6B7690; margin-top: 4px;">Certif. IA</div>
+      </div>
+      <div class="pd-stat" style="padding: 24px; border: 1px solid #E4E9F2; border-radius: 14px;">
+        <div class="pd-display" style="font-size: 34px; font-weight: 800; color: #0088A9;">100%</div>
+        <div class="pd-eyebrow" style="font-size: 11px; font-weight: 700; color: #6B7690; margin-top: 4px;">Online/Global</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <div style="background: #10182B; padding: 14px 0; overflow: hidden; white-space: nowrap; margin-top: 64px;">
+    <div class="pd-ticker-track">
+      <sc-for list="{{tickerRepeat}}" as="r" hint-placeholder-count="2">
+        <span style="display: flex; align-items: center;">
+          <span class="pd-eyebrow" style="font-size: 12px; font-weight: 700; color: #F5EFDF; padding: 0 18px;">Escuela de Ingeniería</span>
+          <span style="width: 5px; height: 5px; border-radius: 50%; background: #22D3EE; flex-shrink: 0;"></span>
+          <span class="pd-eyebrow" style="font-size: 12px; font-weight: 700; color: #F5EFDF; padding: 0 18px;">Transformación de Negocios</span>
+          <span style="width: 5px; height: 5px; border-radius: 50%; background: #22D3EE; flex-shrink: 0;"></span>
+          <span class="pd-eyebrow" style="font-size: 12px; font-weight: 700; color: #F5EFDF; padding: 0 18px;">Bienestar y Desarrollo Humano</span>
+          <span style="width: 5px; height: 5px; border-radius: 50%; background: #22D3EE; flex-shrink: 0;"></span>
+          <span class="pd-eyebrow" style="font-size: 12px; font-weight: 700; color: #F5EFDF; padding: 0 18px;">Diseño y Tecnologías de Comunicación</span>
+          <span style="width: 5px; height: 5px; border-radius: 50%; background: #22D3EE; flex-shrink: 0;"></span>
+          <span class="pd-eyebrow" style="font-size: 12px; font-weight: 700; color: #F5EFDF; padding: 0 18px;">Educación Superior IA-Native</span>
+          <span style="width: 5px; height: 5px; border-radius: 50%; background: #22D3EE; flex-shrink: 0;"></span>
+          <span class="pd-eyebrow" style="font-size: 12px; font-weight: 700; color: #F5EFDF; padding: 0 18px;">Florida</span>
+          <span style="width: 5px; height: 5px; border-radius: 50%; background: #22D3EE; flex-shrink: 0;"></span>
+          <span class="pd-eyebrow" style="font-size: 12px; font-weight: 700; color: #F5EFDF; padding: 0 18px;">100% Online / Global</span>
+          <span style="width: 5px; height: 5px; border-radius: 50%; background: #22D3EE; flex-shrink: 0;"></span>
+        </span>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- IDENTIDAD -->
+  <div style="background: #F4F7FD; padding: 88px 0;">
+    <div style="max-width: 1140px; margin: 0 auto; padding: 0 56px;">
+      <div style="text-align: center; margin-bottom: 48px;">
+        <div class="pd-eyebrow" style="font-size: 12px; font-weight: 700; color: #0088A9; margin-bottom: 14px;">Identidad estratégica</div>
+        <h2 class="pd-display" style="font-size: 36px; font-weight: 800; margin: 0 auto; max-width: 620px;">No enseñamos lo que se enseñaba hace cinco años</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+        <div class="pd-card" style="background: #FFFFFF; border: 1px solid #E4E9F2; padding: 30px;">
+          <div class="pd-icon-badge" style="margin-bottom: 18px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0088A9" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v3M12 18v3M3 12h3M18 12h3"></path><path d="M12 12l4-5"></path></svg></div>
+          <div style="font-size: 17px; font-weight: 700; margin-bottom: 10px;">Conocimiento de frontera, fácil de usar</div>
+          <div style="font-size: 14px; line-height: 1.65; color: #4A5773;">Hacemos que el conocimiento más avanzado del mundo sea fácil de entender y de aplicar — sin importar de dónde vengas.</div>
+        </div>
+        <div class="pd-card" style="background: #FFFFFF; border: 1px solid #E4E9F2; padding: 30px;">
+          <div class="pd-icon-badge" style="margin-bottom: 18px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0088A9" stroke-width="1.8"><path d="M12 21V9"></path><path d="M12 13c0-4 3-5 6-5-.5 3-2 5-6 5z"></path><path d="M12 17c0-3-2.5-4-5-4 .5 2.5 2 4 5 4z"></path></svg></div>
+          <div style="font-size: 17px; font-weight: 700; margin-bottom: 10px;">Un currículo vivo, no un plan fijo</div>
+          <div style="font-size: 14px; line-height: 1.65; color: #4A5773;">Programas diseñados y actualizados con IA, validados por criterio experto humano. Cuando cambia la industria, el curso cambia con ella.</div>
+        </div>
+        <div class="pd-card" style="background: #FFFFFF; border: 1px solid #E4E9F2; padding: 30px;">
+          <div class="pd-icon-badge" style="margin-bottom: 18px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0088A9" stroke-width="1.8"><path d="M4 19.5V6a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0 0 4h13"></path></svg></div>
+          <div style="font-size: 17px; font-weight: 700; margin-bottom: 10px;">Comunidad antes que matrícula</div>
+          <div style="font-size: 14px; line-height: 1.65; color: #4A5773;">Certifícate en competencias reales desde el primer día, con o sin título. El valor se demuestra antes de pedirte que te matricules.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCUELAS: TARJETAS -->
+  <div id="programas" style="max-width: 1200px; margin: 0 auto; padding: 96px 56px;">
+    <div style="text-align: center; margin-bottom: 48px;">
+      <h2 class="pd-display" style="font-size: 38px; font-weight: 800; margin: 0 0 12px;">Cuatro escuelas. Un mismo motor IA-Native.</h2>
+      <div style="font-size: 15px; color: #4A5773; max-width: 520px; margin: 0 auto;">Cada programa se rediseña continuamente con IA y expertos humanos para reflejar lo que la industria necesita hoy.</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px;">
+
+      <div class="pd-card">
+        <div style="background: #10182B; padding: 30px; display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: {{accent}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10182B" stroke-width="1.8"><path d="M12 2l3 4h4l-1 4 3 3-3 3 1 4h-4l-3 4-3-4H5l1-4-3-3 3-3-1-4h4z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></div>
+          <div class="pd-display" style="font-size: 19px; font-weight: 700; color: #FFFFFF;">Escuela de Ingeniería</div>
+        </div>
+        <div style="padding: 26px 28px;">
+          <div style="font-size: 13px; color: #4A5773; margin-bottom: 16px;">Donde se construye la infraestructura del mundo digital: datos, inteligencia artificial y ciberseguridad.</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="pd-tag">Cybersecurity · BS</span>
+            <span class="pd-tag">Data Science &amp; AI · BS</span>
+            <span class="pd-tag">AI Engineering · MSAIE</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pd-card">
+        <div style="background: #10182B; padding: 30px; display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: {{accent}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10182B" stroke-width="1.8"><path d="M4 20V13M10 20V9M16 20V5M22 20V11"></path></svg></div>
+          <div class="pd-display" style="font-size: 19px; font-weight: 700; color: #FFFFFF;">Transformación de Negocios</div>
+        </div>
+        <div style="padding: 26px 28px;">
+          <div style="font-size: 13px; color: #4A5773; margin-bottom: 16px;">Para quienes quieren liderar organizaciones, no solo administrarlas.</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="pd-tag">Business Mgmt &amp; Entrepreneurship · BS</span>
+            <span class="pd-tag">Management &amp; Entrepreneurship · MSME</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pd-card">
+        <div style="background: #10182B; padding: 30px; display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: {{accent}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10182B" stroke-width="1.8"><path d="M12 21s-7-4.5-7-10a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.5-7 10-7 10a29 29 0 0 1-2-1.6"></path></svg></div>
+          <div class="pd-display" style="font-size: 19px; font-weight: 700; color: #FFFFFF;">Bienestar y Desarrollo Humano</div>
+        </div>
+        <div style="padding: 26px 28px;">
+          <div style="font-size: 13px; color: #4A5773; margin-bottom: 16px;">La ciencia de vivir más y mejor, convertida en una industria de miles de millones de dólares.</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="pd-tag">Integrative Wellness · AAS</span>
+            <span class="pd-tag">Aging Sciences &amp; Health Mgmt · BS</span>
+            <span class="pd-tag">Applied Neuroscience · MS</span>
+            <span class="pd-tag">Strategic Leadership Aging Services · MS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pd-card">
+        <div style="background: #10182B; padding: 30px; display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: {{accent}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10182B" stroke-width="1.8"><path d="M4 20l6-16 2 5 2-5 6 16"></path><path d="M8 20l4-10 4 10"></path></svg></div>
+          <div class="pd-display" style="font-size: 19px; font-weight: 700; color: #FFFFFF;">Diseño y Tec. de Comunicación</div>
+        </div>
+        <div style="padding: 26px 28px;">
+          <div style="font-size: 13px; color: #4A5773; margin-bottom: 16px;">Storytelling, diseño y tecnología para las industrias creativas del futuro.</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="pd-tag">Digital Media · BS</span>
+            <span class="pd-tag">Digital Media, Film &amp; Visual Design · MFA</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MOTOR CURRICULAR -->
+  <div style="max-width: 1140px; margin: 0 auto; padding: 0 56px 96px;">
+    <h2 class="pd-display" style="font-size: 36px; font-weight: 800; margin: 0 0 48px; text-align: center;">Así se construye un curso en KUN</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+      <div class="pd-card" style="border: 1px solid #E4E9F2; padding: 30px;">
+        <div class="pd-display" style="width: 34px; height: 34px; border-radius: 8px; background: #10182B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; margin-bottom: 18px;">01</div>
+        <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">La IA rastrea la frontera</div>
+        <div style="font-size: 14px; line-height: 1.6; color: #4A5773;">Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.</div>
+      </div>
+      <div class="pd-card" style="border: 1px solid #E4E9F2; padding: 30px;">
+        <div class="pd-display" style="width: 34px; height: 34px; border-radius: 8px; background: #10182B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; margin-bottom: 18px;">02</div>
+        <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">El criterio humano decide</div>
+        <div style="font-size: 14px; line-height: 1.6; color: #4A5773;">Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.</div>
+      </div>
+      <div class="pd-card" style="border: 1px solid #E4E9F2; padding: 30px;">
+        <div class="pd-display" style="width: 34px; height: 34px; border-radius: 8px; background: #10182B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; margin-bottom: 18px;">03</div>
+        <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Aprendes lo que el mercado necesita hoy</div>
+        <div style="font-size: 14px; line-height: 1.6; color: #4A5773;">No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDUCACIÓN CONTINUA: CARRUSEL -->
+  <div id="continua" style="background: #10182B; color: #F5EFDF; padding: 88px 0;">
+    <div style="max-width: 900px; margin: 0 auto; padding: 0 56px;">
+      <div style="text-align: center; margin-bottom: 48px;">
+        <div class="pd-eyebrow" style="font-size: 12px; font-weight: 700; color: #22D3EE; margin-bottom: 14px;">Educación continua</div>
+        <h2 class="pd-display" style="font-size: 36px; font-weight: 800; margin: 0 0 14px;">No tienes que esperar a graduarte</h2>
+        <div style="font-size: 14px; color: #9AA5BD; max-width: 480px; margin: 0 auto;">Seis certificaciones de 36 a 40 horas, diseñadas para aplicar lo aprendido desde la primera semana.</div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <div class="pd-arrow" onClick="{{onPrev}}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10182B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+        </div>
+
+        <div style="flex: 1; overflow: hidden;">
+          <div style="display: flex; width: 600%; transform: translateX({{trackOffset}}); transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);">
+            <sc-for list="{{certs}}" as="c" hint-placeholder-count="6">
+              <div style="flex: 0 0 16.6667%; width: 16.6667%; box-sizing: border-box; padding: 0 8px;">
+                <div style="border: 1px solid rgba(34,211,238,0.3); border-radius: 16px; padding: 40px; text-align: center; min-height: 220px;">
+                  <div class="pd-tag" style="background: rgba(34,211,238,0.12); color: #22D3EE; margin-bottom: 14px;">{{c.hours}} · 100% online</div>
+                  <div class="pd-display" style="font-size: 26px; font-weight: 700; margin-bottom: 14px;">{{c.name}}</div>
+                  <div style="font-size: 14px; line-height: 1.6; color: #C9BFA0; max-width: 420px; margin: 0 auto;">{{c.desc}}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div class="pd-arrow" onClick="{{onNext}}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10182B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 10px; margin-top: 32px;">
+        <sc-for list="{{certs}}" as="c" hint-placeholder-count="6">
+          <div class="pd-dot" style="background: {{c.dotColor}};" onClick="{{c.pick}}"></div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTER: TRANSPARENCIA + CTA -->
+  <div id="registro" style="max-width: 1140px; margin: 0 auto; padding: 88px 56px 40px;">
+    <div style="text-align: center; padding: 56px 40px; background: #F4F7FD; border-radius: 24px; margin-bottom: 40px;">
+      <h2 class="pd-display" style="font-size: 30px; font-weight: 800; margin: 0 0 14px;">Antes de matricularte, síguenos</h2>
+      <div style="font-size: 15px; color: #4A5773; max-width: 480px; margin: 0 auto 28px;">El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real, sin necesidad de estar matriculado.</div>
+      <a href="#" class="pd-btn-grad" style="display: inline-block; padding: 14px 28px; font-size: 14px; font-weight: 700; text-decoration: none;">Únete a la comunidad</a>
+    </div>
+
+    <div id="comunidad" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 16px; padding: 20px 22px; border: 1px solid #E4E9F2; border-radius: 14px;">
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: #EAF7EE; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E9E5A" stroke-width="2"><path d="M20 6L9 17l-5-5"></path></svg></div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700;">Florida CIE</div>
+          <div style="font-size: 12px; color: #4A5773; margin-top: 2px;">Comisión de Educación Independiente</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px; padding: 20px 22px; border: 1px solid #E4E9F2; border-radius: 14px;">
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: #FDF1E4; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D68A2B" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg></div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700;">SACSCOC · En proceso</div>
+          <div style="font-size: 12px; color: #4A5773; margin-top: 2px;">Acreditación institucional en avance</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="background: #10182B; color: #F5EFDF; padding: 72px 0 0;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 56px;">
+      <div style="display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 56px; border-bottom: 1px solid rgba(245,239,223,0.15);">
+        <div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <svg width="30" height="30" viewBox="0 0 120 120"><path d="M60,10 L100,28 L100,64 C100,92 82,108 60,116 C38,108 20,92 20,64 L20,28 Z" fill="#22D3EE" stroke="#22D3EE" stroke-width="3"></path><text x="60" y="76" text-anchor="middle" font-family="Manrope, sans-serif" font-size="34" font-weight="800" fill="#10182B">K</text></svg>
+            <div class="pd-display" style="font-size: 17px; font-weight: 700;">KUN University AI</div>
+          </div>
+          <div style="font-size: 13px; line-height: 1.6; color: #8FA0C9; max-width: 260px;">La universidad IA-Native. Rediseñada alrededor de la inteligencia artificial, no al revés.</div>
+        </div>
+        <div>
+          <div class="pd-eyebrow" style="font-size: 11px; font-weight: 700; color: #8FA0C9; margin-bottom: 18px;">Escuelas</div>
+          <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+            <a href="#programas" style="color: #F5EFDF; text-decoration: none;">Ingeniería</a>
+            <a href="#programas" style="color: #F5EFDF; text-decoration: none;">Transformación de Negocios</a>
+            <a href="#programas" style="color: #F5EFDF; text-decoration: none;">Bienestar y Desarrollo Humano</a>
+            <a href="#programas" style="color: #F5EFDF; text-decoration: none;">Diseño y Tecnologías de Comunicación</a>
+          </div>
+        </div>
+        <div>
+          <div class="pd-eyebrow" style="font-size: 11px; font-weight: 700; color: #8FA0C9; margin-bottom: 18px;">Institución</div>
+          <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+            <a href="#" style="color: #F5EFDF; text-decoration: none;">Sobre KUN</a>
+            <a href="#registro" style="color: #F5EFDF; text-decoration: none;">Licenciamiento y acreditación</a>
+            <a href="#" style="color: #F5EFDF; text-decoration: none;">Contacto</a>
+          </div>
+        </div>
+        <div>
+          <div class="pd-eyebrow" style="font-size: 11px; font-weight: 700; color: #8FA0C9; margin-bottom: 18px;">Síguenos</div>
+          <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+            <a href="#" style="color: #F5EFDF; text-decoration: none;">YouTube</a>
+            <a href="#" style="color: #F5EFDF; text-decoration: none;">LinkedIn</a>
+            <a href="#" style="color: #F5EFDF; text-decoration: none;">Instagram</a>
+            <a href="#" style="color: #F5EFDF; text-decoration: none;">X (Twitter)</a>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 24px 0 28px;">
+        <div style="font-size: 12px; color: #8FA0C9;">© 2026 KUN University AI · Knowledge · Union · Network</div>
+        <a href="#" style="font-size: 12px; color: #22D3EE; text-decoration: none;">Documento base de marca disponible para inversionistas →</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#06B6D4","options":["#06B6D4","#22D3EE","#00E5FF","#0088A9"],"section":"Cian de marca"}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { slide: 0 };
+    this.next = this.next.bind(this);
+    this.prev = this.prev.bind(this);
+    this.goTo = this.goTo.bind(this);
+  }
+  next() { this.setState({ slide: (this.state.slide + 1) % 6 }); }
+  prev() { this.setState({ slide: (this.state.slide + 5) % 6 }); }
+  goTo(i) { this.setState({ slide: i }); }
+  renderVals() {
+    const accent = this.props.accent ?? '#06B6D4';
+    const slide = this.state.slide ?? 0;
+    const step = 100 / 6;
+    const trackOffset = '-' + (slide * step).toFixed(4) + '%';
+    const rawCerts = [
+      { name: 'AI Business Architect', hours: '40 horas', desc: 'Escala operaciones con IA: automatización de procesos y decisiones algorítmicas de negocio.' },
+      { name: 'Venture Finance Pro', hours: '40 horas', desc: 'Domina la mecánica de venture capital: cap tables, equity y valoración corporativa.' },
+      { name: 'Applied AI Systems', hours: '36 horas', desc: 'Fundamentos prácticos de inteligencia artificial y automatización aplicada.' },
+      { name: 'Cyber Cloud Defense', hours: '36 horas', desc: 'Seguridad en la nube y protección de infraestructura digital, desde cero.' },
+      { name: 'Executive Brain Architecture', hours: '36 horas', desc: 'Neurotecnología y alto rendimiento estratégico para líderes ejecutivos.' },
+      { name: 'Cognitive Resilience Management', hours: '36 horas', desc: 'Ciencia de la resiliencia cognitiva aplicada al liderazgo de alto desempeño.' }
+    ];
+    const certs = rawCerts.map((c, i) => ({
+      ...c,
+      dotColor: i === slide ? '#22D3EE' : 'rgba(245,239,223,0.25)',
+      pick: () => this.goTo(i)
+    }));
+    return { accent, tickerRepeat: [{}, {}], trackOffset, certs, onPrev: this.prev, onNext: this.next };
+  }
+}
+</script>
+</body>
+</html>

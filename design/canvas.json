@@ -1,0 +1,27 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "KUN University AI — Landing" },
+    { "id": "page-2", "name": "Exploración (rondas 1–4)" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1440, "h": 1050, "title": "KUN University AI — Landing", "expand": "fill", "page": "page-1" },
+
+    { "file": "TerminalVivo.dc.html", "x": 1020, "y": 0, "w": 1440, "h": 900, "title": "Opción A — Terminal Vivo", "expand": "fill", "page": "page-2" },
+    { "file": "EditorialMiami.dc.html", "x": 2580, "y": 0, "w": 1440, "h": 900, "title": "Opción B — Editorial Miami", "expand": "fill", "page": "page-2" },
+    { "file": "RedViva.dc.html", "x": 4140, "y": 0, "w": 1440, "h": 900, "title": "Opción C — Red Viva", "expand": "fill", "page": "page-2" },
+    { "file": "ManifiestoBrutalista.dc.html", "x": 5700, "y": 0, "w": 1440, "h": 900, "title": "Opción D — Manifiesto Brutalista", "expand": "fill", "page": "page-2" },
+    { "file": "IndiceRonda2.dc.html", "x": 0, "y": 1300, "w": 900, "h": 1000, "title": "Índice — Ronda 2 (más audaz)", "expand": "fit", "page": "page-2" },
+    { "file": "AuroraCinetica.dc.html", "x": 1020, "y": 1300, "w": 1440, "h": 900, "title": "Opción E — Aurora Cinética", "expand": "fill", "page": "page-2" },
+    { "file": "CollageMaximalista.dc.html", "x": 2580, "y": 1300, "w": 1440, "h": 900, "title": "Opción F — Collage Maximalista", "expand": "fill", "page": "page-2" },
+    { "file": "HologramaFuturista.dc.html", "x": 4140, "y": 1300, "w": 1440, "h": 900, "title": "Opción G — Holograma Futurista", "expand": "fill", "page": "page-2" },
+    { "file": "PrestigioAcademico.dc.html", "x": 0, "y": 2500, "w": 1440, "h": 1000, "title": "Ronda 3 — Prestigio Académico Reinventado", "expand": "fill", "page": "page-2" },
+    { "file": "PrestigioDivergency.dc.html", "x": 1560, "y": 2500, "w": 1440, "h": 1000, "title": "Ronda 4 — Prestigio + ADN Divergency AI (elegida)", "expand": "fill", "page": "page-2" }
+  ],
+  "annotations": [
+    { "id": "page2-context", "x": 0, "y": 0, "w": 860, "text": "Exploración previa (Rondas 1–4). El diseño final, desarrollado al 100%, está en la página 'KUN University AI — Landing'. Se conserva aquí como historial de decisiones.", "page": "page-2" },
+    { "id": "feedback-note", "x": 1020, "y": 1180, "w": 1440, "text": "Feedback del vicerrector/director: la ronda 1 se sentía plana. Ronda 2 = más movimiento, profundidad y color →", "page": "page-2" },
+    { "id": "feedback-note-2", "x": 0, "y": 2380, "w": 1400, "text": "Feedback nuevo: dirección propia, no 'estética de IA'. Ronda 3 = escudo/sello original, serif clásica, azul marino/oro/burdeos sobre papel, sin gradientes ni vidrio.", "page": "page-2" },
+    { "id": "feedback-note-3", "x": 1560, "y": 2380, "w": 1400, "text": "Gustó la Ronda 3. Ronda 4 = misma artesanía recoloreada con el ADN real de Divergency AI (marino #060F38 + cian). Esta fue la elegida para desarrollar al 100% →", "page": "page-2" }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}
