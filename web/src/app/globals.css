@@ -193,6 +193,24 @@ body {
   animation: drift 7s ease-in-out infinite;
 }
 
+@keyframes sway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(-2deg);
+  }
+}
+
+.animate-sway {
+  animation: sway 6s ease-in-out infinite;
+}
+
+.animate-sway-reverse {
+  animation: sway 6.5s ease-in-out infinite reverse;
+}
+
 @keyframes hairline-grow {
   from {
     width: 0;
@@ -251,7 +269,9 @@ body {
   .animate-marquee,
   .animate-spin-slow,
   .animate-checker-scroll,
-  .animate-pulse-soft {
+  .animate-pulse-soft,
+  .animate-sway,
+  .animate-sway-reverse {
     animation: none;
   }
 

@@ -31,7 +31,7 @@ export function Hero({ stats }: { stats: Stats }) {
         style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #E7E8E8 55%, #C7D6E4 100%)" }}
       />
       <div
-        className="pointer-events-none absolute left-1/2 -z-10 h-115 w-115 -translate-x-1/2"
+        className="animate-drift pointer-events-none absolute left-1/2 -z-10 h-115 w-115 -translate-x-1/2"
         style={{ top: 210 }}
       >
         <Parallax speed={0.15} mouseDepth={26} className="h-full w-full">
@@ -42,12 +42,12 @@ export function Hero({ stats }: { stats: Stats }) {
           />
         </Parallax>
       </div>
-      <div className="pointer-events-none absolute -bottom-6 left-4 -z-10 opacity-60 max-lg:hidden">
+      <div className="animate-sway pointer-events-none absolute -bottom-6 left-4 -z-10 opacity-60 max-lg:hidden">
         <Parallax speed={-0.1} mouseDepth={-14}>
           <PalmSilhouette />
         </Parallax>
       </div>
-      <div className="pointer-events-none absolute -right-2 -bottom-6 -z-10 opacity-60 max-lg:hidden">
+      <div className="animate-sway-reverse pointer-events-none absolute -right-2 -bottom-6 -z-10 opacity-60 max-lg:hidden">
         <Parallax speed={-0.1} mouseDepth={-14}>
           <PalmSilhouette flip />
         </Parallax>
