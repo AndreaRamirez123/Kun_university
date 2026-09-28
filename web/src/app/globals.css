@@ -263,6 +263,20 @@ body {
   animation: card-slide-out 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+@keyframes building-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+.animate-building-float {
+  animation: building-float 4.5s ease-in-out infinite;
+}
+
 @keyframes hairline-grow {
   from {
     width: 0;
@@ -326,7 +340,8 @@ body {
   .animate-sway,
   .animate-sway-reverse,
   .animate-card-slide-in,
-  .animate-card-slide-out {
+  .animate-card-slide-out,
+  .animate-building-float {
     animation: none;
   }
 

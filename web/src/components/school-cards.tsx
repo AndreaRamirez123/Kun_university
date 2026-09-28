@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Reveal } from "./reveal";
 import type { School } from "@/lib/types";
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -37,9 +38,11 @@ function BuildingCard({ school, i }: { school: School; i: number }) {
   const height = HEIGHTS[i % HEIGHTS.length];
   return (
     <div
-      className="flex w-62 shrink-0 flex-col items-center max-md:w-full max-md:max-w-70"
-      style={{ filter: "drop-shadow(0 18px 20px rgba(3,62,140,0.22))" }}
-    >
+      className="animate-building-float group flex w-62 shrink-0 flex-col items-center transition-[translate,filter] duration-300 hover:-translate-y-2 max-md:w-full max-md:max-w-70 max-md:animate-none max-md:transition-none max-md:hover:translate-y-0"
+      style={{
+        filter: "drop-shadow(0 18px 20px rgba(3,62,140,0.22))",
+        animationDelay: `${i * 0.4}s`,
+      }}>
       <div
         className="deco-ziggurat relative w-full border-x-2 border-t-2 border-navy/20 pt-14"
         style={{
@@ -126,7 +129,9 @@ export function SchoolCards({ schools }: { schools: School[] }) {
       <div className="overflow-x-auto pb-4 max-md:hidden">
         <div className="mx-auto flex w-max items-end gap-1 px-14">
           {schools.map((school, i) => (
-            <BuildingCard key={school.slug} school={school} i={i} />
+            <Reveal key={school.slug} delay={i * 120} variant="up" className="shrink-0">
+              <BuildingCard school={school} i={i} />
+            </Reveal>
           ))}
         </div>
       </div>
