@@ -55,7 +55,7 @@ export function Hero({ stats }: { stats: Stats }) {
       <div className="relative z-10 mx-auto max-w-220 px-14 pt-16 pb-10 text-center max-md:px-6 lg:max-w-320">
         <div className="mx-auto max-w-170 rounded-t-[110px] rounded-b-3xl border-2 border-burgundy/50 bg-cream/95 px-12 py-14 shadow-[0_40px_80px_rgba(3,62,140,0.28)] backdrop-blur-sm max-md:rounded-t-[36px] max-md:px-6 max-md:py-10 lg:max-w-none lg:w-full">
           <div
-            className="small-caps mx-auto mb-7 inline-block bg-navy px-8 py-2.5 text-xs font-bold tracking-[0.14em] text-cream"
+            className="small-caps mx-auto mb-7 inline-block cursor-default bg-navy px-8 py-2.5 text-xs font-bold tracking-[0.14em] text-cream transition duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:bg-burgundy hover:shadow-[0_12px_28px_rgba(3,62,140,0.5)] active:-translate-y-1 active:scale-[1.03] active:bg-burgundy active:shadow-[0_12px_28px_rgba(3,62,140,0.5)]"
             style={{ clipPath: "polygon(4% 0%, 96% 0%, 100% 50%, 96% 100%, 4% 100%, 0% 50%)" }}
           >
             Saludos desde KUN University · Florida
