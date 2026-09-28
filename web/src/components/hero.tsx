@@ -30,10 +30,7 @@ export function Hero({ stats }: { stats: Stats }) {
         className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-175"
         style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #E7E8E8 55%, #C7D6E4 100%)" }}
       />
-      <div
-        className="animate-drift pointer-events-none absolute left-1/2 -z-10 h-115 w-115 -translate-x-1/2"
-        style={{ top: 210 }}
-      >
+      <div className="animate-drift pointer-events-none absolute top-35 left-1/2 -z-10 h-60 w-60 -translate-x-1/2 md:top-[210px] md:h-115 md:w-115">
         <Parallax speed={0.15} mouseDepth={26} className="h-full w-full">
           <div
             aria-hidden
