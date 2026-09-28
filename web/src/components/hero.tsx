@@ -34,7 +34,7 @@ export function Hero({ stats }: { stats: Stats }) {
         className="pointer-events-none absolute left-1/2 -z-10 h-115 w-115 -translate-x-1/2"
         style={{ top: 210 }}
       >
-        <Parallax speed={0.15} className="h-full w-full">
+        <Parallax speed={0.15} mouseDepth={26} className="h-full w-full">
           <div
             aria-hidden
             className="deco-sunburst h-full w-full opacity-40"
@@ -43,12 +43,12 @@ export function Hero({ stats }: { stats: Stats }) {
         </Parallax>
       </div>
       <div className="pointer-events-none absolute -bottom-6 left-4 -z-10 opacity-60 max-lg:hidden">
-        <Parallax speed={-0.1}>
+        <Parallax speed={-0.1} mouseDepth={-14}>
           <PalmSilhouette />
         </Parallax>
       </div>
       <div className="pointer-events-none absolute -right-2 -bottom-6 -z-10 opacity-60 max-lg:hidden">
-        <Parallax speed={-0.1}>
+        <Parallax speed={-0.1} mouseDepth={-14}>
           <PalmSilhouette flip />
         </Parallax>
       </div>
