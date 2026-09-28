@@ -44,8 +44,8 @@ const ACCENTS = ["#0092B6", "#D4AF37", "#A9BFD1"];
 export function IdentityPillars() {
   return (
     <div className="relative z-10 overflow-hidden bg-surface-alt py-22">
-      <div className="pointer-events-none absolute top-0 right-0 h-96 w-96 translate-x-1/3 -translate-y-1/3">
-        <Parallax speed={0.12} className="h-full w-full">
+      <div className="animate-drift pointer-events-none absolute top-0 right-0 h-96 w-96 translate-x-1/3 -translate-y-1/3">
+        <Parallax speed={0.12} mouseDepth={20} className="h-full w-full">
           <div
             aria-hidden
             className="deco-sunburst h-full w-full opacity-[0.08]"
