@@ -86,6 +86,8 @@ function BuildingCard({ school, i }: { school: School; i: number }) {
 
 export function SchoolCards({ schools }: { schools: School[] }) {
   const [active, setActive] = useState(0);
+  const [displayed, setDisplayed] = useState(0);
+  const [outgoing, setOutgoing] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -93,6 +95,17 @@ export function SchoolCards({ schools }: { schools: School[] }) {
     }, 3800);
     return () => clearInterval(timer);
   }, [schools.length]);
+
+  if (active !== displayed) {
+    setOutgoing(displayed);
+    setDisplayed(active);
+  }
+
+  useEffect(() => {
+    if (outgoing === null) return;
+    const timer = setTimeout(() => setOutgoing(null), 600);
+    return () => clearTimeout(timer);
+  }, [outgoing]);
 
   return (
     <div id="programas" className="relative z-10 overflow-hidden bg-cream py-24">
@@ -119,8 +132,15 @@ export function SchoolCards({ schools }: { schools: School[] }) {
       </div>
 
       {/* Mobile: one building at a time, auto-advancing */}
-      <div className="hidden justify-center px-6 max-md:flex">
-        <BuildingCard key={schools[active].slug} school={schools[active]} i={active} />
+      <div className="relative hidden justify-center px-6 max-md:flex">
+        {outgoing !== null && (
+          <div className="animate-card-slide-out absolute inset-x-0 flex justify-center px-6">
+            <BuildingCard school={schools[outgoing]} i={outgoing} />
+          </div>
+        )}
+        <div key={schools[displayed].slug} className="animate-card-slide-in">
+          <BuildingCard school={schools[displayed]} i={displayed} />
+        </div>
       </div>
       <div className="mt-5 hidden justify-center gap-2 max-md:flex">
         {schools.map((school, i) => (
