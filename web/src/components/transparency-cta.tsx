@@ -21,7 +21,7 @@ export function TransparencyCta() {
             </p>
             <a
               href="#"
-              className="bg-surface-alt text-navy inline-block rounded-full px-7 py-3 text-sm font-bold shadow-[6px_6px_12px_rgba(3,62,140,0.28),-6px_-6px_12px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)]"
+              className="bg-surface-alt text-navy inline-block rounded-full px-7 py-3 text-sm font-bold shadow-[6px_6px_12px_rgba(3,62,140,0.28),-6px_-6px_12px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)] active:scale-[0.98] active:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)]"
             >
               Únete a la comunidad
             </a>
@@ -73,7 +73,7 @@ function Porthole({
 }) {
   return (
     <div className="relative z-10 flex flex-col items-center text-center">
-      <div className="bg-surface-alt flex h-18 w-18 items-center justify-center rounded-full shadow-[8px_8px_16px_rgba(3,62,140,0.3),-8px_-8px_16px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-300 hover:scale-[0.96] hover:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)] max-md:h-14 max-md:w-14">
+      <div className="bg-surface-alt flex h-18 w-18 items-center justify-center rounded-full shadow-[8px_8px_16px_rgba(3,62,140,0.3),-8px_-8px_16px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-300 hover:scale-[0.96] hover:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)] active:scale-[0.96] active:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)] max-md:h-14 max-md:w-14">
         {icon}
       </div>
       <div className="mt-2 text-[13px] font-bold max-md:text-xs">{label}</div>
