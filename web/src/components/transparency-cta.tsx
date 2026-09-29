@@ -31,7 +31,7 @@ export function TransparencyCta() {
 
         <div
           id="comunidad"
-          className="relative flex justify-center gap-16 px-10 pt-2 pb-8 max-md:flex-col max-md:items-center max-md:gap-7 max-md:px-6 max-md:pb-6"
+          className="relative flex justify-center gap-16 px-10 pt-2 pb-8 max-md:gap-6 max-md:px-4 max-md:pb-6"
         >
           <div aria-hidden className="absolute top-13 right-16 left-16 h-px bg-hairline max-md:hidden" />
           <Porthole
@@ -73,11 +73,11 @@ function Porthole({
 }) {
   return (
     <div className="relative z-10 flex flex-col items-center text-center">
-      <div className="bg-surface-alt flex h-18 w-18 items-center justify-center rounded-full shadow-[8px_8px_16px_rgba(3,62,140,0.3),-8px_-8px_16px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-300 hover:scale-[0.96] hover:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)]">
+      <div className="bg-surface-alt flex h-18 w-18 items-center justify-center rounded-full shadow-[8px_8px_16px_rgba(3,62,140,0.3),-8px_-8px_16px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-300 hover:scale-[0.96] hover:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)] max-md:h-14 max-md:w-14">
         {icon}
       </div>
-      <div className="mt-2 text-[13px] font-bold">{label}</div>
-      <div className="mt-0.5 max-w-45 text-xs text-muted-ink">{detail}</div>
+      <div className="mt-2 text-[13px] font-bold max-md:text-xs">{label}</div>
+      <div className="mt-0.5 max-w-45 text-xs text-muted-ink max-md:max-w-32 max-md:text-[11px]">{detail}</div>
     </div>
   );
 }
