@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { Certification } from "@/lib/types";
 
-const ACCENTS = ["#0092B6", "#D4AF37"];
+const ACCENTS = ["#0092B6", "#033E8C"];
+const RIVET_STYLE = {
+  background: "#fffde7",
+  boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)",
+} as const;
+const RIVETS_EDGE = [12, 32, 52, 72, 88];
+const RIVETS_SIDE = [30, 50, 70];
 
 export function CertificationsCarousel({ certifications }: { certifications: Certification[] }) {
   const [index, setIndex] = useState(0);
@@ -73,30 +79,42 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
           <div
             className="relative flex-1 rounded-[34px] p-2.5"
             style={{
-              background: `linear-gradient(135deg, #D4AF37, ${accent}, #033E8C, ${accent}, #D4AF37)`,
+              background: `linear-gradient(135deg, #033E8C, ${accent}, #005F7F, ${accent}, #033E8C)`,
               boxShadow: "0 30px 60px rgba(3,12,30,0.45), 0 10px 20px rgba(3,12,30,0.3)",
             }}
           >
-            <span
-              aria-hidden
-              className="absolute top-2 left-2 h-3 w-3 rounded-full"
-              style={{ background: "#fffde7", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)" }}
-            />
-            <span
-              aria-hidden
-              className="absolute top-2 right-2 h-3 w-3 rounded-full"
-              style={{ background: "#fffde7", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)" }}
-            />
-            <span
-              aria-hidden
-              className="absolute bottom-2 left-2 h-3 w-3 rounded-full"
-              style={{ background: "#fffde7", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)" }}
-            />
-            <span
-              aria-hidden
-              className="absolute right-2 bottom-2 h-3 w-3 rounded-full"
-              style={{ background: "#fffde7", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)" }}
-            />
+            {RIVETS_EDGE.map((p) => (
+              <span
+                key={`t${p}`}
+                aria-hidden
+                className="absolute h-2 w-2 rounded-full"
+                style={{ top: 0, left: `${p}%`, transform: "translate(-50%, -50%)", ...RIVET_STYLE }}
+              />
+            ))}
+            {RIVETS_EDGE.map((p) => (
+              <span
+                key={`b${p}`}
+                aria-hidden
+                className="absolute h-2 w-2 rounded-full"
+                style={{ bottom: 0, left: `${p}%`, transform: "translate(-50%, 50%)", ...RIVET_STYLE }}
+              />
+            ))}
+            {RIVETS_SIDE.map((p) => (
+              <span
+                key={`l${p}`}
+                aria-hidden
+                className="absolute h-2 w-2 rounded-full"
+                style={{ left: 0, top: `${p}%`, transform: "translate(-50%, -50%)", ...RIVET_STYLE }}
+              />
+            ))}
+            {RIVETS_SIDE.map((p) => (
+              <span
+                key={`r${p}`}
+                aria-hidden
+                className="absolute h-2 w-2 rounded-full"
+                style={{ right: 0, top: `${p}%`, transform: "translate(50%, -50%)", ...RIVET_STYLE }}
+              />
+            ))}
 
             <div
               className="relative overflow-hidden rounded-[26px] bg-cream px-10 py-12 text-center text-ink max-md:px-6 max-md:py-9"
