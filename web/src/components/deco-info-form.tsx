@@ -32,7 +32,7 @@ export function DecoInfoForm({ schools }: { schools: School[] }) {
 
   return (
     <>
-      <div className="rounded-t-[56px] border border-hairline bg-cream p-14 text-center shadow-[0_24px_50px_rgba(3,62,140,0.2)] max-md:rounded-t-[28px] max-md:p-8">
+      <div className="border-hairline bg-cream rounded-[32px] border p-14 text-center shadow-[0_24px_50px_rgba(3,62,140,0.2)] max-md:p-8">
         <div className="font-display mb-2 text-2xl font-normal">Solicita información</div>
         <p className="mx-auto mb-7 max-w-100 text-sm text-muted-ink">
           Te contamos todo sobre programas, becas y fechas de inicio. Sin compromiso.
