@@ -32,18 +32,38 @@ export function DecoInfoForm({ schools }: { schools: School[] }) {
 
   return (
     <>
-      <div className="border-hairline bg-cream rounded-[32px] border p-14 text-center shadow-[0_24px_50px_rgba(3,62,140,0.2)] max-md:p-8">
-        <div className="font-display mb-2 text-2xl font-normal">Solicita información</div>
-        <p className="mx-auto mb-7 max-w-100 text-sm text-muted-ink">
-          Te contamos todo sobre programas, becas y fechas de inicio. Sin compromiso.
-        </p>
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="rounded-full bg-navy px-9 py-4 text-[15px] font-bold text-cream shadow-[0_14px_28px_rgba(3,62,140,0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(3,62,140,0.55)]"
+      <div
+        className="relative overflow-hidden rounded-[36px] p-2.5"
+        style={{ boxShadow: "0 30px 60px rgba(3,12,30,0.22), 0 10px 20px rgba(3,12,30,0.14)" }}
+      >
+        <div
+          aria-hidden
+          className="animate-spin-slow absolute -inset-[75%]"
+          style={{
+            animationDuration: "5s",
+            background:
+              "conic-gradient(from 0deg, #033E8C, #0092B6, #005F7F, #0092B6, #033E8C, #0092B6, #005F7F, #0092B6, #033E8C)",
+          }}
+        />
+
+        <div
+          className="border-hairline bg-cream relative rounded-[30px] border p-14 text-center max-md:p-8"
+          style={{
+            boxShadow: "inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -10px 24px rgba(3,62,140,0.08)",
+          }}
         >
-          Quiero información →
-        </button>
+          <div className="font-display mb-2 text-2xl font-normal">Solicita información</div>
+          <p className="mx-auto mb-7 max-w-100 text-sm text-muted-ink">
+            Te contamos todo sobre programas, becas y fechas de inicio. Sin compromiso.
+          </p>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="rounded-full bg-navy px-9 py-4 text-[15px] font-bold text-cream shadow-[0_14px_28px_rgba(3,62,140,0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(3,62,140,0.55)]"
+          >
+            Quiero información →
+          </button>
+        </div>
       </div>
 
       <div
