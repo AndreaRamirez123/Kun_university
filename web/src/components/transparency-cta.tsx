@@ -61,10 +61,8 @@ function Porthole({
 }) {
   return (
     <div className="relative z-10 flex flex-col items-center text-center">
-      <div className="flex h-22 w-22 items-center justify-center rounded-full border-4 border-cream bg-surface-alt shadow-[0_14px_28px_rgba(3,62,140,0.2)]">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full border border-dashed border-burgundy/50">
-          {icon}
-        </div>
+      <div className="bg-surface-alt flex h-22 w-22 items-center justify-center rounded-full shadow-[6px_6px_12px_rgba(3,62,140,0.18),-6px_-6px_12px_rgba(255,255,255,0.9)] transition-[box-shadow,transform] duration-300 hover:scale-[0.97] hover:shadow-[inset_5px_5px_10px_rgba(3,62,140,0.2),inset_-5px_-5px_10px_rgba(255,255,255,0.9)]">
+        {icon}
       </div>
       <div className="mt-3 text-[13px] font-bold">{label}</div>
       <div className="mt-0.5 max-w-45 text-xs text-muted-ink">{detail}</div>
