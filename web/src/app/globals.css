@@ -263,6 +263,22 @@ body {
   animation: card-slide-out 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+@keyframes badge-spin {
+  from {
+    transform: rotate(0turn) scale(1);
+  }
+  50% {
+    transform: rotate(1turn) scale(1.12);
+  }
+  to {
+    transform: rotate(2turn) scale(1);
+  }
+}
+
+.animate-badge-spin {
+  animation: badge-spin 0.6s ease;
+}
+
 @keyframes building-float {
   0%,
   100% {
@@ -341,7 +357,8 @@ body {
   .animate-sway-reverse,
   .animate-card-slide-in,
   .animate-card-slide-out,
-  .animate-building-float {
+  .animate-building-float,
+  .animate-badge-spin {
     animation: none;
   }
 
