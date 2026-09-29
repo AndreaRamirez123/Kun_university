@@ -70,7 +70,7 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
             </svg>
           </button>
 
-          <div className="relative flex-1 overflow-hidden rounded-t-[64px] rounded-b-2xl border-2 border-cyan/20 bg-cream px-10 py-12 text-center text-ink max-md:rounded-t-[36px] max-md:px-6 max-md:py-9">
+          <div className="relative flex-1 overflow-hidden rounded-[28px] border-2 border-cyan/20 bg-cream px-10 py-12 text-center text-ink max-md:rounded-2xl max-md:px-6 max-md:py-9">
             <div
               key={spinKey}
               className="animate-badge-spin mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border-4 bg-white"
