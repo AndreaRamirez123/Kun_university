@@ -17,12 +17,12 @@ const SOCIAL_LINKS = ["YouTube", "LinkedIn", "Instagram", "X (Twitter)"];
 
 export function SiteFooter() {
   return (
-    <div className="relative z-10 bg-navy pt-18 text-cream">
+    <div className="relative z-10 bg-navy pt-18 text-cream max-md:pt-10">
       <div className="mx-auto max-w-[1140px] px-14 max-md:px-6">
-        <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr] gap-10 border-b border-cream/15 pb-14 max-md:grid-cols-1 max-md:gap-8">
-          <div>
-            <div className="mb-4 flex items-center gap-3">
-              <Image src="/kun-logo-full.png" alt="KUN University AI" width={86} height={90} className="h-22.5 w-auto" />
+        <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr] gap-10 border-b border-cream/15 pb-14 max-md:grid-cols-2 max-md:gap-x-6 max-md:gap-y-6 max-md:pb-8">
+          <div className="max-md:col-span-2">
+            <div className="mb-4 flex items-center gap-3 max-md:mb-2.5">
+              <Image src="/kun-logo-full.png" alt="KUN University AI" width={86} height={90} className="h-22.5 w-auto max-md:h-14" />
             </div>
             <p className="max-w-65 text-[13px] leading-[1.6] text-navy-muted">
               La universidad IA-Native. Rediseñada alrededor de la inteligencia artificial, no al
@@ -71,10 +71,10 @@ export function SiteFooter() {
 function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="small-caps mb-4.5 text-[11px] font-bold tracking-[0.1em] text-navy-muted">
+      <div className="small-caps mb-4.5 text-[11px] font-bold tracking-[0.1em] text-navy-muted max-md:mb-2.5">
         {title}
       </div>
-      <div className="flex flex-col gap-3 text-[13px]">{children}</div>
+      <div className="flex flex-col gap-3 text-[13px] max-md:gap-2">{children}</div>
     </div>
   );
 }
