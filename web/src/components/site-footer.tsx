@@ -13,12 +13,57 @@ const INSTITUTION_LINKS = [
   { label: "Contacto", href: "#" },
 ];
 
-const SOCIAL_LINKS = ["YouTube", "LinkedIn", "Instagram", "X (Twitter)"];
+const SOCIAL_LINKS = [
+  {
+    label: "YouTube",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <rect x="2" y="5" width="20" height="14" rx="4" />
+        <path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    label: "LinkedIn",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <rect x="3" y="3" width="18" height="18" rx="3" />
+        <line x1="8" y1="10" x2="8" y2="17" />
+        <circle cx="8" cy="6.5" r="0.5" fill="currentColor" />
+        <path d="M12 17v-4.5c0-1.5 1-2.5 2.3-2.5s2.2 1 2.2 2.5V17" />
+      </svg>
+    ),
+  },
+  {
+    label: "Instagram",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    label: "X (Twitter)",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M4 4l16 16M20 4L4 20" />
+      </svg>
+    ),
+  },
+];
 
 export function SiteFooter() {
   return (
-    <div className="relative z-10 bg-navy pt-18 text-cream max-md:pt-10">
-      <div className="mx-auto max-w-[1140px] px-14 max-md:px-6">
+    <div className="relative z-10 overflow-hidden bg-navy pt-18 text-cream max-md:pt-10">
+      <div
+        aria-hidden
+        className="deco-sunburst pointer-events-none absolute -top-24 -right-24 h-72 w-72 opacity-[0.06]"
+        style={{ ["--ray-a" as string]: "#FFFFFF", ["--ray-b" as string]: "transparent" }}
+      />
+
+      <div className="relative mx-auto max-w-[1140px] px-14 max-md:px-6">
         <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr] gap-10 border-b border-cream/15 pb-14 max-md:grid-cols-2 max-md:gap-x-6 max-md:gap-y-6 max-md:pb-8">
           <div className="max-md:col-span-2">
             <div className="mb-4 flex items-center gap-3 max-md:mb-2.5">
@@ -32,7 +77,11 @@ export function SiteFooter() {
 
           <FooterColumn title="Escuelas">
             {SCHOOLS.map((s) => (
-              <a key={s} href="#programas" className="text-cream no-underline">
+              <a
+                key={s}
+                href="#programas"
+                className="text-cream no-underline transition-colors hover:text-cyan"
+              >
                 {s}
               </a>
             ))}
@@ -40,7 +89,11 @@ export function SiteFooter() {
 
           <FooterColumn title="Institución">
             {INSTITUTION_LINKS.map((l) => (
-              <a key={l.label} href={l.href} className="text-cream no-underline">
+              <a
+                key={l.label}
+                href={l.href}
+                className="text-cream no-underline transition-colors hover:text-cyan"
+              >
                 {l.label}
               </a>
             ))}
@@ -48,20 +101,20 @@ export function SiteFooter() {
 
           <FooterColumn title="Síguenos">
             {SOCIAL_LINKS.map((s) => (
-              <a key={s} href="#" className="text-cream no-underline">
-                {s}
+              <a
+                key={s.label}
+                href="#"
+                className="flex items-center gap-2 text-cream no-underline transition-colors hover:text-cyan"
+              >
+                {s.icon}
+                {s.label}
               </a>
             ))}
           </FooterColumn>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 py-6">
-          <div className="small-caps text-xs text-navy-muted">
-            © 2026 KUN University AI
-          </div>
-          <a href="#" className="text-xs text-cyan no-underline">
-            Documento base de marca disponible para inversionistas →
-          </a>
+        <div className="py-6 text-center">
+          <div className="small-caps text-xs text-navy-muted">© 2026 KUN University AI</div>
         </div>
       </div>
     </div>
