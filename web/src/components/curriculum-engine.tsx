@@ -69,41 +69,56 @@ export function CurriculumEngine() {
           />
         </svg>
 
-        {STEPS.map((step, i) => (
-          <div key={step.number} className={`text-center ${step.lift}`}>
-            <div
-              role="button"
-              tabIndex={0}
-              aria-expanded={open === i}
-              className="animate-pulse-soft peer relative mx-auto mb-5 flex h-17 w-17 cursor-pointer items-center justify-center rounded-full border-2 transition-colors duration-300"
-              style={{
-                borderColor: ACCENTS[i],
-                color: ACCENTS[i],
-                background: `${ACCENTS[i]}1F`,
-                boxShadow: `0 0 0 7px ${ACCENTS[i]}14`,
-                animationDelay: `${i * 0.3}s`,
-              }}
-              onClick={() => setOpen((o) => (o === i ? null : i))}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setOpen((o) => (o === i ? null : i));
-                }
-              }}
-            >
-              {step.icon}
+        {STEPS.map((step, i) => {
+          const isOpen = open === i;
+          return (
+            <div key={step.number} className={`text-center ${step.lift}`}>
+              <div
+                role="button"
+                tabIndex={0}
+                aria-expanded={isOpen}
+                className="relative mx-auto mb-5 flex cursor-pointer items-center justify-center overflow-hidden border-2 transition-[width,height,border-radius,box-shadow] duration-500"
+                style={{
+                  width: isOpen ? "min(280px, 100%)" : 68,
+                  height: isOpen ? 220 : 68,
+                  borderRadius: isOpen ? 24 : 999,
+                  borderColor: ACCENTS[i],
+                  color: ACCENTS[i],
+                  background: isOpen ? "var(--color-cream)" : `${ACCENTS[i]}1F`,
+                  boxShadow: isOpen
+                    ? "0 24px 48px rgba(15,30,46,0.22)"
+                    : `0 0 0 7px ${ACCENTS[i]}14`,
+                  transitionTimingFunction: "cubic-bezier(0.55, 0, 0.1, 1)",
+                }}
+                onClick={() => setOpen((o) => (o === i ? null : i))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setOpen((o) => (o === i ? null : i));
+                  }
+                }}
+              >
+                <span
+                  className={`animate-pulse-soft flex items-center justify-center transition-opacity duration-200 ${isOpen ? "opacity-0" : "opacity-100"}`}
+                  style={{ animationDelay: `${i * 0.3}s`, animation: isOpen ? "none" : undefined }}
+                  aria-hidden={isOpen}
+                >
+                  {step.icon}
+                </span>
+                <div
+                  className={`absolute inset-0 flex flex-col items-center justify-center gap-2.5 p-6 text-center transition-opacity duration-300 ${isOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
+                  style={{ transitionDelay: isOpen ? "200ms" : "0ms" }}
+                >
+                  <div className="text-sm leading-[1.6] text-muted-ink">{step.body}</div>
+                </div>
+              </div>
+              <div className="mb-2 text-base font-bold">{step.title}</div>
+              <div className={`text-xs font-semibold text-teal ${isOpen ? "hidden" : "hidden max-md:block"}`}>
+                Toca el ícono para ver más
+              </div>
             </div>
-            <div className="mb-2 text-base font-bold">{step.title}</div>
-            <div
-              className={`peer-hover:grid-rows-[1fr] peer-hover:opacity-100 mx-auto grid max-w-70 grid-rows-[0fr] text-sm leading-[1.6] text-muted-ink opacity-0 transition-[grid-template-rows,opacity] duration-700 ease-out ${open === i ? "grid-rows-[1fr] opacity-100" : ""}`}
-            >
-              <div className="overflow-hidden">{step.body}</div>
-            </div>
-            <div className={`text-xs font-semibold text-teal ${open === i ? "hidden" : "hidden max-md:block"}`}>
-              Toca el ícono para ver más
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-14 text-center">
