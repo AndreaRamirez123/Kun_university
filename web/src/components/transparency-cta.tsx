@@ -2,27 +2,23 @@ export function TransparencyCta() {
   return (
     <div id="registro" className="relative z-10 mx-auto max-w-260 px-14 pt-22 pb-10 max-md:px-6">
       <div
-        className="relative overflow-hidden rounded-[40px] max-md:rounded-[28px]"
+        className="bg-surface-alt relative overflow-hidden rounded-[40px] max-md:rounded-[28px]"
         style={{
           boxShadow:
-            "10px 10px 24px rgba(3,12,30,0.45), -8px -8px 20px rgba(0,146,182,0.28), 0 28px 56px rgba(3,62,140,0.3)",
+            "12px 12px 28px rgba(3,62,140,0.28), -10px -10px 24px rgba(255,255,255,1)",
         }}
       >
-        <div className="relative bg-linear-to-br from-navy to-cyan-deep p-14 text-center max-md:p-8">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/15 blur-[80px]"
-          />
-          <h2 className="font-display mb-3.5 text-[28px] font-normal text-white">
+        <div className="relative p-14 text-center max-md:p-8">
+          <h2 className="font-display mb-3.5 text-[28px] font-normal text-navy">
             Antes de matricularte, síguenos
           </h2>
-          <p className="mx-auto mb-7 max-w-[480px] text-sm text-white/85">
+          <p className="mx-auto mb-7 max-w-[480px] text-sm text-muted-ink">
             El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real, sin
             necesidad de estar matriculado.
           </p>
           <a
             href="#"
-            className="inline-block rounded-lg bg-navy px-7 py-3.5 text-sm font-bold text-white shadow-[4px_4px_10px_rgba(0,0,0,0.35),-3px_-3px_8px_rgba(0,146,182,0.25)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.4),inset_-2px_-2px_6px_rgba(0,146,182,0.3)]"
+            className="bg-surface-alt text-navy inline-block rounded-full px-8 py-3.5 text-sm font-bold shadow-[6px_6px_12px_rgba(3,62,140,0.28),-6px_-6px_12px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)]"
           >
             Únete a la comunidad
           </a>
@@ -30,7 +26,7 @@ export function TransparencyCta() {
 
         <div
           id="comunidad"
-          className="bg-surface-alt relative flex justify-center gap-16 px-10 py-12 max-md:flex-col max-md:items-center max-md:gap-10 max-md:px-6 max-md:py-9"
+          className="relative flex justify-center gap-16 px-10 pt-4 pb-12 max-md:flex-col max-md:items-center max-md:gap-10 max-md:px-6 max-md:pb-9"
         >
           <div aria-hidden className="absolute top-17 right-16 left-16 h-px bg-hairline max-md:hidden" />
           <Porthole
