@@ -1,12 +1,12 @@
 export function UniversityIllustration() {
   return (
-    <div className="relative mx-auto flex h-full w-full max-w-70 items-center justify-center">
+    <div className="relative mx-auto flex h-full w-full max-w-50 items-center justify-center">
       <div
         aria-hidden
-        className="deco-sunburst absolute h-56 w-56 opacity-[0.3]"
+        className="deco-sunburst absolute h-40 w-40 opacity-[0.3]"
         style={{ ["--ray-a" as string]: "#0092B6", ["--ray-b" as string]: "transparent" }}
       />
-      <svg viewBox="0 0 260 220" className="relative h-52 w-52" aria-hidden>
+      <svg viewBox="0 0 260 220" className="relative h-36 w-36" aria-hidden>
         {/* stepped Art Deco tower */}
         <rect x="42" y="148" width="176" height="48" fill="#033E8C" />
         <rect x="60" y="110" width="140" height="40" fill="#033E8C" />

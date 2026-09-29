@@ -2,7 +2,7 @@ import { UniversityIllustration } from "./university-illustration";
 
 export function TransparencyCta() {
   return (
-    <div id="registro" className="relative z-10 mx-auto max-w-260 px-14 pt-22 pb-10 max-md:px-6">
+    <div id="registro" className="relative z-10 mx-auto max-w-260 px-14 pt-14 pb-10 max-md:px-6">
       <div
         className="bg-surface-alt relative overflow-hidden rounded-[40px] max-md:rounded-[28px]"
         style={{
@@ -10,18 +10,18 @@ export function TransparencyCta() {
             "12px 12px 28px rgba(3,62,140,0.28), -10px -10px 24px rgba(255,255,255,1)",
         }}
       >
-        <div className="relative grid grid-cols-[1.1fr_0.9fr] items-center gap-8 p-14 text-left max-md:grid-cols-1 max-md:gap-6 max-md:p-8 max-md:text-center">
+        <div className="relative grid grid-cols-[1.1fr_0.9fr] items-center gap-6 p-9 text-left max-md:grid-cols-1 max-md:gap-3 max-md:p-6 max-md:text-center">
           <div>
-            <h2 className="font-display mb-3.5 text-[28px] font-normal text-navy">
+            <h2 className="font-display mb-2 text-[22px] font-normal text-navy">
               Antes de matricularte, síguenos
             </h2>
-            <p className="mb-7 max-w-[480px] text-sm text-muted-ink max-md:mx-auto">
+            <p className="mb-4 max-w-[480px] text-sm text-muted-ink max-md:mx-auto">
               El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real,
               sin necesidad de estar matriculado.
             </p>
             <a
               href="#"
-              className="bg-surface-alt text-navy inline-block rounded-full px-8 py-3.5 text-sm font-bold shadow-[6px_6px_12px_rgba(3,62,140,0.28),-6px_-6px_12px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)]"
+              className="bg-surface-alt text-navy inline-block rounded-full px-7 py-3 text-sm font-bold shadow-[6px_6px_12px_rgba(3,62,140,0.28),-6px_-6px_12px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)]"
             >
               Únete a la comunidad
             </a>
@@ -31,9 +31,9 @@ export function TransparencyCta() {
 
         <div
           id="comunidad"
-          className="relative flex justify-center gap-16 px-10 pt-4 pb-12 max-md:flex-col max-md:items-center max-md:gap-10 max-md:px-6 max-md:pb-9"
+          className="relative flex justify-center gap-16 px-10 pt-2 pb-8 max-md:flex-col max-md:items-center max-md:gap-7 max-md:px-6 max-md:pb-6"
         >
-          <div aria-hidden className="absolute top-17 right-16 left-16 h-px bg-hairline max-md:hidden" />
+          <div aria-hidden className="absolute top-13 right-16 left-16 h-px bg-hairline max-md:hidden" />
           <Porthole
             label="Florida CIE"
             detail="Comisión de Educación Independiente"
@@ -73,10 +73,10 @@ function Porthole({
 }) {
   return (
     <div className="relative z-10 flex flex-col items-center text-center">
-      <div className="bg-surface-alt flex h-22 w-22 items-center justify-center rounded-full shadow-[8px_8px_16px_rgba(3,62,140,0.3),-8px_-8px_16px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-300 hover:scale-[0.96] hover:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)]">
+      <div className="bg-surface-alt flex h-18 w-18 items-center justify-center rounded-full shadow-[8px_8px_16px_rgba(3,62,140,0.3),-8px_-8px_16px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-300 hover:scale-[0.96] hover:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)]">
         {icon}
       </div>
-      <div className="mt-3 text-[13px] font-bold">{label}</div>
+      <div className="mt-2 text-[13px] font-bold">{label}</div>
       <div className="mt-0.5 max-w-45 text-xs text-muted-ink">{detail}</div>
     </div>
   );
