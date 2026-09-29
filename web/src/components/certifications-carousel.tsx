@@ -70,28 +70,66 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
             </svg>
           </button>
 
-          <div className="relative flex-1 overflow-hidden rounded-[28px] border-2 border-cyan/20 bg-cream px-10 py-12 text-center text-ink max-md:rounded-2xl max-md:px-6 max-md:py-9">
-            <div
-              key={spinKey}
-              className="animate-badge-spin mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border-4 bg-white"
-              style={{ borderColor: accent, boxShadow: `0 8px 20px ${accent}33` }}
-            >
-              <span className="font-display text-lg font-bold" style={{ color: accent }}>
-                {cert.hours}h
-              </span>
-            </div>
+          <div
+            className="relative flex-1 rounded-[34px] p-2.5"
+            style={{
+              background: `linear-gradient(135deg, #D4AF37, ${accent}, #033E8C, ${accent}, #D4AF37)`,
+              boxShadow: "0 30px 60px rgba(3,12,30,0.45), 0 10px 20px rgba(3,12,30,0.3)",
+            }}
+          >
+            <span
+              aria-hidden
+              className="absolute top-2 left-2 h-3 w-3 rounded-full"
+              style={{ background: "#fffde7", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)" }}
+            />
+            <span
+              aria-hidden
+              className="absolute top-2 right-2 h-3 w-3 rounded-full"
+              style={{ background: "#fffde7", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)" }}
+            />
+            <span
+              aria-hidden
+              className="absolute bottom-2 left-2 h-3 w-3 rounded-full"
+              style={{ background: "#fffde7", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)" }}
+            />
+            <span
+              aria-hidden
+              className="absolute right-2 bottom-2 h-3 w-3 rounded-full"
+              style={{ background: "#fffde7", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)" }}
+            />
 
-            <div className={`transition-opacity duration-300 ${fading ? "opacity-0" : "opacity-100"}`}>
+            <div
+              className="relative overflow-hidden rounded-[26px] bg-cream px-10 py-12 text-center text-ink max-md:px-6 max-md:py-9"
+              style={{
+                boxShadow:
+                  "inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -10px 24px rgba(3,62,140,0.1)",
+              }}
+            >
               <div
-                className="small-caps mb-2.5 text-xs font-bold tracking-[0.1em]"
-                style={{ color: accent }}
+                key={spinKey}
+                className="animate-badge-spin relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border-4 bg-white"
+                style={{
+                  borderColor: accent,
+                  boxShadow: `0 0 0 5px ${accent}22, 0 12px 22px ${accent}55, inset 0 3px 5px rgba(255,255,255,0.9), inset 0 -4px 8px rgba(0,0,0,0.12)`,
+                }}
               >
-                {cert.hours} horas · 100% online
+                <span className="font-display text-lg font-bold" style={{ color: accent }}>
+                  {cert.hours}h
+                </span>
               </div>
-              <h3 className="font-display mb-3 text-2xl font-normal">{cert.name}</h3>
-              <p className="mx-auto max-w-100 text-sm leading-[1.6] text-muted-ink">
-                {cert.description}
-              </p>
+
+              <div className={`transition-opacity duration-300 ${fading ? "opacity-0" : "opacity-100"}`}>
+                <div
+                  className="small-caps mb-2.5 text-xs font-bold tracking-[0.1em]"
+                  style={{ color: accent }}
+                >
+                  {cert.hours} horas · 100% online
+                </div>
+                <h3 className="font-display mb-3 text-2xl font-normal">{cert.name}</h3>
+                <p className="mx-auto max-w-100 text-sm leading-[1.6] text-muted-ink">
+                  {cert.description}
+                </p>
+              </div>
             </div>
           </div>
 
