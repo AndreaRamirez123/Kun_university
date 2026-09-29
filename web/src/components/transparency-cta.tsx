@@ -1,7 +1,13 @@
 export function TransparencyCta() {
   return (
     <div id="registro" className="relative z-10 mx-auto max-w-260 px-14 pt-22 pb-10 max-md:px-6">
-      <div className="relative mb-10 overflow-hidden rounded-t-[72px] rounded-b-3xl bg-linear-to-br from-navy to-cyan-deep p-14 text-center shadow-[0_28px_56px_rgba(3,62,140,0.38)] max-md:rounded-t-[32px] max-md:p-8">
+      <div
+        className="relative mb-10 overflow-hidden rounded-t-[72px] rounded-b-3xl bg-linear-to-br from-navy to-cyan-deep p-14 text-center max-md:rounded-t-[32px] max-md:p-8"
+        style={{
+          boxShadow:
+            "10px 10px 24px rgba(3,12,30,0.45), -8px -8px 20px rgba(0,146,182,0.28), 0 28px 56px rgba(3,62,140,0.3)",
+        }}
+      >
         <div
           aria-hidden
           className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/15 blur-[80px]"
@@ -15,14 +21,17 @@ export function TransparencyCta() {
         </p>
         <a
           href="#"
-          className="inline-block rounded-lg bg-navy px-7 py-3.5 text-sm font-bold text-white transition hover:-translate-y-0.5"
+          className="inline-block rounded-lg bg-navy px-7 py-3.5 text-sm font-bold text-white shadow-[4px_4px_10px_rgba(0,0,0,0.35),-3px_-3px_8px_rgba(0,146,182,0.25)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.4),inset_-2px_-2px_6px_rgba(0,146,182,0.3)]"
         >
           Únete a la comunidad
         </a>
       </div>
 
-      <div id="comunidad" className="relative flex justify-center gap-16 pt-4 max-md:flex-col max-md:items-center max-md:gap-10">
-        <div aria-hidden className="absolute top-11 right-16 left-16 h-px bg-hairline max-md:hidden" />
+      <div
+        id="comunidad"
+        className="bg-surface-alt relative flex justify-center gap-16 rounded-[32px] px-10 py-12 max-md:flex-col max-md:items-center max-md:gap-10 max-md:px-6 max-md:py-9"
+      >
+        <div aria-hidden className="absolute top-17 right-16 left-16 h-px bg-hairline max-md:hidden" />
         <Porthole
           label="Florida CIE"
           detail="Comisión de Educación Independiente"
@@ -61,7 +70,7 @@ function Porthole({
 }) {
   return (
     <div className="relative z-10 flex flex-col items-center text-center">
-      <div className="bg-surface-alt flex h-22 w-22 items-center justify-center rounded-full shadow-[6px_6px_12px_rgba(3,62,140,0.18),-6px_-6px_12px_rgba(255,255,255,0.9)] transition-[box-shadow,transform] duration-300 hover:scale-[0.97] hover:shadow-[inset_5px_5px_10px_rgba(3,62,140,0.2),inset_-5px_-5px_10px_rgba(255,255,255,0.9)]">
+      <div className="bg-surface-alt flex h-22 w-22 items-center justify-center rounded-full shadow-[8px_8px_16px_rgba(3,62,140,0.3),-8px_-8px_16px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-300 hover:scale-[0.96] hover:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)]">
         {icon}
       </div>
       <div className="mt-3 text-[13px] font-bold">{label}</div>
