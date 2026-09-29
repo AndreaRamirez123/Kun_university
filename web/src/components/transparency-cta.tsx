@@ -1,3 +1,5 @@
+import { UniversityIllustration } from "./university-illustration";
+
 export function TransparencyCta() {
   return (
     <div id="registro" className="relative z-10 mx-auto max-w-260 px-14 pt-22 pb-10 max-md:px-6">
@@ -8,20 +10,23 @@ export function TransparencyCta() {
             "12px 12px 28px rgba(3,62,140,0.28), -10px -10px 24px rgba(255,255,255,1)",
         }}
       >
-        <div className="relative p-14 text-center max-md:p-8">
-          <h2 className="font-display mb-3.5 text-[28px] font-normal text-navy">
-            Antes de matricularte, síguenos
-          </h2>
-          <p className="mx-auto mb-7 max-w-[480px] text-sm text-muted-ink">
-            El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real, sin
-            necesidad de estar matriculado.
-          </p>
-          <a
-            href="#"
-            className="bg-surface-alt text-navy inline-block rounded-full px-8 py-3.5 text-sm font-bold shadow-[6px_6px_12px_rgba(3,62,140,0.28),-6px_-6px_12px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)]"
-          >
-            Únete a la comunidad
-          </a>
+        <div className="relative grid grid-cols-[1.1fr_0.9fr] items-center gap-8 p-14 text-left max-md:grid-cols-1 max-md:gap-6 max-md:p-8 max-md:text-center">
+          <div>
+            <h2 className="font-display mb-3.5 text-[28px] font-normal text-navy">
+              Antes de matricularte, síguenos
+            </h2>
+            <p className="mb-7 max-w-[480px] text-sm text-muted-ink max-md:mx-auto">
+              El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real,
+              sin necesidad de estar matriculado.
+            </p>
+            <a
+              href="#"
+              className="bg-surface-alt text-navy inline-block rounded-full px-8 py-3.5 text-sm font-bold shadow-[6px_6px_12px_rgba(3,62,140,0.28),-6px_-6px_12px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)]"
+            >
+              Únete a la comunidad
+            </a>
+          </div>
+          <UniversityIllustration />
         </div>
 
         <div
