@@ -9,26 +9,15 @@ const INK = "#10101A";
 const CREAM = "#FFF9EC";
 const DISPLAY = "var(--font-archivo-black), sans-serif";
 
-const CARD_W = 220;
-const CARD_H = 260;
-
 export function CertificationFlipGrid({ certifications }: { certifications: Certification[] }) {
   return (
-    <>
-      {/* Desktop: card widens and the cover opens like a book, hinged on the left */}
-      <div className="flex flex-wrap justify-center gap-10 max-md:hidden">
-        {certifications.map((cert, i) => (
-          <BookFlipCard key={cert.slug} cert={cert} accent={i % 2 === 0 ? RED : NAVY} />
-        ))}
-      </div>
-
-      {/* Mobile: click-to-expand drawer (widening would overflow a phone screen) */}
-      <div className="grid grid-cols-2 gap-3 md:hidden">
-        {certifications.map((cert, i) => (
-          <ExpandCard key={cert.slug} cert={cert} accent={i % 2 === 0 ? RED : NAVY} />
-        ))}
-      </div>
-    </>
+    <div
+      className="flex flex-wrap justify-center gap-8 [--card-h:210px] [--card-w:150px] max-md:gap-4 md:[--card-h:260px] md:[--card-w:220px]"
+    >
+      {certifications.map((cert, i) => (
+        <BookFlipCard key={cert.slug} cert={cert} accent={i % 2 === 0 ? RED : NAVY} />
+      ))}
+    </div>
   );
 }
 
@@ -52,7 +41,14 @@ function CampusWatermark({ accent, className = "" }: { accent: string; className
 
 function GradCapIcon({ color }: { color: string }) {
   return (
-    <svg aria-hidden width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.6">
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.6"
+      className="h-6 w-6 md:h-9 md:w-9"
+    >
       <path d="M2 9l10-5 10 5-10 5-10-5z" />
       <path d="M6 11.5V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5" />
       <path d="M22 9v6" strokeLinecap="round" />
@@ -66,31 +62,37 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
   return (
     <div
       className="relative transition-[width] duration-700 ease-[cubic-bezier(0.4,0.1,0.2,1)]"
-      style={{ height: CARD_H, width: open ? CARD_W * 2 : CARD_W }}
+      style={{
+        height: "var(--card-h)",
+        width: open ? "calc(var(--card-w) * 2)" : "var(--card-w)",
+      }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       onClick={() => setOpen((o) => !o)}
     >
       {/* inside page: revealed on the right once the cover swings away */}
       <div
-        className="absolute top-0 right-0 flex flex-col items-center justify-center overflow-hidden rounded-2xl border-[3px] p-6 text-center"
+        className="absolute top-0 right-0 flex flex-col items-center justify-center overflow-hidden rounded-2xl border-[3px] p-3 text-center md:p-6"
         style={{
-          width: CARD_W,
-          height: CARD_H,
+          width: "var(--card-w)",
+          height: "var(--card-h)",
           borderColor: INK,
           background: CREAM,
           boxShadow: `5px 5px 0 ${INK}`,
         }}
       >
-        <div className="text-base leading-tight font-extrabold uppercase" style={{ fontFamily: DISPLAY, color: accent }}>
+        <div
+          className="text-[11px] leading-tight font-extrabold uppercase md:text-base"
+          style={{ fontFamily: DISPLAY, color: accent }}
+        >
           {cert.name}
         </div>
-        <p className="mt-2.5 text-[13px] leading-[1.5]" style={{ color: INK }}>
+        <p className="mt-1.5 text-[9px] leading-[1.4] md:mt-2.5 md:text-[13px] md:leading-[1.5]" style={{ color: INK }}>
           {cert.description}
         </p>
         <a
           href="#informacion"
-          className="group relative mt-4 overflow-hidden rounded-lg border-2 px-5 py-2 text-xs font-extrabold tracking-[0.04em] uppercase"
+          className="group relative mt-2 overflow-hidden rounded-lg border-2 px-3 py-1.5 text-[8px] font-extrabold tracking-[0.04em] uppercase md:mt-4 md:px-5 md:py-2 md:text-xs"
           style={{ borderColor: accent, color: accent }}
         >
           <span
@@ -105,7 +107,7 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
       {/* flip cover: swings open on a left hinge, revealing the inside page */}
       <div
         className="absolute top-0 right-0"
-        style={{ width: CARD_W, height: CARD_H, perspective: "2000px" }}
+        style={{ width: "var(--card-w)", height: "var(--card-h)", perspective: "2000px" }}
       >
         <div
           className="relative h-full w-full transition-transform duration-700 ease-[cubic-bezier(0.4,0.1,0.2,1)]"
@@ -121,21 +123,24 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
             style={{ borderColor: INK, background: accent, boxShadow: `5px 5px 0 ${INK}`, backfaceVisibility: "hidden" }}
           >
             <div
-              className="flex flex-1 flex-col items-center justify-center gap-2 p-5 text-center"
+              className="flex flex-1 flex-col items-center justify-center gap-1 p-2 text-center md:gap-2 md:p-5"
               style={{
                 clipPath: "polygon(0 0, 100% 0, 100% 88%, 57% 88%, 50% 100%, 43% 88%, 0 88%)",
               }}
             >
               <GradCapIcon color={CREAM} />
-              <div className="text-base font-extrabold uppercase" style={{ fontFamily: DISPLAY, color: CREAM }}>
+              <div
+                className="text-[11px] font-extrabold uppercase md:text-base"
+                style={{ fontFamily: DISPLAY, color: CREAM }}
+              >
                 {cert.name}
               </div>
-              <span className="text-xs font-bold" style={{ color: CREAM, opacity: 0.85 }}>
+              <span className="text-[9px] font-bold md:text-xs" style={{ color: CREAM, opacity: 0.85 }}>
                 {cert.hours}h · online
               </span>
             </div>
             <div
-              className="py-2.5 text-center text-xs font-extrabold tracking-[0.06em] uppercase"
+              className="py-1.5 text-center text-[9px] font-extrabold tracking-[0.06em] uppercase md:py-2.5 md:text-xs"
               style={{ color: CREAM }}
             >
               Ver más
@@ -154,77 +159,7 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
               clipPath: "polygon(0% 0%, 100% 0%, 88% 50%, 100% 100%, 0% 100%)",
             }}
           >
-            <CampusWatermark accent={accent} className="h-28 w-28 opacity-30" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ExpandCard({ cert, accent }: { cert: Certification; accent: string }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div
-      className="relative overflow-hidden rounded-2xl border-[3px] transition-transform duration-300"
-      style={{
-        borderColor: INK,
-        background: CREAM,
-        boxShadow: open ? `7px 7px 0 ${INK}` : `5px 5px 0 ${INK}`,
-        transform: open ? "translate(-2px,-2px)" : "translate(0,0)",
-      }}
-    >
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        className="relative flex w-full flex-col items-stretch text-left"
-      >
-        <CampusWatermark accent={accent} className="absolute -right-6 -bottom-8 h-24 w-24 opacity-[0.14]" />
-        <div
-          className="flex items-center justify-between px-3 py-2 text-[10px] font-extrabold tracking-[0.06em] uppercase"
-          style={{ fontFamily: DISPLAY, background: accent, color: CREAM }}
-        >
-          <span>{cert.hours}h · online</span>
-          <span
-            aria-hidden
-            className="inline-block text-xs transition-transform duration-300"
-            style={{ transform: open ? "rotate(45deg)" : "rotate(0deg)" }}
-          >
-            +
-          </span>
-        </div>
-        <div className="relative flex min-h-32 flex-1 flex-col items-center justify-center p-3 text-center">
-          <div className="text-sm font-extrabold uppercase" style={{ fontFamily: DISPLAY, color: INK }}>
-            {cert.name}
-          </div>
-          <span aria-hidden className="mt-2 h-[3px] w-8 rounded-full" style={{ background: accent }} />
-        </div>
-      </button>
-
-      <div
-        className="grid transition-[grid-template-rows] duration-500 ease-out"
-        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
-      >
-        <div className="overflow-hidden">
-          <div
-            className="border-t-[3px] p-3 text-center"
-            style={{ borderColor: INK, background: accent, color: CREAM }}
-          >
-            <p className="text-[11px] leading-[1.4]">{cert.description}</p>
-            <a
-              href="#informacion"
-              className="mt-2 inline-block rounded-full border-2 px-4 py-1.5 text-[10px] font-extrabold tracking-[0.04em] uppercase transition-opacity duration-300"
-              style={{
-                borderColor: CREAM,
-                color: CREAM,
-                opacity: open ? 1 : 0,
-                transitionDelay: open ? "250ms" : "0ms",
-              }}
-            >
-              Inscríbete →
-            </a>
+            <CampusWatermark accent={accent} className="h-16 w-16 opacity-30 md:h-28 md:w-28" />
           </div>
         </div>
       </div>
