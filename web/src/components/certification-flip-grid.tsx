@@ -19,6 +19,24 @@ export function CertificationFlipGrid({ certifications }: { certifications: Cert
   );
 }
 
+function CampusWatermark({ accent }: { accent: string }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 200 160"
+      className="pointer-events-none absolute -right-6 -bottom-8 h-40 w-40 opacity-[0.14] max-md:h-24 max-md:w-24"
+      style={{ color: accent }}
+    >
+      <rect x="30" y="90" width="140" height="60" fill="currentColor" />
+      <rect x="50" y="65" width="100" height="30" fill="currentColor" />
+      <rect x="70" y="45" width="60" height="25" fill="currentColor" />
+      <rect x="88" y="25" width="24" height="24" fill="currentColor" />
+      <polygon points="100,10 122,25 78,25" fill="currentColor" />
+      <rect x="94" y="118" width="12" height="32" fill="#FFF9EC" />
+    </svg>
+  );
+}
+
 function FlipCard({ cert, accent }: { cert: Certification; accent: string }) {
   const [flipped, setFlipped] = useState(false);
 
@@ -42,6 +60,7 @@ function FlipCard({ cert, accent }: { cert: Certification; accent: string }) {
           className="absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-[3px]"
           style={{ borderColor: INK, background: CREAM, boxShadow: `5px 5px 0 ${INK}`, backfaceVisibility: "hidden" }}
         >
+          <CampusWatermark accent={accent} />
           <div
             className="px-5 py-3 text-xs font-extrabold tracking-[0.06em] uppercase max-md:px-3 max-md:py-2 max-md:text-[10px]"
             style={{ fontFamily: DISPLAY, background: accent, color: CREAM }}
