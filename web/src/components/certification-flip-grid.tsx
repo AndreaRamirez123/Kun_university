@@ -12,7 +12,7 @@ const DISPLAY = "var(--font-archivo-black), sans-serif";
 export function CertificationFlipGrid({ certifications }: { certifications: Certification[] }) {
   return (
     <div
-      className="flex flex-wrap justify-center gap-8 [--card-h:210px] [--card-w:150px] max-md:gap-4 md:[--card-h:260px] md:[--card-w:220px]"
+      className="flex flex-wrap justify-center gap-8 [--card-h:195px] [--card-w:130px] max-md:gap-3 md:[--card-h:260px] md:[--card-w:220px]"
     >
       {certifications.map((cert, i) => (
         <BookFlipCard key={cert.slug} cert={cert} accent={i % 2 === 0 ? RED : NAVY} />
