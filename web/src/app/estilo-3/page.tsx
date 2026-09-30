@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import { getCertifications, getSchools, getStats } from "@/lib/api";
 import { AccordionShowcase, type AccordionItem } from "@/components/accordion-showcase";
+import { CertificationFlipGrid } from "@/components/certification-flip-grid";
 import { CollageInfoForm } from "@/components/collage-info-form";
 import { FlipText } from "@/components/flip-text";
 import { MobileTabBar } from "@/components/mobile-tab-bar";
@@ -436,25 +437,7 @@ export default async function Estilo3Page() {
             primera semana.
           </p>
         </Reveal>
-        <AccordionShowcase
-          items={certifications.map(
-            (cert, i): AccordionItem => ({
-              id: cert.slug,
-              eyebrow: `${cert.hours}h · online`,
-              title: cert.name,
-              description: cert.description,
-              accent: i % 2 === 0 ? RED : NAVY,
-            }),
-          )}
-          autoRotateMs={3800}
-          theme={{
-            fontDisplay: DISPLAY,
-            ink: INK,
-            mutedText: "#4A4636",
-            border: INK,
-            shape: "rounded-2xl",
-          }}
-        />
+        <CertificationFlipGrid certifications={certifications} />
         <Reveal className="mt-11 text-center">
           <a
             href="#informacion"
