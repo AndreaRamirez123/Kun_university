@@ -13,7 +13,7 @@ export function CertificationFlipGrid({ certifications }: { certifications: Cert
   return (
     <div className="grid grid-cols-3 gap-6 max-md:grid-cols-2 max-md:gap-3">
       {certifications.map((cert, i) => (
-        <FlipCard key={cert.slug} cert={cert} accent={i % 2 === 0 ? RED : NAVY} />
+        <ExpandCard key={cert.slug} cert={cert} accent={i % 2 === 0 ? RED : NAVY} />
       ))}
     </div>
   );
@@ -37,66 +37,79 @@ function CampusWatermark({ accent }: { accent: string }) {
   );
 }
 
-function FlipCard({ cert, accent }: { cert: Certification; accent: string }) {
-  const [flipped, setFlipped] = useState(false);
+function ExpandCard({ cert, accent }: { cert: Certification; accent: string }) {
+  const [open, setOpen] = useState(false);
 
   return (
     <div
-      className="relative min-h-70 cursor-pointer max-md:min-h-40"
-      style={{ perspective: "1000px" }}
-      onMouseEnter={() => setFlipped(true)}
-      onMouseLeave={() => setFlipped(false)}
-      onTouchStart={() => setFlipped((f) => !f)}
+      className="relative overflow-hidden rounded-2xl border-[3px] transition-transform duration-300"
+      style={{
+        borderColor: INK,
+        background: CREAM,
+        boxShadow: open ? `7px 7px 0 ${INK}` : `5px 5px 0 ${INK}`,
+        transform: open ? "translate(-2px,-2px)" : "translate(0,0)",
+      }}
     >
-      <div
-        className="relative h-full w-full transition-transform duration-700"
-        style={{
-          transformStyle: "preserve-3d",
-          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-        }}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="relative flex w-full flex-col items-stretch text-left"
       >
-        {/* front */}
+        <CampusWatermark accent={accent} />
         <div
-          className="absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-[3px]"
-          style={{ borderColor: INK, background: CREAM, boxShadow: `5px 5px 0 ${INK}`, backfaceVisibility: "hidden" }}
+          className="flex items-center justify-between px-5 py-3 text-xs font-extrabold tracking-[0.06em] uppercase max-md:px-3 max-md:py-2 max-md:text-[10px]"
+          style={{ fontFamily: DISPLAY, background: accent, color: CREAM }}
         >
-          <CampusWatermark accent={accent} />
-          <div
-            className="px-5 py-3 text-xs font-extrabold tracking-[0.06em] uppercase max-md:px-3 max-md:py-2 max-md:text-[10px]"
-            style={{ fontFamily: DISPLAY, background: accent, color: CREAM }}
+          <span>{cert.hours}h · online</span>
+          <span
+            aria-hidden
+            className="inline-block text-sm transition-transform duration-300 max-md:text-xs"
+            style={{ transform: open ? "rotate(45deg)" : "rotate(0deg)" }}
           >
-            {cert.hours}h · online
-          </div>
-          <div className="flex flex-1 flex-col items-center justify-center p-6 text-center max-md:p-3">
-            <div
-              className="text-xl font-extrabold uppercase max-md:text-sm"
-              style={{ fontFamily: DISPLAY, color: INK }}
-            >
-              {cert.name}
-            </div>
-            <span
-              aria-hidden
-              className="mt-3 h-[3px] w-12 rounded-full max-md:mt-2 max-md:w-8"
-              style={{ background: accent }}
-            />
-          </div>
+            +
+          </span>
         </div>
+        <div className="relative flex min-h-56 flex-1 flex-col items-center justify-center p-6 text-center max-md:min-h-32 max-md:p-3">
+          <div
+            className="text-xl font-extrabold uppercase max-md:text-sm"
+            style={{ fontFamily: DISPLAY, color: INK }}
+          >
+            {cert.name}
+          </div>
+          <span
+            aria-hidden
+            className="mt-3 h-[3px] w-12 rounded-full max-md:mt-2 max-md:w-8"
+            style={{ background: accent }}
+          />
+        </div>
+      </button>
 
-        {/* back */}
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-2xl border-[3px] p-6 text-center max-md:p-3"
-          style={{
-            borderColor: INK,
-            background: accent,
-            color: CREAM,
-            boxShadow: `5px 5px 0 ${INK}`,
-            backfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
-          }}
-        >
-          <p className="text-sm leading-[1.6] max-md:text-[11px] max-md:leading-[1.4]">{cert.description}</p>
-          <div className="small-caps mt-4 text-xs font-bold tracking-[0.08em] uppercase opacity-80 max-md:mt-2 max-md:text-[9px]">
-            Ver más
+      {/* staged reveal: description drawer, then CTA fades in after */}
+      <div
+        className="grid transition-[grid-template-rows] duration-500 ease-out"
+        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+      >
+        <div className="overflow-hidden">
+          <div
+            className="border-t-[3px] p-6 text-center max-md:p-3"
+            style={{ borderColor: INK, background: accent, color: CREAM }}
+          >
+            <p className="text-sm leading-[1.6] max-md:text-[11px] max-md:leading-[1.4]">
+              {cert.description}
+            </p>
+            <a
+              href="#informacion"
+              className="mt-4 inline-block rounded-full border-2 px-5 py-2 text-xs font-extrabold tracking-[0.04em] uppercase transition-opacity duration-300 max-md:mt-2 max-md:px-4 max-md:py-1.5 max-md:text-[10px]"
+              style={{
+                borderColor: CREAM,
+                color: CREAM,
+                opacity: open ? 1 : 0,
+                transitionDelay: open ? "250ms" : "0ms",
+              }}
+            >
+              Inscríbete →
+            </a>
           </div>
         </div>
       </div>
