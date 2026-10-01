@@ -43,7 +43,7 @@ export default async function Estilo2Page() {
         style={{ borderColor: INK }}
       >
         <div className="flex items-center gap-3">
-          <Image src="/kun-logo-model2.png" alt="KUN University AI" width={271} height={96} priority className="h-24 w-auto" />
+          <Image src="/kun-logo-model2.png" alt="KUN University AI" width={271} height={96} priority className="h-24 w-auto max-md:h-14" />
         </div>
         <div className="flex items-center gap-7 max-md:hidden">
           <a href="#programas" className="text-sm font-bold hover:text-[#8C0303]">
