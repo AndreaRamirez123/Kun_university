@@ -143,14 +143,12 @@ export default async function Estilo2Page() {
         <div className="relative mx-auto max-w-260">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible"
+            className="pointer-events-none absolute top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 max-md:h-96 max-md:w-96"
           >
-            <div className="animate-glow-orbit absolute h-1 w-1">
+            <div className="animate-glow-orbit absolute inset-0">
               <div
-                className="animate-glow-hue absolute h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70"
+                className="animate-glow-hue absolute top-0 left-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-80 max-md:h-16 max-md:w-16"
                 style={{
-                  left: "50%",
-                  top: "-190%",
                   background: "conic-gradient(#ff2d55, #ffd60a, #30d5c8, #5e60ff, #ff2d55)",
                 }}
               />
@@ -159,7 +157,7 @@ export default async function Estilo2Page() {
 
           <Reveal
             delay={320}
-            className="relative grid grid-cols-4 overflow-hidden rounded-2xl border-4 max-md:grid-cols-2"
+            className="relative z-10 grid grid-cols-4 overflow-hidden rounded-2xl border-4 max-md:grid-cols-2"
             style={{ borderColor: INK }}
           >
             <StatBlock value={stats.schools} label="Escuelas" bg={BLUE} text={CREAM} />
