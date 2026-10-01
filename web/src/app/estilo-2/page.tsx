@@ -140,16 +140,34 @@ export default async function Estilo2Page() {
           </a>
         </Reveal>
 
-        <Reveal
-          delay={320}
-          className="relative mx-auto grid max-w-260 grid-cols-4 overflow-hidden rounded-2xl border-4 max-md:grid-cols-2"
-          style={{ borderColor: INK }}
-        >
-          <StatBlock value={stats.schools} label="Escuelas" bg={BLUE} text={CREAM} />
-          <StatBlock value={stats.programs} label="Programas" bg={CREAM} text={INK} />
-          <StatBlock value={stats.certifications} label="Certif. IA" bg={RED} text={CREAM} />
-          <StatBlock value={`${stats.online}%`} label="Online" bg={TEAL} text={INK} />
-        </Reveal>
+        <div className="relative mx-auto max-w-260">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible"
+          >
+            <div className="animate-glow-orbit absolute h-1 w-1">
+              <div
+                className="animate-glow-hue absolute h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70"
+                style={{
+                  left: "50%",
+                  top: "-190%",
+                  background: "conic-gradient(#ff2d55, #ffd60a, #30d5c8, #5e60ff, #ff2d55)",
+                }}
+              />
+            </div>
+          </div>
+
+          <Reveal
+            delay={320}
+            className="relative grid grid-cols-4 overflow-hidden rounded-2xl border-4 max-md:grid-cols-2"
+            style={{ borderColor: INK }}
+          >
+            <StatBlock value={stats.schools} label="Escuelas" bg={BLUE} text={CREAM} />
+            <StatBlock value={stats.programs} label="Programas" bg={CREAM} text={INK} />
+            <StatBlock value={stats.certifications} label="Certif. IA" bg={RED} text={CREAM} />
+            <StatBlock value={`${stats.online}%`} label="Online" bg={TEAL} text={INK} />
+          </Reveal>
+        </div>
       </div>
 
       {/* CHECKERED DIVIDER */}
