@@ -144,13 +144,13 @@ export function FanStack({
                 </div>
               )}
               <div
-                className="mb-1.5 text-sm leading-tight font-bold md:text-base"
+                className="mb-1.5 text-sm leading-tight font-bold break-words md:text-base"
                 style={{ fontFamily: fontDisplay, color: ink }}
               >
                 {item.title}
               </div>
               <p
-                className={`${isSelected ? "" : "line-clamp-3"} text-[11px] leading-snug font-semibold md:text-xs`}
+                className={`${isSelected ? "" : "line-clamp-3"} text-[11px] leading-snug font-semibold break-words md:text-xs`}
                 style={{ color: mutedText }}
               >
                 {item.description}
