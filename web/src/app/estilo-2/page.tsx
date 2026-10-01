@@ -418,28 +418,54 @@ export default async function Estilo2Page() {
       {/* CTA + TRANSPARENCIA */}
       <div id="registro" className="mx-auto max-w-300 px-14 pb-20 max-md:px-6">
         <Reveal
-          className="mb-10 rounded-2xl border-4 p-13 text-center max-md:p-8"
+          className="relative mb-10 overflow-hidden rounded-2xl border-4 p-13 text-center max-md:p-8"
           style={{ background: BLUE, color: CREAM, borderColor: INK, boxShadow: softShadow(TEAL) }}
         >
-          <h2 className="mb-3.5 text-2xl uppercase" style={{ fontFamily: DISPLAY }}>
-            Antes de matricularte, síguenos
-          </h2>
-          <p className="mx-auto mb-7 max-w-120 text-sm font-medium opacity-90">
-            El valor se demuestra antes de pedirte que pagues por él. Clases abiertas y
-            conversaciones con expertos, sin matrícula.
-          </p>
-          <a
-            href="#"
-            className="inline-block rounded-full border-[3px] px-7 py-3.5 text-sm font-bold uppercase transition hover:-translate-y-0.5"
-            style={{ background: CREAM, color: INK, borderColor: INK }}
-          >
-            Únete a la comunidad
-          </a>
+          <div
+            aria-hidden
+            className="animate-spin-slow pointer-events-none absolute -inset-[70%] opacity-25"
+            style={{ background: `conic-gradient(from 0deg, ${RED}, ${TEAL}, ${CREAM}, ${TEAL}, ${RED})` }}
+          />
+          <div className="relative">
+            <h2 className="mb-3.5 text-2xl uppercase" style={{ fontFamily: DISPLAY }}>
+              Antes de matricularte, síguenos
+            </h2>
+            <p className="mx-auto mb-7 max-w-120 text-sm font-medium opacity-90">
+              El valor se demuestra antes de pedirte que pagues por él. Clases abiertas y
+              conversaciones con expertos, sin matrícula.
+            </p>
+            <a
+              href="#"
+              className="inline-block rounded-full border-[3px] px-7 py-3.5 text-sm font-bold uppercase transition hover:-translate-y-0.5 active:-translate-y-0.5"
+              style={{ background: CREAM, color: INK, borderColor: INK }}
+            >
+              Únete a la comunidad
+            </a>
+          </div>
         </Reveal>
 
         <div id="comunidad" className="mb-10 grid grid-cols-2 gap-6 max-md:grid-cols-1">
-          <SealCard label="Florida CIE" detail="Comisión de Educación Independiente" accent={BLUE} />
-          <SealCard label="SACSCOC · En proceso" detail="Acreditación institucional en avance" accent={RED} />
+          <SealCard
+            label="Florida CIE"
+            detail="Comisión de Educación Independiente"
+            accent={BLUE}
+            icon={
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={BLUE} strokeWidth="2">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            }
+          />
+          <SealCard
+            label="SACSCOC · En proceso"
+            detail="Acreditación institucional en avance"
+            accent={RED}
+            icon={
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth="2">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 3" />
+              </svg>
+            }
+          />
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t-4 pt-6" style={{ borderColor: INK }}>
@@ -517,26 +543,44 @@ function PostcardPlaceholder({
   );
 }
 
-function SealCard({ label, detail, accent }: { label: string; detail: string; accent: string }) {
+function SealCard({
+  label,
+  detail,
+  accent,
+  icon,
+}: {
+  label: string;
+  detail: string;
+  accent: string;
+  icon: React.ReactNode;
+}) {
   return (
-    <div
-      className="flex items-center gap-4 rounded-xl border-4 p-5 transition hover:-translate-y-1"
-      style={{ borderColor: INK, boxShadow: softShadow(accent) }}
-    >
+    <div className="relative overflow-hidden rounded-xl p-2" style={{ boxShadow: softShadow(accent) }}>
       <div
-        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-dashed text-center"
-        style={{ borderColor: accent, transform: "rotate(-6deg)" }}
+        aria-hidden
+        className="animate-spin-slow pointer-events-none absolute -inset-[75%]"
+        style={{
+          animationDuration: "5s",
+          background: `conic-gradient(from 0deg, ${BLUE}, ${RED}, ${TEAL}, ${RED}, ${BLUE})`,
+        }}
+      />
+      <div
+        className="relative flex items-center gap-4 rounded-lg border-4 p-5 transition hover:-translate-y-1 active:-translate-y-1"
+        style={{ borderColor: INK, background: CREAM }}
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2">
-          <path d="M20 6L9 17l-5-5" />
-        </svg>
-      </div>
-      <div>
-        <div className="text-[13px] font-bold" style={{ color: BLUE }}>
-          {label}
+        <div
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-dashed text-center"
+          style={{ borderColor: accent, transform: "rotate(-6deg)" }}
+        >
+          {icon}
         </div>
-        <div className="mt-0.5 text-xs" style={{ color: "#5A4E40" }}>
-          {detail}
+        <div>
+          <div className="text-[13px] font-bold" style={{ color: BLUE }}>
+            {label}
+          </div>
+          <div className="mt-0.5 text-xs" style={{ color: "#5A4E40" }}>
+            {detail}
+          </div>
         </div>
       </div>
     </div>
