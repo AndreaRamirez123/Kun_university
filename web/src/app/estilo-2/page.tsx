@@ -270,18 +270,30 @@ export default async function Estilo2Page() {
             La vida en KUN
           </h3>
           <span className="text-sm font-medium" style={{ color: "#8a7a63" }}>
-            (espacio reservado para fotos reales del campus)
+            (ilustraciones mientras sumamos fotos reales del campus)
           </span>
         </Reveal>
         <div className="flex flex-wrap items-start gap-7 max-md:justify-center">
           {[
-            { label: "Campus", accent: BLUE, rotate: -3 },
-            { label: "Estudiantes", accent: RED, rotate: 2 },
-            { label: "Comunidad", accent: BLUE, rotate: -2 },
-            { label: "Equipo docente", accent: RED, rotate: 3, hideOnMobile: true },
+            { label: "Campus", accent: BLUE, rotate: -3, icon: <CampusIllustration accent={BLUE} /> },
+            { label: "Estudiantes", accent: RED, rotate: 2, icon: <StudentsIllustration accent={RED} /> },
+            { label: "Comunidad", accent: BLUE, rotate: -2, icon: <CommunityIllustration accent={BLUE} /> },
+            {
+              label: "Equipo docente",
+              accent: RED,
+              rotate: 3,
+              hideOnMobile: true,
+              icon: <FacultyIllustration accent={RED} />,
+            },
           ].map((p, i) => (
             <Reveal key={p.label} delay={i * 100}>
-              <PostcardPlaceholder label={p.label} accent={p.accent} rotate={p.rotate} hideOnMobile={p.hideOnMobile} />
+              <PostcardPlaceholder
+                label={p.label}
+                accent={p.accent}
+                rotate={p.rotate}
+                hideOnMobile={p.hideOnMobile}
+                icon={p.icon}
+              />
             </Reveal>
           ))}
         </div>
@@ -530,11 +542,13 @@ function PostcardPlaceholder({
   accent,
   rotate,
   hideOnMobile,
+  icon,
 }: {
   label: string;
   accent: string;
   rotate: number;
   hideOnMobile?: boolean;
+  icon: React.ReactNode;
 }) {
   return (
     <div
@@ -543,19 +557,74 @@ function PostcardPlaceholder({
     >
       <div aria-hidden className="retro-airmail h-2" />
       <div
-        className="flex h-36 items-center justify-center max-md:h-28"
+        className="relative flex h-36 items-center justify-center overflow-hidden max-md:h-28"
         style={{ background: `linear-gradient(135deg, ${accent}45, ${accent}18)` }}
       >
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="1.6">
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <circle cx="9" cy="10" r="1.8" />
-          <path d="M21 16l-5.5-5-4 4-2.5-2.5L3 17" />
-        </svg>
+        <div
+          aria-hidden
+          className="retro-sunburst absolute h-24 w-24 opacity-25 max-md:h-20 max-md:w-20"
+          style={{ "--ray-a": accent, "--ray-b": "transparent" } as React.CSSProperties}
+        />
+        <div className="relative">{icon}</div>
       </div>
       <div className="border-t-2 px-3 py-2 text-center text-[11px] font-bold tracking-[0.05em] uppercase" style={{ borderColor: INK, color: "#8a7a63" }}>
         📮 {label}
       </div>
     </div>
+  );
+}
+
+function CampusIllustration({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className="h-14 w-14 md:h-16 md:w-16" aria-hidden>
+      <line x1="32" y1="8" x2="32" y2="2" stroke={INK} strokeWidth="2" />
+      <polygon points="32,2 40,5 32,8" fill={accent} />
+      <polygon points="32,10 54,26 10,26" fill={accent} />
+      <rect x="12" y="26" width="40" height="24" fill={INK} opacity="0.1" />
+      <rect x="15" y="28" width="6" height="22" fill={accent} />
+      <rect x="25" y="28" width="6" height="22" fill={accent} />
+      <rect x="35" y="28" width="6" height="22" fill={accent} />
+      <rect x="45" y="28" width="4" height="22" fill={accent} />
+      <rect x="9" y="50" width="46" height="4" fill={INK} />
+    </svg>
+  );
+}
+
+function StudentsIllustration({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className="h-14 w-14 md:h-16 md:w-16" aria-hidden>
+      <circle cx="40" cy="24" r="7" fill={INK} opacity="0.15" />
+      <path d="M30 50c0-9 7-14 10-14s10 5 10 14" fill={INK} opacity="0.15" />
+      <circle cx="24" cy="20" r="8" fill={accent} />
+      <path d="M12 50c0-10 8-16 12-16s12 6 12 16" fill={accent} />
+      <polygon points="24,10 35,14 24,18 13,14" fill={INK} />
+    </svg>
+  );
+}
+
+function CommunityIllustration({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className="h-14 w-14 md:h-16 md:w-16" aria-hidden>
+      <circle cx="16" cy="26" r="7" fill={CREAM} stroke={INK} strokeWidth="2" />
+      <path d="M4 50c0-8 6-13 12-13s12 5 12 13" fill={CREAM} stroke={INK} strokeWidth="2" />
+      <circle cx="48" cy="26" r="7" fill={CREAM} stroke={INK} strokeWidth="2" />
+      <path d="M36 50c0-8 6-13 12-13s12 5 12 13" fill={CREAM} stroke={INK} strokeWidth="2" />
+      <circle cx="32" cy="22" r="9" fill={accent} stroke={INK} strokeWidth="2" />
+      <path d="M17 50c0-9.5 7-15 15-15s15 5.5 15 15" fill={accent} stroke={INK} strokeWidth="2" />
+    </svg>
+  );
+}
+
+function FacultyIllustration({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className="h-14 w-14 md:h-16 md:w-16" aria-hidden>
+      <circle cx="32" cy="16" r="8" fill={accent} />
+      <path d="M18 48c0-11 8-17 14-17s14 6 14 17" fill={accent} />
+      <rect x="22" y="36" width="20" height="12" fill={CREAM} stroke={INK} strokeWidth="2" />
+      <line x1="25" y1="40" x2="39" y2="40" stroke={INK} strokeWidth="1.4" />
+      <line x1="25" y1="44" x2="35" y2="44" stroke={INK} strokeWidth="1.4" />
+      <rect x="10" y="50" width="44" height="3" fill={INK} />
+    </svg>
   );
 }
 
