@@ -302,20 +302,16 @@ body {
   animation: glow-hue 4s linear infinite;
 }
 
-@keyframes hex-glow-pulse {
-  0%,
-  100% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.85;
-    transform: scale(1.18);
-  }
+.group:hover .hex-glow-spin,
+.group:active .hex-glow-spin {
+  animation-play-state: paused;
 }
 
-.animate-hex-glow-pulse {
-  animation: hex-glow-pulse 3.2s ease-in-out infinite;
+.group:hover .hex-glow-blob,
+.group:active .hex-glow-blob {
+  opacity: 0.95;
+  filter: blur(6px);
+  transform: translate(-50%, -50%) scale(1.9);
 }
 
 @keyframes badge-ring-pulse {
@@ -413,8 +409,7 @@ body {
   .animate-building-float,
   .animate-badge-spin,
   .animate-glow-orbit,
-  .animate-glow-hue,
-  .animate-hex-glow-pulse {
+  .animate-glow-hue {
     animation: none;
   }
 

@@ -230,17 +230,17 @@ export default async function Estilo2Page() {
               <div className="group relative z-0 mx-auto mb-5 h-27 w-24">
                 <div
                   aria-hidden
-                  className="animate-spin-slow pointer-events-none absolute top-1/2 left-1/2 -z-10 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-45 blur-xl transition-opacity duration-300 group-hover:opacity-80"
-                  style={{
-                    background: `conic-gradient(from 0deg, ${card.ring}, ${TEAL}, ${CREAM}, ${TEAL}, ${card.ring})`,
-                    animationDuration: "7s",
-                  }}
-                />
-                <div
-                  aria-hidden
-                  className="animate-hex-glow-pulse pointer-events-none absolute top-1/2 left-1/2 -z-10 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full blur-lg"
-                  style={{ background: card.ring }}
-                />
+                  className="pointer-events-none absolute top-1/2 left-1/2 -z-10 h-36 w-36 -translate-x-1/2 -translate-y-1/2"
+                >
+                  <div className="hex-glow-spin animate-glow-orbit absolute inset-0" style={{ animationDuration: "6s" }}>
+                    <div
+                      className="hex-glow-blob absolute top-0 left-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70 blur-md transition-[opacity,filter,transform] duration-300"
+                      style={{
+                        background: `conic-gradient(from 0deg, ${card.ring}, ${TEAL}, ${CREAM}, ${TEAL}, ${card.ring})`,
+                      }}
+                    />
+                  </div>
+                </div>
                 <div
                   className="hex-badge relative flex h-full w-full items-center justify-center border-3"
                   style={{
