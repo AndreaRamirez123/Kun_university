@@ -556,3 +556,89 @@ body {
     100% 100%
   );
 }
+
+.step-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  min-height: 280px;
+  text-align: center;
+  background: linear-gradient(165deg, var(--step-accent, #03318c), #171717 150%);
+}
+
+@media (min-width: 768px) {
+  .step-card {
+    height: 320px;
+  }
+}
+
+.step-card::before,
+.step-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.step-card::before {
+  background: radial-gradient(130% 90% at 50% -10%, var(--step-accent, #03318c) 0%, transparent 65%);
+  transition: transform 1.1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.step-card::after {
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 20%, rgba(0, 0, 0, 0.78) 100%);
+}
+
+.step-card-pin {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.75rem 1.25rem 0;
+}
+
+.step-card-reveal {
+  position: relative;
+  z-index: 1;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0 1.5rem;
+  transition:
+    max-height 0.6s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.45s ease,
+    padding 0.5s ease;
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .step-card:hover::before,
+  .step-card:focus-within::before {
+    transform: scale(1.08);
+  }
+
+  .step-card:hover .step-card-reveal,
+  .step-card:focus-within .step-card-reveal {
+    max-height: 220px;
+    opacity: 1;
+    padding: 0.35rem 1.5rem 1.75rem;
+  }
+}
+
+@media not all and (hover: hover), (max-width: 767px) {
+  .step-card-reveal {
+    max-height: none;
+    opacity: 1;
+    padding: 0.35rem 1.5rem 1.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-card::before,
+  .step-card-reveal {
+    transition: none;
+  }
+}

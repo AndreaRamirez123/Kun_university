@@ -365,28 +365,40 @@ export default async function Estilo2Page() {
             { n: "1", title: "LA IA RASTREA LA FRONTERA", body: "Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos." },
             { n: "2", title: "EL CRITERIO HUMANO DECIDE", body: "Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden." },
             { n: "3", title: "APRENDES LO QUE EL MERCADO NECESITA HOY", body: "No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy." },
-          ].map((step, i) => (
-            <Reveal key={step.n} delay={i * 120} className="text-center">
-              <div
-                className="mx-auto mb-5 flex h-24 w-22 items-center justify-center border-4 text-3xl text-white"
-                style={{
-                  fontFamily: DISPLAY,
-                  borderColor: INK,
-                  background: i % 2 === 0 ? BLUE : RED,
-                  clipPath: "polygon(50% 0%, 100% 22%, 100% 100%, 0% 100%, 0% 22%)",
-                  boxShadow: softShadow(INK),
-                }}
-              >
-                {step.n}
-              </div>
-              <div className="mb-2 text-sm font-bold" style={{ color: BLUE }}>
-                {step.title}
-              </div>
-              <div className="mx-auto max-w-70 text-[13px] leading-[1.65]" style={{ color: "#5A4E40" }}>
-                {step.body}
-              </div>
-            </Reveal>
-          ))}
+          ].map((step, i) => {
+            const accent = i % 2 === 0 ? BLUE : RED;
+            return (
+              <Reveal key={step.n} delay={i * 120}>
+                <div
+                  tabIndex={0}
+                  className="step-card rounded-xl border-4 outline-none"
+                  style={{
+                    borderColor: INK,
+                    boxShadow: softShadow(INK),
+                    ["--step-accent" as string]: accent,
+                  }}
+                >
+                  <div className="step-card-pin">
+                    <div
+                      className="mx-auto flex h-20 w-18 items-center justify-center border-4 text-2xl text-white"
+                      style={{
+                        fontFamily: DISPLAY,
+                        borderColor: INK,
+                        background: accent,
+                        clipPath: "polygon(50% 0%, 100% 22%, 100% 100%, 0% 100%, 0% 22%)",
+                      }}
+                    >
+                      {step.n}
+                    </div>
+                    <div className="text-sm font-bold text-white">{step.title}</div>
+                  </div>
+                  <div className="step-card-reveal">
+                    <p className="text-[13px] leading-[1.6] text-white/90">{step.body}</p>
+                  </div>
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
         <Reveal delay={360} className="mt-12 text-center">
           <a
