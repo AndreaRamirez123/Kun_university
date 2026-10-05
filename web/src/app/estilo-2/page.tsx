@@ -407,7 +407,7 @@ export default async function Estilo2Page() {
                     >
                       {step.n}
                     </div>
-                    <div className="text-sm font-bold text-white">{step.title}</div>
+                    <div className="text-sm font-bold text-balance text-white">{step.title}</div>
                   </div>
                   <div className="step-card-reveal">
                     <p className="text-[13px] leading-[1.6] text-white/90">{step.body}</p>
