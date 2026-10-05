@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getCertifications, getSchools, getStats } from "@/lib/api";
-import { AccordionShowcase, type AccordionItem } from "@/components/accordion-showcase";
+import { CertificationsSwiper } from "@/components/certifications-swiper";
 import { FanStack, type FanItem } from "@/components/fan-stack";
 import { MobileTabBar } from "@/components/mobile-tab-bar";
 import { ModelSwitcher } from "@/components/model-switcher";
@@ -439,24 +439,11 @@ export default async function Estilo2Page() {
             primera semana.
           </p>
         </Reveal>
-        <AccordionShowcase
-          items={certifications.map(
-            (cert, i): AccordionItem => ({
-              id: cert.slug,
-              eyebrow: `${cert.hours}h · 100% online`,
-              title: cert.name,
-              description: cert.description,
-              accent: i % 2 === 0 ? BLUE : RED,
-            }),
-          )}
-          autoRotateMs={3800}
-          theme={{
-            fontDisplay: DISPLAY,
-            ink: INK,
-            mutedText: "#5A4E40",
-            border: INK,
-            shape: "rounded-xl",
-          }}
+        <CertificationsSwiper
+          certifications={certifications}
+          accents={[BLUE, RED, TEAL]}
+          fontDisplay={DISPLAY}
+          ink={INK}
         />
         <Reveal className="mt-10 text-center">
           <a
