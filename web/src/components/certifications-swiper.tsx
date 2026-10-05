@@ -1,7 +1,7 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCards, Mousewheel } from "swiper/modules";
+import { Autoplay, EffectCards, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-cards";
 import type { Certification } from "@/lib/types";
@@ -20,19 +20,21 @@ export function CertificationsSwiper({
   return (
     <div className="mx-auto w-full max-w-85">
       <Swiper
-        modules={[EffectCards, Mousewheel]}
+        modules={[EffectCards, Mousewheel, Autoplay]}
         effect="cards"
         cardsEffect={{ rotate: true, perSlideOffset: 10, perSlideRotate: 3 }}
         grabCursor
         initialSlide={0}
         speed={500}
+        loop
         mousewheel={{ invert: false }}
+        autoplay={{ delay: 3200, disableOnInteraction: false, pauseOnMouseEnter: true }}
         className="certifications-swiper"
       >
-        {certifications.map((cert, i) => {
+        {[...certifications, ...certifications].map((cert, i) => {
           const accent = accents[i % accents.length];
           return (
-            <SwiperSlide key={cert.slug}>
+            <SwiperSlide key={`${cert.slug}-${i}`}>
               <div
                 className="flex h-[420px] flex-col overflow-hidden rounded-2xl border-4"
                 style={{ borderColor: ink, background: accent }}
