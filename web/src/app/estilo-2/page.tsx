@@ -227,21 +227,36 @@ export default async function Estilo2Page() {
               className="text-center transition hover:-translate-y-1.5"
               style={{ transform: `rotate(${card.rotate}deg)` }}
             >
-              <div
-                className="relative mx-auto mb-5 flex h-27 w-24 items-center justify-center border-3"
-                style={{
-                  borderColor: INK,
-                  background: card.ring,
-                  boxShadow: softShadow(card.ring),
-                  clipPath: "polygon(50% 0%, 100% 18%, 100% 65%, 50% 100%, 0% 65%, 0% 18%)",
-                }}
-              >
+              <div className="group relative z-0 mx-auto mb-5 h-27 w-24">
                 <div
                   aria-hidden
-                  className="absolute top-2.5 h-1 w-9 rounded-full"
-                  style={{ background: "rgba(255,255,255,0.5)" }}
+                  className="animate-spin-slow pointer-events-none absolute top-1/2 left-1/2 -z-10 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-45 blur-xl transition-opacity duration-300 group-hover:opacity-80"
+                  style={{
+                    background: `conic-gradient(from 0deg, ${card.ring}, ${TEAL}, ${CREAM}, ${TEAL}, ${card.ring})`,
+                    animationDuration: "7s",
+                  }}
                 />
-                {card.icon}
+                <div
+                  aria-hidden
+                  className="animate-hex-glow-pulse pointer-events-none absolute top-1/2 left-1/2 -z-10 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full blur-lg"
+                  style={{ background: card.ring }}
+                />
+                <div
+                  className="hex-badge relative flex h-full w-full items-center justify-center border-3"
+                  style={{
+                    borderColor: INK,
+                    background: card.ring,
+                    boxShadow: softShadow(card.ring),
+                    clipPath: "polygon(50% 0%, 100% 18%, 100% 65%, 50% 100%, 0% 65%, 0% 18%)",
+                  }}
+                >
+                  <div
+                    aria-hidden
+                    className="absolute top-2.5 h-1 w-9 rounded-full"
+                    style={{ background: "rgba(255,255,255,0.5)" }}
+                  />
+                  {card.icon}
+                </div>
               </div>
               <div className="mb-2.5 text-base font-bold" style={{ color: BLUE }}>
                 {card.title}
