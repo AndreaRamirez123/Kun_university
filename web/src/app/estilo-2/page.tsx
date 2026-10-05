@@ -284,9 +284,6 @@ export default async function Estilo2Page() {
           <h3 className="text-xl uppercase" style={{ fontFamily: DISPLAY, color: BLUE }}>
             La vida en KUN
           </h3>
-          <span className="text-sm font-medium" style={{ color: "#8a7a63" }}>
-            (ilustraciones mientras sumamos fotos reales del campus)
-          </span>
         </Reveal>
         <div className="flex flex-wrap items-start gap-7 max-md:justify-center">
           {[
