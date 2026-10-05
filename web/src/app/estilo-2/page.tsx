@@ -447,8 +447,8 @@ export default async function Estilo2Page() {
               style={{
                 top: sq.top,
                 left: "-10%",
-                width: sq.size,
-                height: sq.size,
+                width: `clamp(8px, ${((sq.size / 1200) * 100).toFixed(2)}vw, ${sq.size}px)`,
+                height: `clamp(8px, ${((sq.size / 1200) * 100).toFixed(2)}vw, ${sq.size}px)`,
                 background: `linear-gradient(135deg, ${sq.from}55, ${sq.to}55)`,
                 animationDelay: `${sq.delay}s`,
                 animationDuration: `${sq.duration}s`,
