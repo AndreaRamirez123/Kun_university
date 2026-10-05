@@ -429,7 +429,33 @@ export default async function Estilo2Page() {
       </div>
 
       {/* EDUCACIÓN CONTINUA */}
-      <div id="continua" className="mx-auto max-w-300 px-14 pb-20 max-md:px-6">
+      <div id="continua" className="relative z-0 mx-auto max-w-300 overflow-hidden px-14 pb-20 max-md:px-6">
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          {[
+            { top: "10%", size: 70, delay: 0, duration: 16, from: BLUE, to: TEAL },
+            { top: "68%", size: 24, delay: 2, duration: 10, from: RED, to: BLUE },
+            { top: "35%", size: 90, delay: 5, duration: 20, from: TEAL, to: RED },
+            { top: "80%", size: 40, delay: 1, duration: 13, from: BLUE, to: RED },
+            { top: "22%", size: 18, delay: 7, duration: 11, from: RED, to: TEAL },
+            { top: "55%", size: 55, delay: 3, duration: 18, from: TEAL, to: BLUE },
+            { top: "92%", size: 30, delay: 9, duration: 14, from: BLUE, to: TEAL },
+            { top: "4%", size: 45, delay: 4, duration: 22, from: RED, to: BLUE },
+          ].map((sq, i) => (
+            <span
+              key={i}
+              className="animate-float-horizontal absolute rounded-lg opacity-0"
+              style={{
+                top: sq.top,
+                left: "-10%",
+                width: sq.size,
+                height: sq.size,
+                background: `linear-gradient(135deg, ${sq.from}55, ${sq.to}55)`,
+                animationDelay: `${sq.delay}s`,
+                animationDuration: `${sq.duration}s`,
+              }}
+            />
+          ))}
+        </div>
         <Reveal className="mb-14 text-center">
           <h2 className="mb-2 text-3xl uppercase" style={{ fontFamily: DISPLAY, color: BLUE }}>
             No tienes que esperar a graduarte
