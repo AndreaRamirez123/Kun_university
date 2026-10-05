@@ -366,19 +366,19 @@ export default async function Estilo2Page() {
               n: "1",
               title: "LA IA RASTREA LA FRONTERA",
               body: "Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.",
-              watermark: <RadarWatermark />,
+              watermark: "/step-icons/step-radar.png",
             },
             {
               n: "2",
               title: "EL CRITERIO HUMANO DECIDE",
               body: "Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.",
-              watermark: <DecisionWatermark />,
+              watermark: "/step-icons/step-decision.png",
             },
             {
               n: "3",
               title: "APRENDES LO QUE EL MERCADO NECESITA HOY",
               body: "No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy.",
-              watermark: <GrowthWatermark />,
+              watermark: "/step-icons/step-growth.png",
             },
           ].map((step, i) => {
             const accent = i % 2 === 0 ? BLUE : RED;
@@ -394,7 +394,7 @@ export default async function Estilo2Page() {
                   }}
                 >
                   <div aria-hidden className="step-card-watermark">
-                    {step.watermark}
+                    <Image src={step.watermark} alt="" width={220} height={220} className="h-44 w-44 object-contain" />
                   </div>
                   <div className="step-card-pin">
                     <div
@@ -579,44 +579,6 @@ function StatBlock({
       </div>
       <div className="mt-1.5 text-xs font-bold uppercase">{label}</div>
     </div>
-  );
-}
-
-function RadarWatermark() {
-  return (
-    <svg viewBox="0 0 100 100" className="h-44 w-44" aria-hidden>
-      <circle cx="50" cy="50" r="46" fill="none" stroke="white" strokeWidth="2" />
-      <circle cx="50" cy="50" r="31" fill="none" stroke="white" strokeWidth="2" />
-      <circle cx="50" cy="50" r="16" fill="none" stroke="white" strokeWidth="2" />
-      <line x1="50" y1="50" x2="88" y2="16" stroke="white" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="50" cy="50" r="4" fill="white" />
-    </svg>
-  );
-}
-
-function DecisionWatermark() {
-  return (
-    <svg viewBox="0 0 100 100" className="h-44 w-44" aria-hidden>
-      <circle cx="50" cy="32" r="15" fill="none" stroke="white" strokeWidth="3" />
-      <path d="M22 88c0-21 12.5-32 28-32s28 11 28 32" fill="none" stroke="white" strokeWidth="3" />
-      <path d="M32 64l12 12 24-24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function GrowthWatermark() {
-  return (
-    <svg viewBox="0 0 100 100" className="h-44 w-44" aria-hidden>
-      <polyline
-        points="10,82 32,56 50,69 88,22"
-        fill="none"
-        stroke="white"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <polyline points="66,22 88,22 88,44" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }
 
