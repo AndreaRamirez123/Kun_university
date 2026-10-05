@@ -398,10 +398,9 @@ export default async function Estilo2Page() {
                   </div>
                   <div className="step-card-pin">
                     <div
-                      className="mx-auto flex h-20 w-18 items-center justify-center border-4 text-2xl text-white"
+                      className="mx-auto flex h-20 w-18 items-center justify-center text-2xl text-white"
                       style={{
                         fontFamily: DISPLAY,
-                        borderColor: INK,
                         background: accent,
                         clipPath: "polygon(50% 0%, 100% 22%, 100% 100%, 0% 100%, 0% 22%)",
                       }}
