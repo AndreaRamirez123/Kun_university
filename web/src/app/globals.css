@@ -692,3 +692,24 @@ body {
     opacity: 0;
   }
 }
+
+@keyframes jelly-bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(3px);
+  }
+}
+
+.btn-jelly:hover,
+.btn-jelly:active {
+  animation: jelly-bounce 0.4s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-jelly:hover,
+  .btn-jelly:active {
+    animation: none;
+  }
+}
