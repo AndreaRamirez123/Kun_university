@@ -18,7 +18,7 @@ export function CertificationsSwiper({
   ink: string;
 }) {
   return (
-    <div className="mx-auto w-full max-w-85 overflow-hidden max-md:max-w-65">
+    <div className="mx-auto w-full max-w-85 max-md:max-w-52">
       <Swiper
         modules={[EffectCards, Mousewheel, Autoplay]}
         effect="cards"
