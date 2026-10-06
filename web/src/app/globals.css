@@ -721,6 +721,7 @@ body {
 .stat3d-card {
   position: relative;
   height: 100%;
+  overflow: hidden;
   transform-style: preserve-3d;
   box-shadow: 0 10px 20px -8px rgba(16, 16, 26, 0.3);
   transition:
@@ -730,6 +731,7 @@ body {
 
 .stat3d-wrap:hover .stat3d-card,
 .stat3d-wrap:active .stat3d-card {
+  overflow: visible;
   transform: rotate3d(1, 1, 0, 30deg);
   box-shadow: 40px 50px 25px -40px rgba(16, 16, 26, 0), 0 35px 35px -5px rgba(16, 16, 26, 0.45);
 }
@@ -762,6 +764,13 @@ body {
   aspect-ratio: 1;
   transform-style: preserve-3d;
   pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .stat3d-logo {
+    width: 55%;
+    max-width: 4rem;
+  }
 }
 
 .stat3d-circle {
