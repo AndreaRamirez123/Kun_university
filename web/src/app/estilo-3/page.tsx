@@ -548,13 +548,33 @@ function Stat({
 }) {
   return (
     <div
-      className={`px-6.5 py-8.5 max-md:px-4 max-md:py-5 ${border ? "border-r-4 border-[#10101A] max-md:border-b-4" : ""}`}
+      tabIndex={0}
+      className={`stat-unfold px-6.5 py-8.5 outline-none max-md:px-4 max-md:py-5 ${border ? "border-r-4 border-[#10101A] max-md:border-b-4" : ""}`}
       style={{ background: bg, color: text }}
     >
-      <div className="text-5xl font-extrabold max-md:text-3xl" style={{ fontFamily: DISPLAY }}>
-        {value}
+      <div
+        aria-hidden
+        className="stat-unfold-box stat-unfold-box1"
+        style={{ background: `radial-gradient(circle at 30% 107%, ${CREAM} 0%, ${TEAL} 90%)` }}
+      />
+      <div
+        aria-hidden
+        className="stat-unfold-box stat-unfold-box2"
+        style={{ background: `radial-gradient(circle at 30% 107%, ${TEAL} 0%, ${NAVY} 90%)` }}
+      />
+      <div
+        aria-hidden
+        className="stat-unfold-box stat-unfold-box3"
+        style={{ background: `radial-gradient(circle at 30% 107%, ${RED} 0%, ${NAVY} 90%)` }}
+      />
+      <div aria-hidden className="stat-unfold-box stat-unfold-box4" style={{ background: CREAM }} />
+
+      <div className="stat-unfold-logo">
+        <div className="text-5xl font-extrabold max-md:text-3xl" style={{ fontFamily: DISPLAY }}>
+          {value}
+        </div>
+        <div className="mt-1.5 text-xs font-extrabold uppercase max-md:mt-1">{label}</div>
       </div>
-      <div className="mt-1.5 text-xs font-extrabold uppercase max-md:mt-1">{label}</div>
     </div>
   );
 }
