@@ -220,10 +220,10 @@ export default async function Estilo3Page() {
       <div aria-hidden className="cm-torn-bottom relative z-10 -mb-1 h-7 bg-[#10101A]" />
 
       {/* STATS BLOCKS */}
-      <div className="grid grid-cols-4 border-b-4 border-[#10101A] max-md:grid-cols-2">
-        <Stat value={stats.schools} label="Escuelas" bg={RED} text={CREAM} border />
-        <Stat value={stats.programs} label="Programas" bg={CREAM} border />
-        <Stat value={stats.certifications} label="Certif. IA" bg={NAVY} text={CREAM} border />
+      <div className="grid grid-cols-4 gap-4 px-14 py-10 max-md:grid-cols-2 max-md:gap-3 max-md:px-6">
+        <Stat value={stats.schools} label="Escuelas" bg={RED} text={CREAM} />
+        <Stat value={stats.programs} label="Programas" bg={CREAM} />
+        <Stat value={stats.certifications} label="Certif. IA" bg={NAVY} text={CREAM} />
         <Stat value={`${stats.online}%`} label="Online" bg={CREAM} />
       </div>
 
@@ -538,18 +538,16 @@ function Stat({
   label,
   bg,
   text,
-  border,
 }: {
   value: string | number;
   label: string;
   bg: string;
   text?: string;
-  border?: boolean;
 }) {
   return (
     <div
       tabIndex={0}
-      className={`stat-unfold px-6.5 py-8.5 outline-none max-md:px-4 max-md:py-5 ${border ? "border-r-4 border-[#10101A] max-md:border-b-4" : ""}`}
+      className="stat-unfold rounded-2xl border-4 border-[#10101A] px-6.5 py-8.5 outline-none max-md:px-4 max-md:py-5"
       style={{ background: bg, color: text }}
     >
       <div
