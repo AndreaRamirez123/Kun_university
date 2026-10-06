@@ -221,10 +221,34 @@ export default async function Estilo3Page() {
 
       {/* STATS BLOCKS */}
       <div className="grid grid-cols-4 gap-4 px-14 py-10 max-md:grid-cols-2 max-md:gap-3 max-md:px-6">
-        <Stat value={stats.schools} label="Escuelas" bg={RED} text={CREAM} />
-        <Stat value={stats.programs} label="Programas" bg={CREAM} />
-        <Stat value={stats.certifications} label="Certif. IA" bg={NAVY} text={CREAM} />
-        <Stat value={`${stats.online}%`} label="Online" bg={CREAM} />
+        <Stat
+          value={stats.schools}
+          label="Escuelas"
+          gradient={`linear-gradient(135deg, ${RED} 0%, ${INK} 100%)`}
+          text={CREAM}
+          icon={<CapIcon />}
+        />
+        <Stat
+          value={stats.programs}
+          label="Programas"
+          gradient={`linear-gradient(135deg, ${CREAM} 0%, #EADFC4 100%)`}
+          text={INK}
+          icon={<BookIcon />}
+        />
+        <Stat
+          value={stats.certifications}
+          label="Certif. IA"
+          gradient={`linear-gradient(135deg, ${NAVY} 0%, ${INK} 100%)`}
+          text={CREAM}
+          icon={<AwardIcon />}
+        />
+        <Stat
+          value={`${stats.online}%`}
+          label="Online"
+          gradient={`linear-gradient(135deg, ${CREAM} 0%, #EADFC4 100%)`}
+          text={INK}
+          icon={<GlobeIcon />}
+        />
       </div>
 
       {/* IDENTIDAD */}
@@ -536,44 +560,74 @@ export default async function Estilo3Page() {
 function Stat({
   value,
   label,
-  bg,
+  gradient,
   text,
+  icon,
 }: {
   value: string | number;
   label: string;
-  bg: string;
-  text?: string;
+  gradient: string;
+  text: string;
+  icon: ReactNode;
 }) {
   return (
-    <div
-      tabIndex={0}
-      className="stat-unfold rounded-2xl border-4 border-[#10101A] px-6.5 py-8.5 outline-none max-md:px-4 max-md:py-5"
-      style={{ background: bg, color: text }}
-    >
+    <div tabIndex={0} className="stat3d-wrap outline-none">
       <div
-        aria-hidden
-        className="stat-unfold-box stat-unfold-box1"
-        style={{ background: `radial-gradient(circle at 30% 107%, ${CREAM} 0%, ${TEAL} 90%)` }}
-      />
-      <div
-        aria-hidden
-        className="stat-unfold-box stat-unfold-box2"
-        style={{ background: `radial-gradient(circle at 30% 107%, ${TEAL} 0%, ${NAVY} 90%)` }}
-      />
-      <div
-        aria-hidden
-        className="stat-unfold-box stat-unfold-box3"
-        style={{ background: `radial-gradient(circle at 30% 107%, ${RED} 0%, ${NAVY} 90%)` }}
-      />
-      <div aria-hidden className="stat-unfold-box stat-unfold-box4" style={{ background: CREAM }} />
-
-      <div className="stat-unfold-logo">
-        <div className="text-5xl font-extrabold max-md:text-3xl" style={{ fontFamily: DISPLAY }}>
-          {value}
+        className="stat3d-card rounded-2xl border-4 border-[#10101A]"
+        style={{ background: gradient, color: text }}
+      >
+        <div aria-hidden className="stat3d-logo">
+          <span className="stat3d-circle stat3d-circle1" />
+          <span className="stat3d-circle stat3d-circle2" />
+          <span className="stat3d-circle stat3d-circle3" />
+          <span className="stat3d-circle stat3d-circle4" style={{ color: text }}>
+            {icon}
+          </span>
         </div>
-        <div className="mt-1.5 text-xs font-extrabold uppercase max-md:mt-1">{label}</div>
+        <div aria-hidden className="stat3d-glass" />
+        <div className="stat3d-content px-6.5 py-8.5 max-md:px-4 max-md:py-5">
+          <div className="text-5xl font-extrabold max-md:text-3xl" style={{ fontFamily: DISPLAY }}>
+            {value}
+          </div>
+          <div className="mt-1.5 text-xs font-extrabold uppercase max-md:mt-1">{label}</div>
+        </div>
       </div>
     </div>
+  );
+}
+
+function CapIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 9l10-5 10 5-10 5-10-5z" />
+      <path d="M6 11.5V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5" />
+    </svg>
+  );
+}
+
+function BookIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5V6a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0 0 4h13" />
+    </svg>
+  );
+}
+
+function AwardIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="5" />
+      <path d="M8.5 12.5 7 21l5-2.5L17 21l-1.5-8.5" />
+    </svg>
+  );
+}
+
+function GlobeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z" />
+    </svg>
   );
 }
 

@@ -714,77 +714,123 @@ body {
   }
 }
 
-.stat-unfold {
+.stat3d-wrap {
+  perspective: 1000px;
+}
+
+.stat3d-card {
   position: relative;
+  height: 100%;
   overflow: hidden;
-  transition: transform 0.6s ease-in-out;
-}
-
-.stat-unfold:hover,
-.stat-unfold:active {
-  transform: scale(1.04);
-  z-index: 2;
-}
-
-.stat-unfold-logo {
-  position: relative;
-  z-index: 1;
+  transform-style: preserve-3d;
   transition:
-    transform 0.6s ease-in-out,
-    letter-spacing 0.6s ease-in-out;
+    transform 0.5s ease-in-out,
+    box-shadow 0.5s ease-in-out;
 }
 
-.stat-unfold:hover .stat-unfold-logo,
-.stat-unfold:active .stat-unfold-logo {
-  transform: translate(6px, -14px) scale(0.82);
+.stat3d-wrap:hover .stat3d-card,
+.stat3d-wrap:active .stat3d-card {
+  transform: rotate3d(1, 1, 0, 14deg);
+  box-shadow: 0 30px 40px -15px rgba(16, 16, 26, 0.4);
 }
 
-.stat-unfold-box {
+.stat3d-glass {
   position: absolute;
-  bottom: -100%;
-  left: -100%;
-  border-radius: 10% 13% 42% 0% / 10% 12% 75% 0%;
-  border-top: 2px solid rgba(255, 255, 255, 0.85);
-  border-right: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: -7px 7px 29px rgba(16, 16, 26, 0.3);
-  transform-origin: bottom left;
-  transition: all 1s ease-in-out;
+  inset: 6px;
+  border-radius: inherit;
+  border-top-right-radius: 100%;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.4) 100%);
+  border-left: 1px solid rgba(255, 255, 255, 0.55);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  transform: translate3d(0, 0, 18px);
+  transform-style: preserve-3d;
   pointer-events: none;
 }
 
-.stat-unfold:hover .stat-unfold-box,
-.stat-unfold:active .stat-unfold-box {
-  bottom: -1px;
-  left: -1px;
+.stat3d-content {
+  position: relative;
+  transform: translate3d(0, 0, 20px);
+  transform-style: preserve-3d;
 }
 
-.stat-unfold-box1 {
-  width: 68%;
-  height: 68%;
+.stat3d-logo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 70%;
+  max-width: 7.5rem;
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+  pointer-events: none;
 }
 
-.stat-unfold-box2 {
-  width: 48%;
-  height: 48%;
+.stat3d-circle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: -8px 8px 16px rgba(16, 16, 26, 0.18);
+  transition: transform 0.5s ease-in-out;
+}
+
+.stat3d-circle1 {
+  width: 62%;
+  top: 4%;
+  right: 4%;
+  transform: translate3d(0, 0, 14px);
+}
+
+.stat3d-circle2 {
+  width: 46%;
+  top: 7%;
+  right: 7%;
+  transform: translate3d(0, 0, 26px);
   transition-delay: 0.1s;
 }
 
-.stat-unfold-box3 {
-  width: 28%;
-  height: 28%;
+.stat3d-circle3 {
+  width: 30%;
+  top: 11%;
+  right: 11%;
+  transform: translate3d(0, 0, 38px);
   transition-delay: 0.2s;
 }
 
-.stat-unfold-box4 {
-  width: 12%;
-  height: 12%;
+.stat3d-circle4 {
+  width: 16%;
+  top: 15%;
+  right: 15%;
+  display: grid;
+  place-content: center;
+  transform: translate3d(0, 0, 50px);
   transition-delay: 0.3s;
 }
 
+.stat3d-circle4 svg {
+  width: 55%;
+  height: 55%;
+}
+
+.stat3d-wrap:hover .stat3d-circle2,
+.stat3d-wrap:active .stat3d-circle2 {
+  transform: translate3d(0, 0, 38px);
+}
+
+.stat3d-wrap:hover .stat3d-circle3,
+.stat3d-wrap:active .stat3d-circle3 {
+  transform: translate3d(0, 0, 52px);
+}
+
+.stat3d-wrap:hover .stat3d-circle4,
+.stat3d-wrap:active .stat3d-circle4 {
+  transform: translate3d(0, 0, 66px);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .stat-unfold,
-  .stat-unfold-logo,
-  .stat-unfold-box {
+  .stat3d-card,
+  .stat3d-circle {
     transition: none;
   }
 }
