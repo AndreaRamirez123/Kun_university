@@ -715,7 +715,7 @@ body {
 }
 
 .stat3d-wrap {
-  perspective: 1000px;
+  perspective: 700px;
 }
 
 .stat3d-card {
@@ -723,6 +723,7 @@ body {
   height: 100%;
   overflow: hidden;
   transform-style: preserve-3d;
+  box-shadow: 0 10px 20px -8px rgba(16, 16, 26, 0.3);
   transition:
     transform 0.5s ease-in-out,
     box-shadow 0.5s ease-in-out;
@@ -730,8 +731,8 @@ body {
 
 .stat3d-wrap:hover .stat3d-card,
 .stat3d-wrap:active .stat3d-card {
-  transform: rotate3d(1, 1, 0, 14deg);
-  box-shadow: 0 30px 40px -15px rgba(16, 16, 26, 0.4);
+  transform: rotate3d(1, 1, 0, 30deg);
+  box-shadow: 40px 50px 25px -40px rgba(16, 16, 26, 0), 0 35px 35px -5px rgba(16, 16, 26, 0.45);
 }
 
 .stat3d-glass {
@@ -739,17 +740,17 @@ body {
   inset: 6px;
   border-radius: inherit;
   border-top-right-radius: 100%;
-  background: linear-gradient(0deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.4) 100%);
-  border-left: 1px solid rgba(255, 255, 255, 0.55);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
-  transform: translate3d(0, 0, 18px);
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.45) 100%);
+  border-left: 1px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  transform: translate3d(0, 0, 26px);
   transform-style: preserve-3d;
   pointer-events: none;
 }
 
 .stat3d-content {
   position: relative;
-  transform: translate3d(0, 0, 20px);
+  transform: translate3d(0, 0, 30px);
   transform-style: preserve-3d;
 }
 
@@ -770,8 +771,8 @@ body {
   right: 0;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.28);
-  box-shadow: -8px 8px 16px rgba(16, 16, 26, 0.18);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: -8px 8px 16px rgba(16, 16, 26, 0.2);
   transition: transform 0.5s ease-in-out;
 }
 
@@ -779,14 +780,14 @@ body {
   width: 62%;
   top: 4%;
   right: 4%;
-  transform: translate3d(0, 0, 14px);
+  transform: translate3d(0, 0, 20px);
 }
 
 .stat3d-circle2 {
   width: 46%;
   top: 7%;
   right: 7%;
-  transform: translate3d(0, 0, 26px);
+  transform: translate3d(0, 0, 40px);
   transition-delay: 0.1s;
 }
 
@@ -794,7 +795,7 @@ body {
   width: 30%;
   top: 11%;
   right: 11%;
-  transform: translate3d(0, 0, 38px);
+  transform: translate3d(0, 0, 60px);
   transition-delay: 0.2s;
 }
 
@@ -804,7 +805,8 @@ body {
   right: 15%;
   display: grid;
   place-content: center;
-  transform: translate3d(0, 0, 50px);
+  background: rgba(255, 255, 255, 0.55);
+  transform: translate3d(0, 0, 80px);
   transition-delay: 0.3s;
 }
 
@@ -815,17 +817,17 @@ body {
 
 .stat3d-wrap:hover .stat3d-circle2,
 .stat3d-wrap:active .stat3d-circle2 {
-  transform: translate3d(0, 0, 38px);
+  transform: translate3d(0, 0, 60px);
 }
 
 .stat3d-wrap:hover .stat3d-circle3,
 .stat3d-wrap:active .stat3d-circle3 {
-  transform: translate3d(0, 0, 52px);
+  transform: translate3d(0, 0, 80px);
 }
 
 .stat3d-wrap:hover .stat3d-circle4,
 .stat3d-wrap:active .stat3d-circle4 {
-  transform: translate3d(0, 0, 66px);
+  transform: translate3d(0, 0, 100px);
 }
 
 @media (prefers-reduced-motion: reduce) {
