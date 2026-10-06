@@ -721,7 +721,6 @@ body {
 .stat3d-card {
   position: relative;
   height: 100%;
-  overflow: hidden;
   transform-style: preserve-3d;
   box-shadow: 0 10px 20px -8px rgba(16, 16, 26, 0.3);
   transition:
