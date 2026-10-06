@@ -548,13 +548,13 @@ function Stat({
 }) {
   return (
     <div
-      className={`px-6.5 py-8.5 ${border ? "border-r-4 border-[#10101A] max-md:border-b-4" : ""}`}
+      className={`px-6.5 py-8.5 max-md:px-4 max-md:py-5 ${border ? "border-r-4 border-[#10101A] max-md:border-b-4" : ""}`}
       style={{ background: bg, color: text }}
     >
-      <div className="text-5xl font-extrabold" style={{ fontFamily: DISPLAY }}>
+      <div className="text-5xl font-extrabold max-md:text-3xl" style={{ fontFamily: DISPLAY }}>
         {value}
       </div>
-      <div className="mt-1.5 text-xs font-extrabold uppercase">{label}</div>
+      <div className="mt-1.5 text-xs font-extrabold uppercase max-md:mt-1">{label}</div>
     </div>
   );
 }
