@@ -845,6 +845,10 @@ body {
   }
 }
 
+.glow-card {
+  isolation: isolate;
+}
+
 .glow-card::before {
   content: "";
   position: absolute;
