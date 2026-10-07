@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Certification } from "@/lib/types";
 
 const RED = "#BF0404";
@@ -12,7 +12,7 @@ const DISPLAY = "var(--font-archivo-black), sans-serif";
 export function CertificationFlipGrid({ certifications }: { certifications: Certification[] }) {
   return (
     <div
-      className="flex flex-wrap justify-center gap-8 [--card-h:195px] [--card-w:130px] max-md:gap-3 md:[--card-h:260px] md:[--card-w:220px]"
+      className="grid grid-cols-2 justify-items-center gap-8 [--card-h:195px] [--card-w:130px] max-md:gap-3 md:grid-cols-3 md:[--card-h:260px] md:[--card-w:220px]"
     >
       {certifications.map((cert, i) => (
         <BookFlipCard key={cert.slug} cert={cert} accent={i % 2 === 0 ? RED : NAVY} />
@@ -58,16 +58,28 @@ function GradCapIcon({ color }: { color: string }) {
 
 function BookFlipCard({ cert, accent }: { cert: Certification; accent: string }) {
   const [open, setOpen] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  function scheduleOpen(next: boolean) {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setOpen(next), 150);
+  }
 
   return (
     <div
-      className="relative transition-[width] duration-700 ease-[cubic-bezier(0.4,0.1,0.2,1)]"
+      className="relative transition-[width] duration-1000 ease-[cubic-bezier(0.4,0.1,0.2,1)]"
       style={{
         height: "var(--card-h)",
         width: open ? "calc(var(--card-w) * 2)" : "var(--card-w)",
       }}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={() => scheduleOpen(true)}
+      onMouseLeave={() => scheduleOpen(false)}
       onClick={() => setOpen((o) => !o)}
     >
       {/* inside page: revealed on the right once the cover swings away */}
@@ -110,7 +122,7 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
         style={{ width: "var(--card-w)", height: "var(--card-h)", perspective: "2000px" }}
       >
         <div
-          className="relative h-full w-full transition-transform duration-700 ease-[cubic-bezier(0.4,0.1,0.2,1)]"
+          className="relative h-full w-full transition-transform duration-1000 ease-[cubic-bezier(0.4,0.1,0.2,1)]"
           style={{
             transformOrigin: "left",
             transformStyle: "preserve-3d",
