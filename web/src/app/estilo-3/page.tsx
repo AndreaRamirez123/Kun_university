@@ -431,30 +431,74 @@ export default async function Estilo3Page() {
             Así se construye un curso en KUN
           </h2>
         </Reveal>
-        <div className="grid grid-cols-3 gap-6 max-md:grid-cols-1">
+        <div className="grid grid-cols-3 gap-14 max-md:grid-cols-1 max-md:gap-8">
           {[
-            { n: "01", title: "LA IA RASTREA LA FRONTERA", body: "Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.", bg: CREAM, text: INK, rotate: -1.5, tape: false },
-            { n: "02", title: "EL CRITERIO HUMANO DECIDE", body: "Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.", bg: NAVY, text: CREAM, rotate: 2, tape: true },
-            { n: "03", title: "APRENDES LO QUE EL MERCADO NECESITA HOY", body: "No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy.", bg: CREAM, text: INK, rotate: -1, tape: false },
+            {
+              n: "01",
+              title: "LA IA RASTREA LA FRONTERA",
+              body: "Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.",
+              bg: CREAM,
+              text: INK,
+              rotate: -1.5,
+              tape: false,
+              glowFrom: RED,
+              glowTo: NAVY,
+            },
+            {
+              n: "02",
+              title: "EL CRITERIO HUMANO DECIDE",
+              body: "Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.",
+              bg: NAVY,
+              text: CREAM,
+              rotate: 2,
+              tape: true,
+              glowFrom: TEAL,
+              glowTo: RED,
+            },
+            {
+              n: "03",
+              title: "APRENDES LO QUE EL MERCADO NECESITA HOY",
+              body: "No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy.",
+              bg: CREAM,
+              text: INK,
+              rotate: -1,
+              tape: false,
+              glowFrom: NAVY,
+              glowTo: TEAL,
+            },
           ].map((step, i) => (
             <Reveal key={step.n} delay={i * 120}>
-              <TiltCard
-                baseRotate={step.rotate}
-                className="relative rounded-2xl border-4 border-[#10101A] p-7.5"
-                style={{ background: step.bg, color: step.text }}
+              <div
+                className="glow-card relative rounded-3xl"
+                style={
+                  {
+                    "--glow-from": step.glowFrom,
+                    "--glow-to": step.glowTo,
+                  } as React.CSSProperties
+                }
               >
-                {step.tape && (
-                  <div
-                    className="cm-tape"
-                    style={{ top: -16, right: 20, transform: "rotate(9deg)", background: `repeating-linear-gradient(-45deg, ${INK} 0 6px, rgba(16,16,26,0.6) 6px 12px)` }}
-                  />
-                )}
-                <div className="mb-3.5 text-[42px] font-extrabold" style={{ fontFamily: DISPLAY }}>
-                  {step.n}
-                </div>
-                <div className="mb-2 text-[15px] font-extrabold">{step.title}</div>
-                <div className="text-[13px] leading-[1.6]">{step.body}</div>
-              </TiltCard>
+                <TiltCard
+                  baseRotate={step.rotate}
+                  className="relative rounded-3xl p-7.5 max-md:p-4"
+                  style={{ background: step.bg, color: step.text }}
+                >
+                  {step.tape && (
+                    <div
+                      className="cm-tape"
+                      style={{ top: -16, right: 20, transform: "rotate(9deg)", background: `repeating-linear-gradient(-45deg, ${INK} 0 6px, rgba(16,16,26,0.6) 6px 12px)` }}
+                    />
+                  )}
+                  <div className="flip-card-wrap relative flex min-h-56 flex-col items-center justify-center text-center max-md:min-h-40">
+                    <div className="flip-card-logo text-6xl font-extrabold max-md:text-4xl" style={{ fontFamily: DISPLAY }}>
+                      {step.n}
+                    </div>
+                    <div className="flip-card-text absolute inset-0 flex flex-col items-center justify-center gap-2.5 p-2">
+                      <div className="text-lg font-extrabold max-md:text-sm">{step.title}</div>
+                      <div className="text-[13px] leading-[1.6] opacity-85 max-md:text-[11px] max-md:leading-[1.45]">{step.body}</div>
+                    </div>
+                  </div>
+                </TiltCard>
+              </div>
             </Reveal>
           ))}
         </div>
