@@ -272,6 +272,8 @@ export default async function Estilo3Page() {
               numColor: CREAM,
               rotate: -2.5,
               shadow: RED,
+              glowFrom: RED,
+              glowTo: NAVY,
               lift: "md:mt-6",
             },
             {
@@ -283,6 +285,8 @@ export default async function Estilo3Page() {
               numColor: CREAM,
               rotate: 3,
               shadow: TEAL,
+              glowFrom: TEAL,
+              glowTo: RED,
               lift: "md:-mt-3",
               tape: true,
             },
@@ -295,28 +299,40 @@ export default async function Estilo3Page() {
               numColor: CREAM,
               rotate: -2,
               shadow: TEAL,
+              glowFrom: NAVY,
+              glowTo: TEAL,
               lift: "md:mt-8",
             },
           ].map((card, i) => (
             <Reveal key={card.n} delay={i * 120} className={card.lift}>
-              <TiltCard
-                baseRotate={card.rotate}
-                restShadow={`7px 7px 0 ${card.shadow}`}
-                className="relative rounded-3xl p-7.5"
-                style={{ background: card.bg, color: card.text }}
+              <div
+                className="glow-card relative rounded-3xl"
+                style={
+                  {
+                    "--glow-from": card.glowFrom,
+                    "--glow-to": card.glowTo,
+                  } as React.CSSProperties
+                }
               >
-                {card.tape && (
-                  <div
-                    className="cm-tape"
-                    style={{ top: -16, right: 24, transform: "rotate(6deg)", background: `repeating-linear-gradient(-45deg, ${CREAM} 0 6px, rgba(255,249,236,0.65) 6px 12px)` }}
-                  />
-                )}
-                <div className="mb-3 text-3xl font-extrabold" style={{ fontFamily: DISPLAY, color: card.numColor }}>
-                  {card.n}
-                </div>
-                <div className="mb-2.5 text-lg font-extrabold">{card.title}</div>
-                <div className="text-[13px] leading-[1.6] opacity-85">{card.body}</div>
-              </TiltCard>
+                <TiltCard
+                  baseRotate={card.rotate}
+                  restShadow={`7px 7px 0 ${card.shadow}`}
+                  className="relative rounded-3xl p-7.5"
+                  style={{ background: card.bg, color: card.text }}
+                >
+                  {card.tape && (
+                    <div
+                      className="cm-tape"
+                      style={{ top: -16, right: 24, transform: "rotate(6deg)", background: `repeating-linear-gradient(-45deg, ${CREAM} 0 6px, rgba(255,249,236,0.65) 6px 12px)` }}
+                    />
+                  )}
+                  <div className="mb-3 text-3xl font-extrabold" style={{ fontFamily: DISPLAY, color: card.numColor }}>
+                    {card.n}
+                  </div>
+                  <div className="mb-2.5 text-lg font-extrabold">{card.title}</div>
+                  <div className="text-[13px] leading-[1.6] opacity-85">{card.body}</div>
+                </TiltCard>
+              </div>
             </Reveal>
           ))}
         </div>
