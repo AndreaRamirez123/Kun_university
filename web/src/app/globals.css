@@ -905,3 +905,52 @@ body {
     transition: none;
   }
 }
+
+.flip-card-logo {
+  position: relative;
+  z-index: 1;
+  transition:
+    transform 0.3s ease-in-out,
+    filter 0.3s ease-in-out;
+}
+
+.flip-card-text {
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.flip-card-wrap:hover .flip-card-text,
+.flip-card-wrap:active .flip-card-text {
+  opacity: 1;
+}
+
+.flip-card-wrap:hover .flip-card-logo,
+.flip-card-wrap:active .flip-card-logo {
+  filter: blur(3px);
+  animation: flip-card-float 3s ease-in-out infinite;
+}
+
+@keyframes flip-card-float {
+  0%,
+  100% {
+    transform: scale(1.35) translateY(0);
+  }
+  50% {
+    transform: scale(1.35) translateY(-14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-card-logo,
+  .flip-card-text {
+    transition: none;
+  }
+
+  .flip-card-wrap:hover .flip-card-logo,
+  .flip-card-wrap:active .flip-card-logo {
+    animation: none;
+    transform: scale(1.1);
+  }
+}

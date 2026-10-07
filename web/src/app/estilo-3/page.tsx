@@ -325,11 +325,18 @@ export default async function Estilo3Page() {
                       style={{ top: -16, right: 24, transform: "rotate(6deg)", background: `repeating-linear-gradient(-45deg, ${CREAM} 0 6px, rgba(255,249,236,0.65) 6px 12px)` }}
                     />
                   )}
-                  <div className="mb-3 text-3xl font-extrabold max-md:mb-1 max-md:text-xl" style={{ fontFamily: DISPLAY, color: card.numColor }}>
-                    {card.n}
+                  <div className="flip-card-wrap relative flex min-h-56 flex-col items-center justify-center text-center max-md:min-h-40">
+                    <div
+                      className="flip-card-logo text-6xl font-extrabold max-md:text-4xl"
+                      style={{ fontFamily: DISPLAY, color: card.numColor }}
+                    >
+                      {card.n}
+                    </div>
+                    <div className="flip-card-text absolute inset-0 flex flex-col items-center justify-center gap-2.5 p-2">
+                      <div className="text-lg font-extrabold max-md:text-sm">{card.title}</div>
+                      <div className="text-[13px] leading-[1.6] opacity-85 max-md:text-[11px] max-md:leading-[1.45]">{card.body}</div>
+                    </div>
                   </div>
-                  <div className="mb-2.5 text-lg font-extrabold max-md:mb-1 max-md:text-sm">{card.title}</div>
-                  <div className="text-[13px] leading-[1.6] opacity-85 max-md:text-[11px] max-md:leading-[1.45]">{card.body}</div>
                 </TiltCard>
               </div>
             </Reveal>
