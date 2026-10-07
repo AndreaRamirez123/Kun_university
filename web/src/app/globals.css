@@ -887,6 +887,18 @@ body {
   transform: rotate(-16deg) scaleX(1.1) scaleY(0.9);
 }
 
+@media (hover: none) {
+  .glow-card::before {
+    left: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+  }
+
+  .glow-card::after {
+    filter: blur(26px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .glow-card::before,
   .glow-card::after {
