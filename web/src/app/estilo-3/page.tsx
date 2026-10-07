@@ -354,21 +354,21 @@ export default async function Estilo3Page() {
             La vida en KUN
           </h3>
           <span className="text-lg" style={{ fontFamily: HAND, color: "#8a8270" }}>
-            (espacio reservado para fotos reales del campus)
+            (fotos ilustrativas mientras sumamos las reales del campus)
           </span>
         </Reveal>
         <div className="flex flex-wrap items-start gap-8 max-md:justify-center">
           <Reveal delay={0}>
-            <PhotoPlaceholder label="Campus" rotate={-4} accent={RED} />
+            <PhotoPlaceholder label="Campus" rotate={-4} accent={RED} image="/campus-photos/campus.jpg" />
           </Reveal>
           <Reveal delay={100} className="md:mt-9">
-            <PhotoPlaceholder label="Estudiantes" rotate={3} accent={TEAL} />
+            <PhotoPlaceholder label="Estudiantes" rotate={3} accent={TEAL} image="/campus-photos/estudiantes.jpg" />
           </Reveal>
           <Reveal delay={200}>
-            <PhotoPlaceholder label="Comunidad" rotate={-2} accent={RED} />
+            <PhotoPlaceholder label="Comunidad" rotate={-2} accent={RED} image="/campus-photos/comunidad.jpg" />
           </Reveal>
           <Reveal delay={300} className="md:mt-6 max-md:hidden">
-            <PhotoPlaceholder label="Equipo docente" rotate={2.5} accent={TEAL} />
+            <PhotoPlaceholder label="Equipo docente" rotate={2.5} accent={TEAL} image="/campus-photos/docentes.jpg" />
           </Reveal>
         </div>
       </div>
@@ -651,11 +651,13 @@ function PhotoPlaceholder({
   label,
   rotate,
   accent,
+  image,
   className = "",
 }: {
   label: string;
   rotate: number;
   accent: string;
+  image: string;
   className?: string;
 }) {
   return (
@@ -664,14 +666,10 @@ function PhotoPlaceholder({
       style={{ background: CREAM, transform: `rotate(${rotate}deg)`, boxShadow: "6px 6px 0 #10101A" }}
     >
       <div
-        className="flex h-40 items-center justify-center rounded-md max-md:h-32"
+        className="relative h-40 overflow-hidden rounded-md max-md:h-32"
         style={{ background: `linear-gradient(135deg, ${accent}55, ${accent}22)` }}
       >
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="1.6">
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <circle cx="9" cy="10" r="1.8" />
-          <path d="M21 16l-5.5-5-4 4-2.5-2.5L3 17" />
-        </svg>
+        <Image src={image} alt="" fill sizes="224px" className="object-cover opacity-80" />
       </div>
       <div
         className="mt-2 text-center text-[11px] font-extrabold tracking-[0.06em] uppercase"
