@@ -261,7 +261,7 @@ export default async function Estilo3Page() {
             No enseñamos lo que se enseñaba hace cinco años
           </h2>
         </Reveal>
-        <div className="grid grid-cols-3 gap-14 max-md:grid-cols-1 max-md:gap-8">
+        <div className="grid grid-cols-3 gap-14 max-md:grid-cols-1 max-md:gap-10">
           {[
             {
               n: "01",
@@ -317,7 +317,7 @@ export default async function Estilo3Page() {
                 <TiltCard
                   baseRotate={card.rotate}
                   restShadow={`7px 7px 0 ${card.shadow}`}
-                  className="relative rounded-3xl p-7.5 max-md:p-5"
+                  className="relative rounded-3xl p-7.5 max-md:p-4"
                   style={{ background: card.bg, color: card.text }}
                 >
                   {card.tape && (
@@ -326,11 +326,11 @@ export default async function Estilo3Page() {
                       style={{ top: -16, right: 24, transform: "rotate(6deg)", background: `repeating-linear-gradient(-45deg, ${CREAM} 0 6px, rgba(255,249,236,0.65) 6px 12px)` }}
                     />
                   )}
-                  <div className="mb-3 text-3xl font-extrabold max-md:mb-1.5 max-md:text-2xl" style={{ fontFamily: DISPLAY, color: card.numColor }}>
+                  <div className="mb-3 text-3xl font-extrabold max-md:mb-1 max-md:text-xl" style={{ fontFamily: DISPLAY, color: card.numColor }}>
                     {card.n}
                   </div>
-                  <div className="mb-2.5 text-lg font-extrabold max-md:mb-1.5 max-md:text-base">{card.title}</div>
-                  <div className="text-[13px] leading-[1.6] opacity-85">{card.body}</div>
+                  <div className="mb-2.5 text-lg font-extrabold max-md:mb-1 max-md:text-sm">{card.title}</div>
+                  <div className="text-[13px] leading-[1.6] opacity-85 max-md:text-[11px] max-md:leading-[1.45]">{card.body}</div>
                 </TiltCard>
               </div>
             </Reveal>
