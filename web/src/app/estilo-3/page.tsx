@@ -18,7 +18,6 @@ const INK = "#10101A";
 const CREAM = "#FFF9EC";
 
 const DISPLAY = "var(--font-archivo-black), sans-serif";
-const HAND = "var(--font-caveat), cursive";
 
 const TICKER_ITEMS = ["★ IA-NATIVE", "4 ESCUELAS", "★ 11 PROGRAMAS", "100% ONLINE"];
 
@@ -353,9 +352,6 @@ export default async function Estilo3Page() {
           <h3 className="text-2xl font-extrabold uppercase" style={{ fontFamily: DISPLAY }}>
             La vida en KUN
           </h3>
-          <span className="text-lg" style={{ fontFamily: HAND, color: "#8a8270" }}>
-            (fotos ilustrativas mientras sumamos las reales del campus)
-          </span>
         </Reveal>
         <div className="grid grid-cols-2 gap-4 max-md:gap-3 md:flex md:flex-wrap md:items-start md:justify-center md:gap-8">
           <Reveal delay={0}>

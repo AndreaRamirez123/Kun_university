@@ -73,15 +73,23 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
 
   return (
     <div
-      className="relative transition-[width] duration-1000 ease-[cubic-bezier(0.4,0.1,0.2,1)]"
+      className="relative"
       style={{
+        width: "var(--card-w)",
         height: "var(--card-h)",
-        width: open ? "calc(var(--card-w) * 2)" : "var(--card-w)",
+        zIndex: open ? 20 : 1,
       }}
       onMouseEnter={() => scheduleOpen(true)}
       onMouseLeave={() => scheduleOpen(false)}
       onClick={() => setOpen((o) => !o)}
     >
+      <div
+        className="absolute top-0 right-0 transition-[width] duration-1000 ease-[cubic-bezier(0.4,0.1,0.2,1)]"
+        style={{
+          height: "var(--card-h)",
+          width: open ? "calc(var(--card-w) * 2)" : "var(--card-w)",
+        }}
+      >
       {/* inside page: revealed on the right once the cover swings away */}
       <div
         className="absolute top-0 right-0 flex flex-col items-center justify-center overflow-hidden rounded-2xl border-[3px] p-3 text-center md:p-6"
@@ -174,6 +182,7 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
             <CampusWatermark accent={accent} className="h-16 w-16 opacity-30 md:h-28 md:w-28" />
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
