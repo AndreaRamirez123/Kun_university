@@ -261,7 +261,7 @@ export default async function Estilo3Page() {
             No enseñamos lo que se enseñaba hace cinco años
           </h2>
         </Reveal>
-        <div className="grid grid-cols-3 gap-6 max-md:grid-cols-1">
+        <div className="grid grid-cols-3 gap-14 max-md:grid-cols-1 max-md:gap-8">
           {[
             {
               n: "01",
