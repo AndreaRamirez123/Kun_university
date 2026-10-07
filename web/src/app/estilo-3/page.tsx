@@ -357,7 +357,7 @@ export default async function Estilo3Page() {
             (fotos ilustrativas mientras sumamos las reales del campus)
           </span>
         </Reveal>
-        <div className="flex flex-wrap items-start gap-8 max-md:justify-center">
+        <div className="grid grid-cols-2 gap-4 max-md:gap-3 md:flex md:flex-wrap md:items-start md:justify-center md:gap-8">
           <Reveal delay={0}>
             <PhotoPlaceholder label="Campus" rotate={-4} accent={RED} image="/campus-photos/campus.jpg" />
           </Reveal>
@@ -367,7 +367,7 @@ export default async function Estilo3Page() {
           <Reveal delay={200}>
             <PhotoPlaceholder label="Comunidad" rotate={-2} accent={RED} image="/campus-photos/comunidad.jpg" />
           </Reveal>
-          <Reveal delay={300} className="md:mt-6 max-md:hidden">
+          <Reveal delay={300} className="md:mt-6">
             <PhotoPlaceholder label="Equipo docente" rotate={2.5} accent={TEAL} image="/campus-photos/docentes.jpg" />
           </Reveal>
         </div>
@@ -662,17 +662,17 @@ function PhotoPlaceholder({
 }) {
   return (
     <div
-      className={`w-56 shrink-0 rounded-xl border-4 border-[#10101A] p-2 max-md:w-44 ${className}`}
-      style={{ background: CREAM, transform: `rotate(${rotate}deg)`, boxShadow: "6px 6px 0 #10101A" }}
+      className={`w-56 shrink-0 rounded-xl border-4 border-[#10101A] p-2 max-md:w-full max-md:p-1.5 ${className}`}
+      style={{ background: CREAM, transform: `rotate(${rotate * 0.6}deg)`, boxShadow: "6px 6px 0 #10101A" }}
     >
       <div
-        className="relative h-40 overflow-hidden rounded-md max-md:h-32"
+        className="relative h-40 overflow-hidden rounded-md max-md:h-20"
         style={{ background: `linear-gradient(135deg, ${accent}55, ${accent}22)` }}
       >
-        <Image src={image} alt="" fill sizes="224px" className="object-cover opacity-80" />
+        <Image src={image} alt="" fill sizes="(max-width: 767px) 50vw, 224px" className="object-cover opacity-80" />
       </div>
       <div
-        className="mt-2 text-center text-[11px] font-extrabold tracking-[0.06em] uppercase"
+        className="mt-2 text-center text-[11px] font-extrabold tracking-[0.06em] uppercase max-md:mt-1 max-md:text-[9px]"
         style={{ color: "#8a8270" }}
       >
         📷 {label}
