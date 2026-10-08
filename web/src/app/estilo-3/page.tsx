@@ -431,47 +431,43 @@ export default async function Estilo3Page() {
             Así se construye un curso en KUN
           </h2>
         </Reveal>
-        <Reveal className="flex justify-center">
-          <div className="kc-wrap">
-            {[
-              {
-                n: "01",
-                title: "LA IA RASTREA LA FRONTERA",
-                body: "Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.",
-                bg: RED,
-                text: CREAM,
-              },
-              {
-                n: "02",
-                title: "EL CRITERIO HUMANO DECIDE",
-                body: "Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.",
-                bg: NAVY,
-                text: CREAM,
-              },
-              {
-                n: "03",
-                title: "APRENDES LO QUE EL MERCADO NECESITA HOY",
-                body: "No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy.",
-                bg: TEAL,
-                text: CREAM,
-              },
-            ].map((step) => (
-              <div key={step.n} className="kc-card" style={{ background: step.bg }}>
-                <div className="kc-content" style={{ color: step.text }}>
-                  <div className="kc-number" style={{ fontFamily: DISPLAY }}>
-                    {step.n}
-                  </div>
+        <div className="grid grid-cols-3 gap-10 max-md:grid-cols-1 max-md:gap-6">
+          {[
+            {
+              n: "01",
+              title: "LA IA RASTREA LA FRONTERA",
+              body: "Nuestros agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos.",
+              bg: RED,
+              numberColor: CREAM,
+            },
+            {
+              n: "02",
+              title: "EL CRITERIO HUMANO DECIDE",
+              body: "Nuestro equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden.",
+              bg: NAVY,
+              numberColor: CREAM,
+            },
+            {
+              n: "03",
+              title: "APRENDES LO QUE EL MERCADO NECESITA HOY",
+              body: "No lo que se enseñaba hace cinco años. Aprendes las competencias que las empresas buscan hoy.",
+              bg: TEAL,
+              numberColor: CREAM,
+            },
+          ].map((step, i) => (
+            <Reveal key={step.n} delay={i * 120}>
+              <div className="corner-card" style={{ background: step.bg }}>
+                <div className="corner-card-number" style={{ fontFamily: DISPLAY, color: step.numberColor }}>
+                  {step.n}
+                </div>
+                <div className="corner-card-text" style={{ color: INK }}>
                   <div className="text-lg font-extrabold uppercase max-md:text-base">{step.title}</div>
-                  <div className="text-[13px] leading-[1.6] opacity-90 max-md:text-[12px]">{step.body}</div>
+                  <div className="text-[13px] leading-[1.6] max-md:text-[12px]">{step.body}</div>
                 </div>
               </div>
-            ))}
-            <div className="kc-lines">
-              <div className="kc-line" />
-              <div className="kc-line" />
-            </div>
-          </div>
-        </Reveal>
+            </Reveal>
+          ))}
+        </div>
         <Reveal delay={360} className="mt-12 text-center">
           <a
             href="#informacion"
