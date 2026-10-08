@@ -67,7 +67,9 @@ export function SiteFooter() {
         <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr] gap-10 border-b border-cream/15 pb-14 max-md:grid-cols-2 max-md:gap-x-6 max-md:gap-y-6 max-md:pb-8">
           <div className="max-md:col-span-2">
             <div className="mb-4 flex items-center gap-3 max-md:mb-2.5">
-              <Image src="/kun-logo-full.png" alt="KUN University AI" width={86} height={90} className="h-22.5 w-auto max-md:h-14" />
+              <div className="inline-block rounded-2xl bg-cream p-3">
+                <Image src="/kun-logo-full.png" alt="KUN University AI" width={86} height={90} className="h-18 w-auto max-md:h-12" />
+              </div>
             </div>
             <p className="max-w-65 text-[13px] leading-[1.6] text-navy-muted">
               La universidad IA-Native. Rediseñada alrededor de la inteligencia artificial, no al

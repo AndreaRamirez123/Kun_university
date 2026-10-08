@@ -36,7 +36,7 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
   return (
     <div
       id="continua"
-      className="relative z-10 bg-navy py-22 text-cream"
+      className="relative z-10 bg-cream py-22 text-ink"
       onMouseEnter={() => {
         pausedRef.current = true;
       }}
@@ -52,7 +52,7 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
           <h2 className="font-display mb-3.5 text-4xl font-normal">
             No tienes que esperar a graduarte
           </h2>
-          <p className="mx-auto max-w-[480px] text-sm text-navy-muted">
+          <p className="mx-auto max-w-[480px] text-sm text-muted-ink">
             Seis certificaciones de 36 a 40 horas, diseñadas para aplicar lo aprendido desde la
             primera semana.
           </p>
@@ -146,7 +146,7 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
                 }, 350);
               }}
               className="h-2 w-2 rounded-full transition"
-              style={{ background: i === index ? "var(--color-cyan)" : "rgba(255,255,255,0.25)" }}
+              style={{ background: i === index ? "var(--color-cyan)" : "rgba(15,30,46,0.15)" }}
             />
           ))}
         </div>
