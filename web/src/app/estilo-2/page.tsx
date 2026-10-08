@@ -564,7 +564,7 @@ export default async function Estilo2Page() {
       </div>
 
       <ScrollToTop bg="#03318C" />
-      <MobileTabBar bg="#FFFFFF" ink="#03318C" border="#D8DADC" />
+      <MobileTabBar pillBg="#03318C" accents={["#ff2d55", "#ffd60a", "#30d5c8", "#5e60ff"]} />
       <ModelSwitcher current={2} />
     </div>
   );

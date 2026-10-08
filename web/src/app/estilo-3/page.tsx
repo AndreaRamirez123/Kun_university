@@ -580,7 +580,7 @@ export default async function Estilo3Page() {
       </div>
 
       <ScrollToTop bg="#10101A" />
-      <MobileTabBar bg="#FFF9EC" ink="#10101A" border="rgba(16,16,26,0.15)" />
+      <MobileTabBar pillBg="#10101A" accents={["#BF0404", "#003D54", "#0092B6", "#BF0404"]} />
       <ModelSwitcher current={3} />
     </div>
   );

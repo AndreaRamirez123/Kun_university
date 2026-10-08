@@ -35,7 +35,7 @@ export default async function Home() {
       <TransparencyCta />
       <SiteFooter />
       <ScrollToTop bg="#033E8C" />
-      <MobileTabBar bg="#FFFFFF" ink="#033E8C" border="#C9CDD1" />
+      <MobileTabBar pillBg="#033E8C" accents={["#0092B6", "#D4AF37", "#A9BFD1", "#005F7F"]} />
       <ModelSwitcher current={1} />
     </div>
   );
