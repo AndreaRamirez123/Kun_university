@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { Certification } from "@/lib/types";
 
 const ACCENTS = ["#0092B6", "#033E8C"];
@@ -9,7 +9,6 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
   const [index, setIndex] = useState(0);
   const [spinKey, setSpinKey] = useState(0);
   const [fading, setFading] = useState(false);
-  const pausedRef = useRef(false);
   const total = certifications.length;
 
   function go(delta: number) {
@@ -22,10 +21,7 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
   }
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (pausedRef.current) return;
-      go(1);
-    }, 4800);
+    const timer = setInterval(() => go(1), 4800);
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total]);
@@ -34,16 +30,7 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
   const accent = ACCENTS[index % ACCENTS.length];
 
   return (
-    <div
-      id="continua"
-      className="relative z-10 bg-cream py-22 text-ink"
-      onMouseEnter={() => {
-        pausedRef.current = true;
-      }}
-      onMouseLeave={() => {
-        pausedRef.current = false;
-      }}
-    >
+    <div id="continua" className="relative z-10 bg-cream py-22 text-ink">
       <div className="mx-auto max-w-[1100px] px-14 max-md:px-6">
         <div className="mb-12 text-center">
           <div className="small-caps mb-3.5 text-xs font-bold tracking-[0.14em] text-cyan">
