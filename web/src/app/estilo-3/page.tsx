@@ -134,7 +134,7 @@ export default async function Estilo3Page() {
             Rediseñó alrededor
           </h1>
         </Reveal>
-        <div className="mb-9 flex flex-wrap items-center justify-center gap-5">
+        <div className="mb-9 flex flex-wrap items-center justify-start gap-5">
           <Reveal delay={320} variant="left">
             <h1
               className="text-[64px] leading-[1.05] font-extrabold uppercase max-md:text-[32px]"
