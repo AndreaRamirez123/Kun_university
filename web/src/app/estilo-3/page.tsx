@@ -192,7 +192,7 @@ export default async function Estilo3Page() {
       </div>
 
       {/* TICKER */}
-      <div className="mask-fade-x overflow-hidden bg-[#10101A] py-4 whitespace-nowrap">
+      <div className="overflow-hidden bg-[#10101A] py-4 whitespace-nowrap">
         <div className="animate-marquee flex w-max items-center gap-3">
           {[0, 1].map((rep) => (
             <span key={rep} className="flex items-center gap-3">
@@ -214,9 +214,6 @@ export default async function Estilo3Page() {
           ))}
         </div>
       </div>
-
-      {/* TORN DIVIDER */}
-      <div aria-hidden className="cm-torn-bottom relative z-10 -mb-1 h-7 bg-[#10101A]" />
 
       {/* STATS BLOCKS */}
       <div className="grid grid-cols-4 gap-4 px-14 py-10 max-md:grid-cols-2 max-md:gap-3 max-md:px-6">
