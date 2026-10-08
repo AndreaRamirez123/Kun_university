@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef, useState } from "react";
+import type { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectCards, Mousewheel } from "swiper/modules";
 import "swiper/css";
@@ -17,8 +19,12 @@ export function CertificationsSwiper({
   fontDisplay: string;
   ink: string;
 }) {
+  const swiperRef = useRef<SwiperType | null>(null);
+  const total = certifications.length;
+  const [active, setActive] = useState(0);
+
   return (
-    <div className="mx-auto w-full max-w-85 max-md:max-w-52">
+    <div className="mx-auto flex w-full max-w-85 flex-col items-center max-md:max-w-52">
       <Swiper
         modules={[EffectCards, Mousewheel, Autoplay]}
         effect="cards"
@@ -34,7 +40,11 @@ export function CertificationsSwiper({
         loop
         mousewheel={{ invert: false }}
         autoplay={{ delay: 3200, disableOnInteraction: false, pauseOnMouseEnter: true }}
-        className="certifications-swiper"
+        onSwiper={(swiper: SwiperType) => {
+          swiperRef.current = swiper;
+        }}
+        onSlideChange={(swiper: SwiperType) => setActive(swiper.realIndex % total)}
+        className="certifications-swiper w-full"
       >
         {[...certifications, ...certifications].map((cert, i) => {
           const accent = accents[i % accents.length];
@@ -75,6 +85,45 @@ export function CertificationsSwiper({
           );
         })}
       </Swiper>
+
+      <div className="mt-6 flex items-center gap-5">
+        <button
+          type="button"
+          aria-label="Certificación anterior"
+          onClick={() => swiperRef.current?.slidePrev()}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition hover:-translate-y-0.5"
+          style={{ borderColor: ink, color: ink }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        <div className="flex gap-2">
+          {certifications.map((c, i) => (
+            <button
+              key={c.slug}
+              type="button"
+              aria-label={`Ir a ${c.name}`}
+              onClick={() => swiperRef.current?.slideToLoop(i)}
+              className="h-2.5 w-2.5 rounded-full transition"
+              style={{ background: i === active ? ink : `${ink}33` }}
+            />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          aria-label="Siguiente certificación"
+          onClick={() => swiperRef.current?.slideNext()}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition hover:-translate-y-0.5"
+          style={{ borderColor: ink, color: ink }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }

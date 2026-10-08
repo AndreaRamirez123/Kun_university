@@ -77,7 +77,7 @@ export default async function Estilo2Page() {
         />
 
         <div
-          className="absolute top-8 right-14 z-10 flex h-30 w-30 flex-col items-center justify-center rounded-full border-4 text-center max-md:hidden"
+          className="absolute top-0 right-4 z-10 flex h-30 w-30 flex-col items-center justify-center rounded-full border-4 text-center max-md:hidden"
           style={{ borderColor: INK, background: CREAM, transform: "rotate(-8deg)", boxShadow: softShadow(BLUE) }}
         >
           <div
@@ -242,9 +242,8 @@ export default async function Estilo2Page() {
                   </div>
                 </div>
                 <div
-                  className="hex-badge relative flex h-full w-full items-center justify-center border-3"
+                  className="hex-badge relative flex h-full w-full items-center justify-center"
                   style={{
-                    borderColor: INK,
                     background: card.ring,
                     boxShadow: softShadow(card.ring),
                     clipPath: "polygon(50% 0%, 100% 18%, 100% 65%, 50% 100%, 0% 65%, 0% 18%)",
