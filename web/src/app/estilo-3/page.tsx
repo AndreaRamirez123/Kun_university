@@ -193,7 +193,7 @@ export default async function Estilo3Page() {
 
       {/* TICKER */}
       <div className="mx-auto max-w-300 px-14 py-6 max-md:px-6">
-        <div className="mask-fade-x overflow-hidden rounded-full bg-[#10101A] py-4 whitespace-nowrap">
+        <div className="overflow-hidden bg-[#10101A] py-4 whitespace-nowrap">
           <div className="animate-marquee flex w-max items-center gap-3">
             {[0, 1].map((rep) => (
               <span key={rep} className="flex items-center gap-3">
