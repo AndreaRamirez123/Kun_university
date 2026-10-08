@@ -1123,6 +1123,7 @@ body {
 
 .ce-badge {
   position: absolute;
+  z-index: 3;
   top: 15px;
   right: 15px;
   background: #033e8c;
