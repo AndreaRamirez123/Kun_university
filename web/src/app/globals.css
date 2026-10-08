@@ -911,7 +911,8 @@ body {
   z-index: 1;
   transition:
     transform 0.3s ease-in-out,
-    filter 0.3s ease-in-out;
+    filter 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
 }
 
 .flip-card-text {
@@ -928,7 +929,8 @@ body {
 
 .flip-card-wrap:hover .flip-card-logo,
 .flip-card-wrap:active .flip-card-logo {
-  filter: blur(3px);
+  filter: blur(8px);
+  opacity: 0.35;
   animation: flip-card-float 3s ease-in-out infinite;
 }
 
