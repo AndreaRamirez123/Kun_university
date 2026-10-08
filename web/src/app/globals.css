@@ -956,3 +956,213 @@ body {
     transform: scale(1.1);
   }
 }
+
+.kc-wrap {
+  position: relative;
+  overflow: hidden;
+  width: calc(var(--w-card) * 2);
+  height: var(--h-card);
+  --w-card: 300px;
+  --h-card: 330px;
+  --rotate-card: 9deg;
+  --insetx-card: 54px;
+  --t-card: calc(var(--insetx-card) * 0.55);
+}
+
+@media (max-width: 767px) {
+  .kc-wrap {
+    --w-card: 240px;
+    --h-card: 380px;
+    --insetx-card: 30px;
+  }
+}
+
+.kc-card {
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  width: var(--w-card);
+  height: var(--h-card);
+  border-radius: 24px;
+  box-shadow: 0 20px 45px rgba(16, 16, 26, 0.28);
+  animation: kc-rotating 10s cubic-bezier(0.75, 0, 0, 1.01) infinite;
+  z-index: var(--z1);
+  top: var(--t1);
+  left: var(--l1);
+  right: var(--r1);
+  transform: var(--trans1);
+  --x1: var(--insetx-card);
+  --x2: calc((var(--w-card) * 2) - (var(--w-card) + var(--insetx-card)));
+  --to-left: rotate(calc(var(--rotate-card) * -1));
+  --to-center: calc(var(--w-card) / 2);
+  --to-right: rotate(var(--rotate-card));
+}
+
+.kc-wrap:hover .kc-card {
+  animation-play-state: paused;
+}
+
+.kc-card:nth-child(1) {
+  --z1: 2;
+  --t1: 0;
+  --l1: var(--to-center);
+  --r1: var(--to-center);
+  --trans1: rotate(0deg);
+  --z2: 0;
+  --t2: var(--t-card);
+  --l2: var(--x1);
+  --r2: var(--x2);
+  --trans2: var(--to-left);
+  --z3: 0;
+  --t3: var(--t-card);
+  --l3: var(--x2);
+  --r3: var(--x1);
+  --trans3: var(--to-right);
+}
+
+.kc-card:nth-child(2) {
+  --z1: 0;
+  --t1: var(--t-card);
+  --l1: var(--x2);
+  --r1: var(--x1);
+  --trans1: var(--to-right);
+  --z2: 2;
+  --t2: 0;
+  --l2: var(--to-center);
+  --r2: var(--to-center);
+  --trans2: rotate(0deg);
+  --z3: 0;
+  --t3: var(--t-card);
+  --l3: var(--x1);
+  --r3: var(--x2);
+  --trans3: var(--to-left);
+}
+
+.kc-card:nth-child(3) {
+  --z1: 0;
+  --t1: var(--t-card);
+  --l1: var(--x1);
+  --r1: var(--x2);
+  --trans1: var(--to-left);
+  --z2: 0;
+  --t2: var(--t-card);
+  --l2: var(--x2);
+  --r2: var(--x1);
+  --trans2: var(--to-right);
+  --z3: 2;
+  --t3: 0;
+  --l3: var(--to-center);
+  --r3: var(--to-center);
+  --trans3: rotate(0deg);
+}
+
+@keyframes kc-rotating {
+  0%,
+  99.99% {
+    z-index: var(--z1);
+    top: var(--t1);
+    left: var(--l1);
+    right: var(--r1);
+    transform: var(--trans1);
+  }
+  33.33% {
+    z-index: var(--z2);
+    top: var(--t2);
+    left: var(--l2);
+    right: var(--r2);
+    transform: var(--trans2);
+  }
+  66.66% {
+    z-index: var(--z3);
+    top: var(--t3);
+    left: var(--l3);
+    right: var(--r3);
+    transform: var(--trans3);
+  }
+}
+
+.kc-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 34px;
+  text-align: center;
+}
+
+.kc-number {
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.kc-lines {
+  position: absolute;
+  inset: auto 0 0;
+  width: 100%;
+  height: 6px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.kc-line {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kc-line::before,
+.kc-line::after {
+  content: "";
+  position: absolute;
+  background: linear-gradient(to right, transparent, var(--kc-line-color, #bf0404), transparent);
+}
+
+.kc-line:nth-child(1)::before {
+  filter: blur(4px);
+  width: 70%;
+  height: 5px;
+}
+.kc-line:nth-child(1)::after {
+  width: 70%;
+  height: 1px;
+}
+.kc-line:nth-child(2) {
+  --kc-line-color: #0092b6;
+}
+.kc-line:nth-child(2)::before {
+  filter: blur(4px);
+  width: 36%;
+  height: 5px;
+}
+.kc-line:nth-child(2)::after {
+  width: 36%;
+  height: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kc-card {
+    animation: none;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    transform: none;
+    margin: 0 auto 16px;
+  }
+  .kc-wrap {
+    width: 100%;
+    max-width: var(--w-card);
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: visible;
+  }
+}
