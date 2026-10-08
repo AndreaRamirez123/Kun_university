@@ -192,26 +192,28 @@ export default async function Estilo3Page() {
       </div>
 
       {/* TICKER */}
-      <div className="overflow-hidden bg-[#10101A] py-4 whitespace-nowrap">
-        <div className="animate-marquee flex w-max items-center gap-3">
-          {[0, 1].map((rep) => (
-            <span key={rep} className="flex items-center gap-3">
-              {[...TICKER_ITEMS, ...TICKER_ITEMS].map((t, i) => (
-                <span
-                  key={i}
-                  className="inline-flex items-center gap-1.5 rounded-full border-2 px-5 py-2 text-xs font-extrabold tracking-[0.04em] uppercase"
-                  style={{
-                    fontFamily: DISPLAY,
-                    background: [RED, NAVY, TEAL][i % 3],
-                    borderColor: "rgba(255,249,236,0.25)",
-                    color: CREAM,
-                  }}
-                >
-                  {t.replace("★ ", "")}
-                </span>
-              ))}
-            </span>
-          ))}
+      <div className="mx-auto max-w-300 px-14 py-6 max-md:px-6">
+        <div className="mask-fade-x overflow-hidden rounded-full bg-[#10101A] py-4 whitespace-nowrap">
+          <div className="animate-marquee flex w-max items-center gap-3">
+            {[0, 1].map((rep) => (
+              <span key={rep} className="flex items-center gap-3">
+                {[...TICKER_ITEMS, ...TICKER_ITEMS].map((t, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-full border-2 px-5 py-2 text-xs font-extrabold tracking-[0.04em] uppercase"
+                    style={{
+                      fontFamily: DISPLAY,
+                      background: [RED, NAVY, TEAL][i % 3],
+                      borderColor: "rgba(255,249,236,0.25)",
+                      color: CREAM,
+                    }}
+                  >
+                    {t.replace("★ ", "")}
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
