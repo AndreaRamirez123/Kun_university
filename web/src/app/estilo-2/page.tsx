@@ -77,7 +77,7 @@ export default async function Estilo2Page() {
         />
 
         <div
-          className="animate-badge-wobble absolute top-0 right-4 z-10 flex h-30 w-30 flex-col items-center justify-center rounded-full border-4 text-center max-md:hidden"
+          className="animate-badge-wobble absolute top-5 right-4 z-10 flex h-30 w-30 flex-col items-center justify-center rounded-full border-4 text-center max-md:hidden"
           style={{ borderColor: INK, background: CREAM, boxShadow: softShadow(BLUE) }}
         >
           <div

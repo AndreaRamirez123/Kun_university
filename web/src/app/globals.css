@@ -213,7 +213,7 @@ body {
     transform: translateY(0) rotate(-8deg);
   }
   50% {
-    transform: translateY(-10px) rotate(-2deg);
+    transform: translateY(-5px) rotate(-2deg);
   }
 }
 
