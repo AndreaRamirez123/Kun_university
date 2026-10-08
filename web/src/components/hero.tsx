@@ -53,7 +53,7 @@ export function Hero({ stats }: { stats: Stats }) {
         </Parallax>
       </div>
 
-      <div className="relative z-10 mx-auto max-w-220 px-14 pt-16 pb-10 text-center max-md:px-6 lg:max-w-320">
+      <div className="relative z-10 mx-auto max-w-220 px-14 pt-16 pb-10 text-center max-md:px-6 max-md:pt-6 lg:max-w-320">
         <div className="mx-auto max-w-170 rounded-t-[110px] rounded-b-3xl border-2 border-burgundy/50 bg-cream/95 px-12 py-14 shadow-[0_40px_80px_rgba(3,62,140,0.28)] backdrop-blur-sm max-md:rounded-t-[36px] max-md:px-6 max-md:py-10 lg:max-w-none lg:w-full">
           <GreetingBadge>Saludos desde KUN University · Florida</GreetingBadge>
 
