@@ -156,7 +156,7 @@ export default async function Estilo3Page() {
           </Reveal>
           <Reveal delay={440} variant="flip">
             <div
-              className="px-5 py-2.5 text-[22px] font-extrabold tracking-[0.04em] uppercase max-md:text-base"
+              className="px-5 py-2.5 text-[22px] font-extrabold tracking-[0.04em] uppercase max-md:px-2.5 max-md:py-1.5 max-md:text-[10px]"
               style={{ fontFamily: DISPLAY, background: "#10101A", color: CREAM, transform: "rotate(-2deg)", boxShadow: "5px 5px 0 rgba(16,16,26,0.4)" }}
             >
               <FlipText>no al revés.</FlipText>
