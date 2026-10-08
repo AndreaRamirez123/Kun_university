@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function Nav() {
   return (
-    <div className="sticky top-0 z-20 flex items-center justify-between border-b border-hairline bg-cream/80 px-16 py-5.5 backdrop-blur-md max-md:px-6">
+    <div className="sticky top-0 z-20 flex items-center justify-between border-b border-hairline bg-cream px-16 py-5.5 max-md:px-6">
       <div className="flex items-center gap-3.5">
         <Image src="/kun-logo-full.png" alt="KUN University AI" width={96} height={100} priority className="h-25 w-auto" />
       </div>

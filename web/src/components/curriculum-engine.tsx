@@ -45,18 +45,20 @@ export function CurriculumEngine() {
       <div className="grid grid-cols-3 items-start justify-items-center gap-8 max-md:grid-cols-1 max-md:gap-6">
         {STEPS.map((step, i) => (
           <div key={step.number} className="ce-card-effect">
-            <div className="ce-card-inner" style={{ "--card-accent": ACCENTS[i] } as React.CSSProperties}>
-              <div className="ce-liquid" />
-              <div className="ce-shine" />
-              <div className="ce-glow" />
-              <div className="ce-content">
-                <div className="ce-badge">{step.number}</div>
-                <div className="ce-image" style={{ background: ACCENTS[i] }}>
-                  {step.icon}
-                </div>
-                <div className="ce-text">
-                  <p className="ce-title">{step.title}</p>
-                  <p className="ce-description">{step.body}</p>
+            <div className="ce-card-tilt">
+              <div className="ce-card-inner" style={{ "--card-accent": ACCENTS[i] } as React.CSSProperties}>
+                <div className="ce-liquid" />
+                <div className="ce-shine" />
+                <div className="ce-glow" />
+                <div className="ce-content">
+                  <div className="ce-badge">{step.number}</div>
+                  <div className="ce-image" style={{ background: ACCENTS[i] }}>
+                    {step.icon}
+                  </div>
+                  <div className="ce-text">
+                    <p className="ce-title">{step.title}</p>
+                    <p className="ce-description">{step.body}</p>
+                  </div>
                 </div>
               </div>
             </div>
