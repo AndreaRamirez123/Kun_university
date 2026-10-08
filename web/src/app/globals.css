@@ -207,6 +207,20 @@ body {
   animation: sway 6s ease-in-out infinite;
 }
 
+@keyframes badge-wobble {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-8deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-2deg);
+  }
+}
+
+.animate-badge-wobble {
+  animation: badge-wobble 4.5s ease-in-out infinite;
+}
+
 @keyframes roam {
   0% {
     transform: translate(0, 0) scale(1);
@@ -408,6 +422,7 @@ body {
   .animate-card-slide-out,
   .animate-building-float,
   .animate-badge-spin,
+  .animate-badge-wobble,
   .animate-glow-orbit,
   .animate-glow-hue {
     animation: none;

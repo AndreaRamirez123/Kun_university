@@ -54,7 +54,7 @@ export function CollageInfoForm({ schools }: { schools: School[] }) {
           className="rounded-full border-[3px] border-[#10101A] px-8 py-4 text-sm font-extrabold text-[#FFF9EC] transition hover:-translate-y-0.5"
           style={{ background: INK, boxShadow: "5px 5px 0 " + RED }}
         >
-          Quiero información →
+          Llenar formulario →
         </button>
       </div>
 

@@ -77,13 +77,15 @@ export default async function Estilo2Page() {
         />
 
         <div
-          className="absolute top-0 right-4 z-10 flex h-30 w-30 flex-col items-center justify-center rounded-full border-4 text-center max-md:hidden"
-          style={{ borderColor: INK, background: CREAM, transform: "rotate(-8deg)", boxShadow: softShadow(BLUE) }}
+          className="animate-badge-wobble absolute top-0 right-4 z-10 flex h-30 w-30 flex-col items-center justify-center rounded-full border-4 text-center max-md:hidden"
+          style={{ borderColor: INK, background: CREAM, boxShadow: softShadow(BLUE) }}
         >
           <div
-            className="flex h-24 w-24 flex-col items-center justify-center rounded-full border-2 border-dashed"
+            aria-hidden
+            className="animate-spin-slow absolute h-24 w-24 rounded-full border-2 border-dashed"
             style={{ borderColor: RED }}
-          >
+          />
+          <div className="relative flex h-24 w-24 flex-col items-center justify-center">
             <span className="text-[10px] font-bold tracking-[0.1em]" style={{ color: BLUE }}>
               EST. · FLORIDA
             </span>
