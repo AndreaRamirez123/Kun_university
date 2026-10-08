@@ -192,7 +192,7 @@ export default async function Estilo3Page() {
       </div>
 
       {/* TICKER */}
-      <div className="px-[1cm] py-6">
+      <div className="px-[0.5cm] py-6">
         <div className="overflow-hidden bg-[#10101A] py-4 whitespace-nowrap">
           <div className="animate-marquee flex w-max items-center gap-3">
             {[0, 1].map((rep) => (
