@@ -1121,27 +1121,6 @@ body {
   padding: 1.5em;
 }
 
-.ce-badge {
-  position: absolute;
-  z-index: 3;
-  top: 15px;
-  right: 15px;
-  background: #033e8c;
-  color: #fff;
-  padding: 0.3em 0.75em;
-  border-radius: 999px;
-  font-size: 0.8em;
-  font-weight: 700;
-  transform: scale(0.7);
-  opacity: 0;
-  transition: all 0.5s ease 0.2s;
-}
-
-.ce-card-effect:hover .ce-badge {
-  transform: scale(1);
-  opacity: 1;
-}
-
 .ce-image {
   width: 100%;
   height: 110px;
@@ -1212,7 +1191,6 @@ body {
   .ce-liquid,
   .ce-shine,
   .ce-glow,
-  .ce-badge,
   .ce-image,
   .ce-title,
   .ce-description {

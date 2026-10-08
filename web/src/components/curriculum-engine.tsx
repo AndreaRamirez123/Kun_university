@@ -51,7 +51,6 @@ export function CurriculumEngine() {
                 <div className="ce-shine" />
                 <div className="ce-glow" />
                 <div className="ce-content">
-                  <div className="ce-badge">{step.number}</div>
                   <div className="ce-image" style={{ background: ACCENTS[i] }}>
                     {step.icon}
                   </div>
