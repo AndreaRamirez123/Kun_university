@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Canvas } from "@react-three/fiber";
-import { Grid, OrbitControls } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Grid } from "@react-three/drei";
+import * as THREE from "three";
+import { CampusPlayer } from "./campus-player";
 import type { Certification, School, Stats } from "@/lib/types";
 
 function hasWebGL() {
@@ -32,6 +34,27 @@ function NoWebGLFallback() {
   );
 }
 
+// Cámara cinematográfica: sigue al personaje suavemente desde atrás, sin control manual de arrastre.
+function CameraRig({ targetRef }: { targetRef: React.RefObject<THREE.Group | null> }) {
+  const desired = useRef(new THREE.Vector3());
+  const lookAt = useRef(new THREE.Vector3());
+
+  useFrame((state, delta) => {
+    const target = targetRef.current;
+    if (!target) return;
+    const t = Math.min(1, delta * 2.4);
+    desired.current.set(target.position.x, 13, target.position.z + 15);
+    state.camera.position.lerp(desired.current, t);
+    lookAt.current.lerp(
+      new THREE.Vector3(target.position.x, target.position.y + 1.5, target.position.z),
+      Math.min(1, delta * 4),
+    );
+    state.camera.lookAt(lookAt.current);
+  });
+
+  return null;
+}
+
 // Placeholder: un marcador por escuela mientras se construyen los edificios reales en la Fase 3
 // (los carteles con nombre llegarán ahí con drei <Billboard>+<Text>).
 function SchoolMarker({ x, z, color }: { x: number; z: number; color: string }) {
@@ -53,6 +76,7 @@ export function CampusScene({
   stats: Stats;
 }) {
   const [webglOk] = useState(() => (typeof window !== "undefined" ? hasWebGL() : true));
+  const playerRef = useRef<THREE.Group>(null);
 
   const markers = useMemo(() => {
     const colors = ["#3D6FD9", "#D99A1E", "#1E9C7E", "#C2387A"];
@@ -84,8 +108,11 @@ export function CampusScene({
       >
         ← Sitio clásico
       </Link>
+      <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-center text-[11px] font-semibold tracking-[0.04em] text-[#FFF3E6]/70">
+        Usa las flechas o W A S D para caminar
+      </div>
 
-      <Canvas shadows camera={{ position: [20, 18, 24], fov: 50 }}>
+      <Canvas shadows camera={{ position: [0, 13, 31], fov: 45 }}>
         <color attach="background" args={["#1D1236"]} />
         <fog attach="fog" args={["#1D1236", 40, 120]} />
         <ambientLight intensity={0.6} />
@@ -102,7 +129,8 @@ export function CampusScene({
           <SchoolMarker key={m.school.slug} x={m.x} z={m.z} color={m.color} />
         ))}
 
-        <OrbitControls maxPolarAngle={Math.PI / 2.1} minDistance={10} maxDistance={60} />
+        <CampusPlayer groupRef={playerRef} />
+        <CameraRig targetRef={playerRef} />
       </Canvas>
     </div>
   );
