@@ -6,8 +6,11 @@ import * as THREE from "three";
 
 const SPEED = 6;
 const TURN_SMOOTHING = 10;
+const PLAYER_RADIUS = 0.6;
 
 export const BOUNDARY_RADIUS = 27;
+
+export type Collider = { x: number; z: number; radius: number };
 
 const MOVE_KEYS = new Set([
   "KeyW",
@@ -20,7 +23,13 @@ const MOVE_KEYS = new Set([
   "ArrowRight",
 ]);
 
-export function CampusPlayer({ groupRef }: { groupRef: React.RefObject<THREE.Group | null> }) {
+export function CampusPlayer({
+  groupRef,
+  colliders = [],
+}: {
+  groupRef: React.RefObject<THREE.Group | null>;
+  colliders?: Collider[];
+}) {
   const keys = useRef<Record<string, boolean>>({});
   const walkCycle = useRef(0);
   const leftLeg = useRef<THREE.Group>(null);
@@ -67,8 +76,18 @@ export function CampusPlayer({ groupRef }: { groupRef: React.RefObject<THREE.Gro
     if (len > 0.01) {
       ix /= len;
       iz /= len;
-      const nx = g.position.x + ix * SPEED * delta;
-      const nz = g.position.z + iz * SPEED * delta;
+      let nx = g.position.x + ix * SPEED * delta;
+      let nz = g.position.z + iz * SPEED * delta;
+      for (const c of colliders) {
+        const dx = nx - c.x;
+        const dz = nz - c.z;
+        const dist = Math.hypot(dx, dz);
+        const minDist = c.radius + PLAYER_RADIUS;
+        if (dist < minDist && dist > 0.0001) {
+          nx = c.x + (dx / dist) * minDist;
+          nz = c.z + (dz / dist) * minDist;
+        }
+      }
       if (Math.hypot(nx, nz) < BOUNDARY_RADIUS) {
         g.position.x = nx;
         g.position.z = nz;
@@ -92,7 +111,7 @@ export function CampusPlayer({ groupRef }: { groupRef: React.RefObject<THREE.Gro
   const outfit = "#10101A";
 
   return (
-    <group ref={groupRef} position={[0, 0, 16]}>
+    <group ref={groupRef} position={[4, 0, 6]}>
       {/* Torso */}
       <mesh position={[0, 1.55, 0]} castShadow>
         <capsuleGeometry args={[0.36, 0.7, 4, 12]} />

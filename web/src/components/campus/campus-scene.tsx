@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Grid } from "@react-three/drei";
 import * as THREE from "three";
-import { CampusPlayer } from "./campus-player";
+import { BUILDING_LAYOUT } from "./campus-buildings";
+import { CampusPlayer, type Collider } from "./campus-player";
 import type { Certification, School, Stats } from "@/lib/types";
 
 function hasWebGL() {
@@ -55,19 +56,6 @@ function CameraRig({ targetRef }: { targetRef: React.RefObject<THREE.Group | nul
   return null;
 }
 
-// Placeholder: un marcador por escuela mientras se construyen los edificios reales en la Fase 3
-// (los carteles con nombre llegarán ahí con drei <Billboard>+<Text>).
-function SchoolMarker({ x, z, color }: { x: number; z: number; color: string }) {
-  return (
-    <group position={[x, 0, z]}>
-      <mesh position={[0, 1, 0]} castShadow>
-        <boxGeometry args={[2, 2, 2]} />
-        <meshStandardMaterial color={color} />
-      </mesh>
-    </group>
-  );
-}
-
 export function CampusScene({
   schools,
 }: {
@@ -78,21 +66,15 @@ export function CampusScene({
   const [webglOk] = useState(() => (typeof window !== "undefined" ? hasWebGL() : true));
   const playerRef = useRef<THREE.Group>(null);
 
-  const markers = useMemo(() => {
-    const colors = ["#3D6FD9", "#D99A1E", "#1E9C7E", "#C2387A"];
-    const positions = [
-      [0, -10],
-      [10, 0],
-      [0, 10],
-      [-10, 0],
-    ];
-    return schools.slice(0, 4).map((school, i) => ({
-      school,
-      color: colors[i % colors.length],
-      x: positions[i % positions.length][0],
-      z: positions[i % positions.length][1],
-    }));
-  }, [schools]);
+  const buildings = useMemo(
+    () => schools.map((school) => ({ school, layout: BUILDING_LAYOUT[school.slug] })).filter((b) => b.layout),
+    [schools],
+  );
+
+  const colliders: Collider[] = useMemo(
+    () => buildings.map((b) => ({ x: b.layout.x, z: b.layout.z, radius: b.layout.radius })),
+    [buildings],
+  );
 
   if (!webglOk) return <NoWebGLFallback />;
 
@@ -112,7 +94,7 @@ export function CampusScene({
         Usa las flechas o W A S D para caminar
       </div>
 
-      <Canvas shadows camera={{ position: [0, 13, 31], fov: 45 }}>
+      <Canvas shadows camera={{ position: [4, 13, 21], fov: 45 }}>
         <color attach="background" args={["#1D1236"]} />
         <fog attach="fog" args={["#1D1236", 40, 120]} />
         <ambientLight intensity={0.6} />
@@ -125,11 +107,13 @@ export function CampusScene({
         </mesh>
         <Grid args={[60, 60]} position={[0, 0.01, 0]} cellColor="#2A1758" sectionColor="#7A4FD0" fadeDistance={40} />
 
-        {markers.map((m) => (
-          <SchoolMarker key={m.school.slug} x={m.x} z={m.z} color={m.color} />
+        {buildings.map(({ school, layout }) => (
+          <group key={school.slug} position={[layout.x, 0, layout.z]}>
+            <layout.Component />
+          </group>
         ))}
 
-        <CampusPlayer groupRef={playerRef} />
+        <CampusPlayer groupRef={playerRef} colliders={colliders} />
         <CameraRig targetRef={playerRef} />
       </Canvas>
     </div>
