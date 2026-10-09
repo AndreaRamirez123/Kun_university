@@ -6,8 +6,10 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Grid } from "@react-three/drei";
 import * as THREE from "three";
 import { BUILDING_LAYOUT } from "./campus-buildings";
+import { hasWebGL } from "./has-webgl";
 import { CampusInfoPanel } from "./campus-info-panel";
-import { CampusPlayer, type Collider } from "./campus-player";
+import { CampusPlayer, type Collider, type Gender } from "./campus-player";
+import { NoWebGLFallback } from "./no-webgl-fallback";
 import type { Certification, School, Stats } from "@/lib/types";
 
 const ENTRY_MARGIN = 3.5;
@@ -69,32 +71,6 @@ function ActiveRing({ radius }: { radius: number }) {
   );
 }
 
-function hasWebGL() {
-  try {
-    const canvas = document.createElement("canvas");
-    return !!(window.WebGLRenderingContext && (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")));
-  } catch {
-    return false;
-  }
-}
-
-function NoWebGLFallback() {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center text-[#FFF3E6]">
-      <p className="text-lg font-bold">Tu navegador no puede mostrar el campus en 3D</p>
-      <p className="max-w-80 text-sm opacity-80">
-        Activa la aceleración por hardware o abre esta página en una versión reciente de Chrome, Edge o Safari.
-      </p>
-      <Link
-        href="/"
-        className="mt-2 rounded-full bg-[#FFC85C] px-6 py-3 text-sm font-bold text-[#24123F] transition hover:-translate-y-0.5"
-      >
-        Ver versión clásica del sitio
-      </Link>
-    </div>
-  );
-}
-
 // Cámara cinematográfica: sigue al personaje suavemente desde atrás, sin control manual de arrastre.
 function CameraRig({ targetRef }: { targetRef: React.RefObject<THREE.Group | null> }) {
   const desired = useRef(new THREE.Vector3());
@@ -118,10 +94,12 @@ function CameraRig({ targetRef }: { targetRef: React.RefObject<THREE.Group | nul
 
 export function CampusScene({
   schools,
+  gender = "male",
 }: {
   schools: School[];
   certifications: Certification[];
   stats: Stats;
+  gender?: Gender;
 }) {
   const [webglOk] = useState(() => (typeof window !== "undefined" ? hasWebGL() : true));
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
@@ -177,7 +155,7 @@ export function CampusScene({
           </group>
         ))}
 
-        <CampusPlayer groupRef={playerRef} colliders={colliders} />
+        <CampusPlayer groupRef={playerRef} colliders={colliders} gender={gender} />
         <CameraRig targetRef={playerRef} />
         <ProximityWatcher playerRef={playerRef} buildings={buildings} onActiveChange={setActiveSlug} />
       </Canvas>

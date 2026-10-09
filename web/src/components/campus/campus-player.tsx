@@ -11,6 +11,7 @@ const PLAYER_RADIUS = 0.6;
 export const BOUNDARY_RADIUS = 27;
 
 export type Collider = { x: number; z: number; radius: number };
+export type Gender = "male" | "female";
 
 const MOVE_KEYS = new Set([
   "KeyW",
@@ -26,9 +27,11 @@ const MOVE_KEYS = new Set([
 export function CampusPlayer({
   groupRef,
   colliders = [],
+  gender = "male",
 }: {
   groupRef: React.RefObject<THREE.Group | null>;
   colliders?: Collider[];
+  gender?: Gender;
 }) {
   const keys = useRef<Record<string, boolean>>({});
   const walkCycle = useRef(0);
@@ -108,12 +111,14 @@ export function CampusPlayer({
   });
 
   const skin = "#D9A273";
-  const outfit = "#10101A";
+  const outfit = gender === "female" ? "#17213A" : "#10101A";
+  const hair = "#2B1B12";
+  const torsoScale: [number, number, number] = gender === "female" ? [0.9, 1, 0.9] : [1, 1, 1];
 
   return (
     <group ref={groupRef} position={[4, 0, 6]}>
       {/* Torso */}
-      <mesh position={[0, 1.55, 0]} castShadow>
+      <mesh position={[0, 1.55, 0]} scale={torsoScale} castShadow>
         <capsuleGeometry args={[0.36, 0.7, 4, 12]} />
         <meshStandardMaterial color={outfit} roughness={0.65} />
       </mesh>
@@ -122,6 +127,18 @@ export function CampusPlayer({
         <sphereGeometry args={[0.3, 20, 16]} />
         <meshStandardMaterial color={skin} roughness={0.5} />
       </mesh>
+      {/* Cabello */}
+      {gender === "female" ? (
+        <mesh position={[0, 1.95, -0.1]} rotation={[0.2, 0, 0]} castShadow>
+          <capsuleGeometry args={[0.23, 0.6, 4, 10]} />
+          <meshStandardMaterial color={hair} roughness={0.6} />
+        </mesh>
+      ) : (
+        <mesh position={[0, 2.52, 0]} castShadow>
+          <sphereGeometry args={[0.31, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.1]} />
+          <meshStandardMaterial color={hair} roughness={0.7} />
+        </mesh>
+      )}
       {/* Piernas (pivote en la cadera para que el balanceo se vea natural) */}
       <group ref={leftLeg} position={[-0.16, 1.15, 0]}>
         <mesh position={[0, -0.33, 0]} castShadow>
