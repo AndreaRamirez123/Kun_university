@@ -6,6 +6,7 @@ const MODELS = [
   { n: 1, href: "/", label: "Miami Deco" },
   { n: 2, href: "/estilo-2", label: "Retro USA" },
   { n: 3, href: "/estilo-3", label: "Collage" },
+  { n: 4, href: "/campus", label: "Campus 3D" },
 ];
 
 export function ModelSwitcher({ current }: { current: number }) {
@@ -31,7 +32,7 @@ export function ModelSwitcher({ current }: { current: number }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label="Comparar los 3 modelos"
+        aria-label="Comparar los modelos"
         aria-expanded={open}
         className="flex h-11 w-11 items-center justify-center rounded-full bg-[#10182B] text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5"
       >
