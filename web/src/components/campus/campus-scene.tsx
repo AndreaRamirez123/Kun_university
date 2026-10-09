@@ -6,8 +6,68 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Grid } from "@react-three/drei";
 import * as THREE from "three";
 import { BUILDING_LAYOUT } from "./campus-buildings";
+import { CampusInfoPanel } from "./campus-info-panel";
 import { CampusPlayer, type Collider } from "./campus-player";
 import type { Certification, School, Stats } from "@/lib/types";
+
+const ENTRY_MARGIN = 3.5;
+
+type Building = { school: School; layout: (typeof BUILDING_LAYOUT)[string] };
+
+// Detecta el edificio más cercano dentro de su radio de entrada, sin re-renderizar cada frame.
+function ProximityWatcher({
+  playerRef,
+  buildings,
+  onActiveChange,
+}: {
+  playerRef: React.RefObject<THREE.Group | null>;
+  buildings: Building[];
+  onActiveChange: (slug: string | null) => void;
+}) {
+  const current = useRef<string | null>(null);
+
+  useFrame(() => {
+    const player = playerRef.current;
+    if (!player) return;
+    let closestSlug: string | null = null;
+    let closestDist = Infinity;
+    for (const { school, layout } of buildings) {
+      const dx = player.position.x - layout.x;
+      const dz = player.position.z - layout.z;
+      const dist = Math.hypot(dx, dz);
+      if (dist < layout.radius + ENTRY_MARGIN && dist < closestDist) {
+        closestDist = dist;
+        closestSlug = school.slug;
+      }
+    }
+    if (closestSlug !== current.current) {
+      current.current = closestSlug;
+      onActiveChange(closestSlug);
+    }
+  });
+
+  return null;
+}
+
+// Anillo dorado que pulsa en la plaza del edificio activo.
+function ActiveRing({ radius }: { radius: number }) {
+  const ref = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    const mesh = ref.current;
+    if (!mesh) return;
+    const t = state.clock.elapsedTime;
+    mesh.scale.setScalar(1 + Math.sin(t * 2.4) * 0.03);
+    (mesh.material as THREE.MeshBasicMaterial).opacity = 0.5 + Math.sin(t * 2.4) * 0.25;
+  });
+
+  return (
+    <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
+      <ringGeometry args={[radius - 0.15, radius, 48]} />
+      <meshBasicMaterial color="#FFC85C" transparent opacity={0.6} side={THREE.DoubleSide} />
+    </mesh>
+  );
+}
 
 function hasWebGL() {
   try {
@@ -64,9 +124,10 @@ export function CampusScene({
   stats: Stats;
 }) {
   const [webglOk] = useState(() => (typeof window !== "undefined" ? hasWebGL() : true));
+  const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const playerRef = useRef<THREE.Group>(null);
 
-  const buildings = useMemo(
+  const buildings: Building[] = useMemo(
     () => schools.map((school) => ({ school, layout: BUILDING_LAYOUT[school.slug] })).filter((b) => b.layout),
     [schools],
   );
@@ -91,8 +152,10 @@ export function CampusScene({
         ← Sitio clásico
       </Link>
       <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-center text-[11px] font-semibold tracking-[0.04em] text-[#FFF3E6]/70">
-        Usa las flechas o W A S D para caminar
+        Usa las flechas o W A S D para caminar · Acércate a un edificio para explorarlo
       </div>
+
+      <CampusInfoPanel school={buildings.find((b) => b.school.slug === activeSlug)?.school ?? null} />
 
       <Canvas shadows camera={{ position: [4, 13, 21], fov: 45 }}>
         <color attach="background" args={["#1D1236"]} />
@@ -110,11 +173,13 @@ export function CampusScene({
         {buildings.map(({ school, layout }) => (
           <group key={school.slug} position={[layout.x, 0, layout.z]}>
             <layout.Component />
+            {activeSlug === school.slug && <ActiveRing radius={layout.radius} />}
           </group>
         ))}
 
         <CampusPlayer groupRef={playerRef} colliders={colliders} />
         <CameraRig targetRef={playerRef} />
+        <ProximityWatcher playerRef={playerRef} buildings={buildings} onActiveChange={setActiveSlug} />
       </Canvas>
     </div>
   );
