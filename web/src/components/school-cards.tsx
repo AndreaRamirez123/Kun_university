@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Reveal } from "./reveal";
 import type { School } from "@/lib/types";
 
@@ -72,7 +73,7 @@ function BuildingCard({ school, i }: { school: School; i: number }) {
 
       <div className="w-full border-x-2 border-b-2 border-navy/15 bg-cream p-4 text-center">
         <p className="mb-2.5 text-[15px] leading-snug italic text-muted-ink">{school.tagline}</p>
-        <div className="flex flex-wrap justify-center gap-1.5">
+        <div className="mb-3 flex flex-wrap justify-center gap-1.5">
           {school.programs.map((p) => (
             <span
               key={p.name}
@@ -82,6 +83,12 @@ function BuildingCard({ school, i }: { school: School; i: number }) {
             </span>
           ))}
         </div>
+        <Link
+          href={`/programas/${school.slug}`}
+          className="small-caps text-[11px] font-bold text-teal hover:underline"
+        >
+          Ver plan de materias →
+        </Link>
       </div>
     </div>
   );
