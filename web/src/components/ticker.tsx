@@ -1,17 +1,36 @@
-const ITEMS = [
-  "Escuela de Ingeniería",
-  "Transformación de Negocios",
-  "Bienestar y Desarrollo Humano",
-  "Diseño y Tecnologías de Comunicación",
-  "Educación Superior IA-Native",
-  "Florida",
-  "100% Online / Global",
-];
+"use client";
 
-function TickerGroup() {
+import { usePick } from "@/i18n/locale-context";
+
+const COPY = {
+  es: {
+    items: [
+      "Escuela de Ingeniería",
+      "Transformación de Negocios",
+      "Bienestar y Desarrollo Humano",
+      "Diseño y Tecnologías de Comunicación",
+      "Educación Superior IA-Native",
+      "Florida",
+      "100% Online / Global",
+    ],
+  },
+  en: {
+    items: [
+      "School of Engineering",
+      "Business Transformation",
+      "Wellness and Human Development",
+      "Design and Communication Technologies",
+      "AI-Native Higher Education",
+      "Florida",
+      "100% Online / Global",
+    ],
+  },
+};
+
+function TickerGroup({ items }: { items: string[] }) {
   return (
     <span className="flex items-center">
-      {ITEMS.map((item) => (
+      {items.map((item) => (
         <span key={item} className="flex items-center">
           <span
             className="small-caps px-4.5 text-xs font-bold tracking-[0.14em] text-navy"
@@ -27,6 +46,7 @@ function TickerGroup() {
 }
 
 export function Ticker() {
+  const t = usePick(COPY);
   return (
     <div
       className="mask-fade-x relative z-10 overflow-hidden border-y border-white/60 py-4 whitespace-nowrap backdrop-blur-md backdrop-saturate-200"
@@ -38,8 +58,8 @@ export function Ticker() {
       }}
     >
       <div className="animate-marquee flex w-max">
-        <TickerGroup />
-        <TickerGroup />
+        <TickerGroup items={t.items} />
+        <TickerGroup items={t.items} />
       </div>
     </div>
   );

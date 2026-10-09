@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Reveal } from "./reveal";
+import { useLocale, usePick } from "@/i18n/locale-context";
 import type { School } from "@/lib/types";
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -34,9 +35,31 @@ const ICONS: Record<string, React.ReactNode> = {
 const FACADES = ["#C9D6EC", "#BFE6EE", "#E7E8E8", "#C3E0E6"];
 const HEIGHTS = [440, 400, 480, 420];
 
+const COPY = {
+  es: {
+    eyebrow: "Cuatro escuelas",
+    heading: "El mismo motor IA-Native, cuatro fachadas distintas",
+    body: "Cada programa se rediseña continuamente con IA y expertos humanos para reflejar lo que la industria necesita hoy.",
+    goTo: (name: string) => `Ir a ${name}`,
+    curriculum: "Ver plan de materias →",
+    cta: "Quiero información de mi escuela",
+  },
+  en: {
+    eyebrow: "Four schools",
+    heading: "The same AI-Native engine, four different facades",
+    body: "Every program is continuously redesigned with AI and human experts to reflect what industry needs today.",
+    goTo: (name: string) => `Go to ${name}`,
+    curriculum: "View curriculum →",
+    cta: "I want information about my school",
+  },
+};
+
 function BuildingCard({ school, i }: { school: School; i: number }) {
+  const t = usePick(COPY);
+  const { locale } = useLocale();
   const facade = FACADES[i % FACADES.length];
   const height = HEIGHTS[i % HEIGHTS.length];
+  const shortName = school.name[locale].replace(/^(Escuela de |School of )/, "");
   return (
     <div
       className="animate-building-float group flex w-62 shrink-0 flex-col items-center transition-[translate,filter] duration-300 hover:-translate-y-2 max-md:w-full max-md:max-w-70 max-md:animate-none max-md:transition-none max-md:hover:translate-y-0"
@@ -55,9 +78,7 @@ function BuildingCard({ school, i }: { school: School; i: number }) {
           className="absolute top-16 left-1/2 flex -translate-x-1/2 items-center justify-center rounded-sm border-2 border-navy bg-cream px-3 py-5 text-navy shadow-[0_8px_16px_rgba(3,62,140,0.3)]"
           style={{ writingMode: "vertical-rl" }}
         >
-          <span className="font-display text-xl font-bold tracking-[0.1em] uppercase">
-            {school.name.replace("Escuela de ", "")}
-          </span>
+          <span className="font-display text-xl font-bold tracking-[0.1em] uppercase">{shortName}</span>
         </div>
 
         <div className="mt-32 grid grid-cols-4 gap-2 px-6">
@@ -72,7 +93,7 @@ function BuildingCard({ school, i }: { school: School; i: number }) {
       </div>
 
       <div className="w-full border-x-2 border-b-2 border-navy/15 bg-cream p-4 text-center">
-        <p className="mb-2.5 text-[15px] leading-snug italic text-muted-ink">{school.tagline}</p>
+        <p className="mb-2.5 text-[15px] leading-snug italic text-muted-ink">{school.tagline[locale]}</p>
         <div className="mb-3 flex flex-wrap justify-center gap-1.5">
           {school.programs.map((p) => (
             <span
@@ -87,7 +108,7 @@ function BuildingCard({ school, i }: { school: School; i: number }) {
           href={`/programas/${school.slug}`}
           className="small-caps text-[11px] font-bold text-teal hover:underline"
         >
-          Ver plan de materias →
+          {t.curriculum}
         </Link>
       </div>
     </div>
@@ -95,6 +116,8 @@ function BuildingCard({ school, i }: { school: School; i: number }) {
 }
 
 export function SchoolCards({ schools }: { schools: School[] }) {
+  const t = usePick(COPY);
+  const { locale } = useLocale();
   const [active, setActive] = useState(0);
   const [displayed, setDisplayed] = useState(0);
   const [outgoing, setOutgoing] = useState<number | null>(null);
@@ -121,14 +144,9 @@ export function SchoolCards({ schools }: { schools: School[] }) {
     <div id="programas" className="relative z-10 overflow-hidden bg-cream py-24">
       <div className="mx-auto max-w-300 px-14 max-md:px-6">
         <div className="mb-14 text-center">
-          <div className="small-caps mb-3.5 text-xs font-bold text-teal">Cuatro escuelas</div>
-          <h2 className="font-display mb-3.5 text-4xl font-normal">
-            El mismo motor IA-Native, cuatro fachadas distintas
-          </h2>
-          <p className="mx-auto max-w-[520px] text-[15px] text-muted-ink">
-            Cada programa se rediseña continuamente con IA y expertos humanos para reflejar lo que
-            la industria necesita hoy.
-          </p>
+          <div className="small-caps mb-3.5 text-xs font-bold text-teal">{t.eyebrow}</div>
+          <h2 className="font-display mb-3.5 text-4xl font-normal">{t.heading}</h2>
+          <p className="mx-auto max-w-[520px] text-[15px] text-muted-ink">{t.body}</p>
         </div>
       </div>
 
@@ -159,7 +177,7 @@ export function SchoolCards({ schools }: { schools: School[] }) {
           <button
             key={school.slug}
             type="button"
-            aria-label={`Ir a ${school.name}`}
+            aria-label={t.goTo(school.name[locale])}
             onClick={() => setActive(i)}
             className="h-2 w-2 rounded-full transition"
             style={{ background: i === active ? "var(--color-navy)" : "var(--color-hairline)" }}
@@ -174,7 +192,7 @@ export function SchoolCards({ schools }: { schools: School[] }) {
           href="#informacion"
           className="inline-block rounded-full bg-navy px-7 py-4 text-[15px] font-bold text-cream shadow-[0_14px_28px_rgba(3,62,140,0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(3,62,140,0.55)]"
         >
-          Quiero información de mi escuela
+          {t.cta}
         </a>
       </div>
     </div>

@@ -1,9 +1,39 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, usePick } from "@/i18n/locale-context";
 import type { School } from "@/lib/types";
 
+const COPY = {
+  es: {
+    successTitle: "¡Listo!",
+    successBody: "Recibimos tu información. Un asesor de KUN te va a contactar pronto.",
+    title: "Solicita información",
+    subtitle: "Te contamos todo sobre programas, becas y fechas de inicio. Sin compromiso.",
+    name: "Nombre completo",
+    email: "Email",
+    phone: "Teléfono",
+    program: "Programa de interés",
+    choose: "Elige un programa",
+    submit: "Enviar solicitud →",
+  },
+  en: {
+    successTitle: "All set!",
+    successBody: "We received your information. A KUN advisor will contact you soon.",
+    title: "Request information",
+    subtitle: "We'll tell you everything about programs, scholarships and start dates. No commitment.",
+    name: "Full name",
+    email: "Email",
+    phone: "Phone",
+    program: "Program of interest",
+    choose: "Choose a program",
+    submit: "Send request →",
+  },
+};
+
 export function DecoInfoForm({ schools }: { schools: School[] }) {
+  const t = usePick(COPY);
+  const { locale } = useLocale();
   const [submitted, setSubmitted] = useState(false);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -34,22 +64,18 @@ export function DecoInfoForm({ schools }: { schools: School[] }) {
       >
         {submitted ? (
           <div className="py-10 text-center">
-            <div className="font-display text-burgundy mb-2 text-2xl font-normal">¡Listo!</div>
-            <p className="mx-auto max-w-100 text-sm text-muted-ink">
-              Recibimos tu información. Un asesor de KUN te va a contactar pronto.
-            </p>
+            <div className="font-display text-burgundy mb-2 text-2xl font-normal">{t.successTitle}</div>
+            <p className="mx-auto max-w-100 text-sm text-muted-ink">{t.successBody}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-5 max-md:grid-cols-1">
             <div className="col-span-2 mb-1 text-center max-md:col-span-1">
-              <div className="font-display mb-2 text-2xl font-normal">Solicita información</div>
-              <p className="mx-auto max-w-100 text-sm text-muted-ink">
-                Te contamos todo sobre programas, becas y fechas de inicio. Sin compromiso.
-              </p>
+              <div className="font-display mb-2 text-2xl font-normal">{t.title}</div>
+              <p className="mx-auto max-w-100 text-sm text-muted-ink">{t.subtitle}</p>
             </div>
 
             <label className="small-caps text-muted-brown flex flex-col gap-1.5 text-xs font-bold">
-              Nombre completo
+              {t.name}
               <input
                 required
                 type="text"
@@ -59,7 +85,7 @@ export function DecoInfoForm({ schools }: { schools: School[] }) {
             </label>
 
             <label className="small-caps text-muted-brown flex flex-col gap-1.5 text-xs font-bold">
-              Email
+              {t.email}
               <input
                 required
                 type="email"
@@ -69,7 +95,7 @@ export function DecoInfoForm({ schools }: { schools: School[] }) {
             </label>
 
             <label className="small-caps text-muted-brown flex flex-col gap-1.5 text-xs font-bold">
-              Teléfono
+              {t.phone}
               <input
                 required
                 type="tel"
@@ -79,7 +105,7 @@ export function DecoInfoForm({ schools }: { schools: School[] }) {
             </label>
 
             <label className="small-caps text-muted-brown flex flex-col gap-1.5 text-xs font-bold">
-              Programa de interés
+              {t.program}
               <select
                 required
                 name="program"
@@ -87,12 +113,12 @@ export function DecoInfoForm({ schools }: { schools: School[] }) {
                 className="border-hairline focus:border-burgundy rounded-lg border px-4 py-3 text-sm font-medium text-ink normal-case focus:outline-none"
               >
                 <option value="" disabled>
-                  Elige un programa
+                  {t.choose}
                 </option>
                 {schools.flatMap((school) =>
                   school.programs.map((p) => (
                     <option key={`${school.slug}-${p.name}`} value={p.name}>
-                      {p.name} · {school.name}
+                      {p.name} · {school.name[locale]}
                     </option>
                   )),
                 )}
@@ -103,7 +129,7 @@ export function DecoInfoForm({ schools }: { schools: School[] }) {
               type="submit"
               className="col-span-2 mt-2 rounded-full bg-navy px-9 py-4 text-[15px] font-bold text-cream shadow-[0_14px_28px_rgba(3,62,140,0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(3,62,140,0.55)] max-md:col-span-1"
             >
-              Enviar solicitud →
+              {t.submit}
             </button>
           </form>
         )}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto, Josefin_Sans } from "next/font/google";
+import { LocaleProvider } from "@/i18n/locale-context";
 import "./globals.css";
 
 const displayFont = Roboto({
@@ -28,7 +29,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`${displayFont.variable} ${josefin.variable} antialiased`}
     >
-      <body className="font-body bg-cream text-ink">{children}</body>
+      <body className="font-body bg-cream text-ink">
+        <LocaleProvider>{children}</LocaleProvider>
+      </body>
     </html>
   );
 }

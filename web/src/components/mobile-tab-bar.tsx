@@ -1,11 +1,17 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { usePick } from "@/i18n/locale-context";
+
+const LABELS = {
+  es: { programas: "Programas", educacion: "Educación", comunidad: "Comunidad", informacion: "Información" },
+  en: { programas: "Programs", educacion: "Education", comunidad: "Community", informacion: "Information" },
+};
 
 const ITEMS = [
   {
     href: "#programas",
-    label: "Programas",
+    key: "programas" as const,
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M22 10L12 5 2 10l10 5 10-5z" />
@@ -15,7 +21,7 @@ const ITEMS = [
   },
   {
     href: "#continua",
-    label: "Educación",
+    key: "educacion" as const,
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <circle cx="12" cy="8" r="5" />
@@ -25,7 +31,7 @@ const ITEMS = [
   },
   {
     href: "#comunidad",
-    label: "Comunidad",
+    key: "comunidad" as const,
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <circle cx="9" cy="8" r="3" />
@@ -37,7 +43,7 @@ const ITEMS = [
   },
   {
     href: "#informacion",
-    label: "Información",
+    key: "informacion" as const,
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <circle cx="12" cy="12" r="9" />
@@ -48,6 +54,7 @@ const ITEMS = [
 ];
 
 export function MobileTabBar({ pillBg, accents }: { pillBg: string; accents: [string, string, string, string] }) {
+  const labels = usePick(LABELS);
   const [active, setActive] = useState(0);
   const menuRef = useRef<HTMLElement>(null);
   const borderRef = useRef<HTMLDivElement>(null);
@@ -96,7 +103,7 @@ export function MobileTabBar({ pillBg, accents }: { pillBg: string; accents: [st
             itemRefs.current[i] = el;
           }}
           href={item.href}
-          aria-label={item.label}
+          aria-label={labels[item.key]}
           className={`mtb-item ${i === active ? "active" : ""}`}
           style={{ "--mtb-accent": accents[i] } as React.CSSProperties}
           onClick={() => handleClick(i)}

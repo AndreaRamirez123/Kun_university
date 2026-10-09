@@ -3,9 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Reveal } from "../reveal";
+import { useLocale, usePick } from "@/i18n/locale-context";
 import type { School } from "@/lib/types";
 
+const COPY = {
+  es: { eyebrow: "Escuela", curriculum: "Ver plan de materias completo →", closeHint: "Aléjate del edificio para cerrar" },
+  en: { eyebrow: "School", curriculum: "View full curriculum →", closeHint: "Step away from the building to close" },
+};
+
 export function CampusInfoPanel({ school }: { school: School | null }) {
+  const t = usePick(COPY);
+  const { locale } = useLocale();
   const [prevSchool, setPrevSchool] = useState(school);
   const [rendered, setRendered] = useState(school);
   if (school !== prevSchool) {
@@ -28,18 +36,18 @@ export function CampusInfoPanel({ school }: { school: School | null }) {
       }}
     >
       <Reveal variant="right">
-        <div className="small-caps text-xs font-bold text-[#FFC85C]">Escuela</div>
+        <div className="small-caps text-xs font-bold text-[#FFC85C]">{t.eyebrow}</div>
       </Reveal>
       <Reveal variant="right" delay={60}>
         <h2 className="font-display text-4xl leading-[1.05] font-normal text-[#FFF3E6] max-md:text-3xl">
-          {rendered.name.replace("Escuela de ", "")}
+          {rendered.name[locale].replace(/^(Escuela de |School of )/, "")}
         </h2>
       </Reveal>
       <Reveal variant="right" delay={120}>
         <div className="animate-hairline h-[2px] bg-[#FFC85C]" />
       </Reveal>
       <Reveal variant="right" delay={160}>
-        <p className="text-[15px] italic text-[#FFF3E6]/70">{rendered.tagline}</p>
+        <p className="text-[15px] italic text-[#FFF3E6]/70">{rendered.tagline[locale]}</p>
       </Reveal>
 
       <div className="mt-2 flex flex-col">
@@ -63,12 +71,12 @@ export function CampusInfoPanel({ school }: { school: School | null }) {
           href={`/programas/${rendered.slug}`}
           className="mt-2 inline-flex items-center gap-2 text-sm font-bold text-[#FFC85C] hover:underline"
         >
-          Ver plan de materias completo →
+          {t.curriculum}
         </Link>
       </Reveal>
 
       <p className="pointer-events-none mt-auto text-[11px] font-semibold tracking-[0.04em] text-[#FFF3E6]/40">
-        Aléjate del edificio para cerrar
+        {t.closeHint}
       </p>
     </div>
   );

@@ -11,7 +11,7 @@ const PLAYER_RADIUS = 0.6;
 export const BOUNDARY_RADIUS = 27;
 
 export type Collider = { x: number; z: number; radius: number };
-export type Gender = "male" | "female";
+export type Gender = "male" | "female" | "other";
 
 const MOVE_KEYS = new Set([
   "KeyW",
@@ -111,7 +111,7 @@ export function CampusPlayer({
   });
 
   const skin = "#D9A273";
-  const outfit = gender === "female" ? "#17213A" : "#10101A";
+  const outfit = gender === "female" ? "#17213A" : gender === "other" ? "#0D3B45" : "#10101A";
   const hair = "#2B1B12";
   const torsoScale: [number, number, number] = gender === "female" ? [0.9, 1, 0.9] : [1, 1, 1];
 

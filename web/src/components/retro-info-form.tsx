@@ -1,7 +1,35 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, usePick } from "@/i18n/locale-context";
 import type { School } from "@/lib/types";
+
+const COPY = {
+  es: {
+    successTitle: "¡Listo!",
+    successBody: "Recibimos tu información. Un asesor de KUN te va a contactar pronto.",
+    formTitle: "Solicita información",
+    formSubtitle: "Te contamos todo sobre programas, becas y fechas de inicio. Sin compromiso.",
+    name: "Nombre completo",
+    email: "Email",
+    phone: "Teléfono",
+    program: "Programa de interés",
+    programPlaceholder: "Elige un programa",
+    submit: "Enviar solicitud →",
+  },
+  en: {
+    successTitle: "All set!",
+    successBody: "We've received your information. A KUN advisor will reach out soon.",
+    formTitle: "Request information",
+    formSubtitle: "We'll tell you everything about programs, scholarships, and start dates. No commitment.",
+    name: "Full name",
+    email: "Email",
+    phone: "Phone",
+    program: "Program of interest",
+    programPlaceholder: "Choose a program",
+    submit: "Submit request →",
+  },
+};
 
 const BLUE = "#03318C";
 const RED = "#8C0303";
@@ -87,6 +115,8 @@ function IconField({
 
 export function RetroInfoForm({ schools }: { schools: School[] }) {
   const [submitted, setSubmitted] = useState(false);
+  const t = usePick(COPY);
+  const { locale } = useLocale();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -100,10 +130,10 @@ export function RetroInfoForm({ schools }: { schools: School[] }) {
         style={{ borderColor: BLUE, boxShadow: SOFT_TEAL_SHADOW }}
       >
         <div className="mb-3 text-2xl uppercase" style={{ fontFamily: DISPLAY, color: RED }}>
-          ¡Listo!
+          {t.successTitle}
         </div>
         <p className="text-sm font-medium" style={{ color: INK }}>
-          Recibimos tu información. Un asesor de KUN te va a contactar pronto.
+          {t.successBody}
         </p>
       </div>
     );
@@ -121,15 +151,15 @@ export function RetroInfoForm({ schools }: { schools: School[] }) {
     >
       <header className="col-span-2 mb-6 text-center max-md:col-span-1 max-md:mb-3">
         <div className="text-3xl uppercase" style={{ fontFamily: DISPLAY, color: BLUE }}>
-          Solicita información
+          {t.formTitle}
         </div>
         <p className="mx-auto mt-2 max-w-100 text-sm font-medium" style={{ color: "#5A5A5A" }}>
-          Te contamos todo sobre programas, becas y fechas de inicio. Sin compromiso.
+          {t.formSubtitle}
         </p>
       </header>
 
       <label className="flex flex-col gap-1.5 text-xs font-bold tracking-[0.05em] uppercase" style={{ color: BLUE }}>
-        Nombre completo
+        {t.name}
         <IconField icon={<UserIcon />}>
           <input
             required
@@ -142,7 +172,7 @@ export function RetroInfoForm({ schools }: { schools: School[] }) {
       </label>
 
       <label className="flex flex-col gap-1.5 text-xs font-bold tracking-[0.05em] uppercase" style={{ color: BLUE }}>
-        Email
+        {t.email}
         <IconField icon={<MailIcon />}>
           <input
             required
@@ -155,7 +185,7 @@ export function RetroInfoForm({ schools }: { schools: School[] }) {
       </label>
 
       <label className="flex flex-col gap-1.5 text-xs font-bold tracking-[0.05em] uppercase" style={{ color: BLUE }}>
-        Teléfono
+        {t.phone}
         <IconField icon={<PhoneIcon />}>
           <input
             required
@@ -168,7 +198,7 @@ export function RetroInfoForm({ schools }: { schools: School[] }) {
       </label>
 
       <label className="flex flex-col gap-1.5 text-xs font-bold tracking-[0.05em] uppercase" style={{ color: BLUE }}>
-        Programa de interés
+        {t.program}
         <IconField icon={<ListIcon />} hasChevron>
           <select
             required
@@ -178,12 +208,12 @@ export function RetroInfoForm({ schools }: { schools: School[] }) {
             style={{ color: INK }}
           >
             <option value="" disabled>
-              Elige un programa
+              {t.programPlaceholder}
             </option>
             {schools.flatMap((school) =>
               school.programs.map((p) => (
                 <option key={`${school.slug}-${p.name}`} value={p.name}>
-                  {p.name} · {school.name}
+                  {p.name} · {school.name[locale]}
                 </option>
               )),
             )}
@@ -196,7 +226,7 @@ export function RetroInfoForm({ schools }: { schools: School[] }) {
         className="btn-jelly col-span-2 mt-2 rounded-full border-[3px] px-7 py-4 text-sm font-bold text-white uppercase transition hover:-translate-y-0.5 max-md:col-span-1"
         style={{ background: RED, borderColor: INK, boxShadow: SOFT_INK_SHADOW }}
       >
-        Enviar solicitud →
+        {t.submit}
       </button>
     </form>
   );

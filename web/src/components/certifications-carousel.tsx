@@ -1,11 +1,37 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale, usePick } from "@/i18n/locale-context";
 import type { Certification } from "@/lib/types";
 
 const ACCENTS = ["#0092B6", "#033E8C"];
 
+const COPY = {
+  es: {
+    eyebrow: "Educación continua",
+    heading: "No tienes que esperar a graduarte",
+    body: "Seis certificaciones de 36 a 40 horas, diseñadas para aplicar lo aprendido desde la primera semana.",
+    prev: "Certificación anterior",
+    next: "Siguiente certificación",
+    hoursSuffix: "horas · 100% online",
+    goTo: (name: string) => `Ir a ${name}`,
+    cta: "Inscríbete a una certificación",
+  },
+  en: {
+    eyebrow: "Continuing education",
+    heading: "You don't have to wait until graduation",
+    body: "Six certifications of 36 to 40 hours, designed to apply what you learn from the very first week.",
+    prev: "Previous certification",
+    next: "Next certification",
+    hoursSuffix: "hours · 100% online",
+    goTo: (name: string) => `Go to ${name}`,
+    cta: "Enroll in a certification",
+  },
+};
+
 export function CertificationsCarousel({ certifications }: { certifications: Certification[] }) {
+  const t = usePick(COPY);
+  const { locale } = useLocale();
   const [index, setIndex] = useState(0);
   const [spinKey, setSpinKey] = useState(0);
   const [fading, setFading] = useState(false);
@@ -33,22 +59,15 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
     <div id="continua" className="relative z-10 bg-cream py-22 text-ink">
       <div className="mx-auto max-w-[1100px] px-14 max-md:px-6">
         <div className="mb-12 text-center">
-          <div className="small-caps mb-3.5 text-xs font-bold tracking-[0.14em] text-cyan">
-            Educación continua
-          </div>
-          <h2 className="font-display mb-3.5 text-4xl font-normal">
-            No tienes que esperar a graduarte
-          </h2>
-          <p className="mx-auto max-w-[480px] text-sm text-muted-ink">
-            Seis certificaciones de 36 a 40 horas, diseñadas para aplicar lo aprendido desde la
-            primera semana.
-          </p>
+          <div className="small-caps mb-3.5 text-xs font-bold tracking-[0.14em] text-cyan">{t.eyebrow}</div>
+          <h2 className="font-display mb-3.5 text-4xl font-normal">{t.heading}</h2>
+          <p className="mx-auto max-w-[480px] text-sm text-muted-ink">{t.body}</p>
         </div>
 
         <div className="relative mx-auto flex max-w-160 items-center gap-4 max-md:gap-2">
           <button
             type="button"
-            aria-label="Certificación anterior"
+            aria-label={t.prev}
             onClick={() => go(-1)}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-cyan/40 text-cyan transition hover:-translate-y-0.5 hover:border-cyan hover:bg-cyan/10 max-md:h-9 max-md:w-9"
           >
@@ -96,11 +115,11 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
                   className="small-caps mb-2.5 text-xs font-bold tracking-[0.1em]"
                   style={{ color: accent }}
                 >
-                  {cert.hours} horas · 100% online
+                  {cert.hours} {t.hoursSuffix}
                 </div>
                 <h3 className="font-display mb-3 text-2xl font-normal">{cert.name}</h3>
                 <p className="mx-auto max-w-100 text-sm leading-[1.6] text-muted-ink">
-                  {cert.description}
+                  {cert.description[locale]}
                 </p>
               </div>
             </div>
@@ -108,7 +127,7 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
 
           <button
             type="button"
-            aria-label="Siguiente certificación"
+            aria-label={t.next}
             onClick={() => go(1)}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-cyan/40 text-cyan transition hover:-translate-y-0.5 hover:border-cyan hover:bg-cyan/10 max-md:h-9 max-md:w-9"
           >
@@ -123,7 +142,7 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
             <button
               key={c.slug}
               type="button"
-              aria-label={`Ir a ${c.name}`}
+              aria-label={t.goTo(c.name)}
               onClick={() => {
                 setSpinKey((k) => k + 1);
                 setFading(true);
@@ -143,7 +162,7 @@ export function CertificationsCarousel({ certifications }: { certifications: Cer
             href="#informacion"
             className="inline-block rounded-full bg-burgundy px-7 py-4 text-[15px] font-bold text-cream shadow-[0_14px_28px_rgba(0,146,182,0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(0,146,182,0.55)]"
           >
-            Inscríbete a una certificación
+            {t.cta}
           </a>
         </div>
       </div>

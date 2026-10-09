@@ -6,6 +6,7 @@ import { useState } from "react";
 import { CampusCharacterSelect, type Gender } from "./campus-character-select";
 import { hasWebGL } from "./has-webgl";
 import { NoWebGLFallback } from "./no-webgl-fallback";
+import { usePick } from "@/i18n/locale-context";
 import type { Certification, School, Stats } from "@/lib/types";
 
 const CampusScene = dynamic(() => import("./campus-scene").then((m) => m.CampusScene), {
@@ -13,13 +14,19 @@ const CampusScene = dynamic(() => import("./campus-scene").then((m) => m.CampusS
   loading: () => <CampusLoading />,
 });
 
+const COPY = {
+  es: { loading: "Cargando el campus…", classicSite: "Ver versión clásica del sitio" },
+  en: { loading: "Loading the campus…", classicSite: "View the classic site" },
+};
+
 function CampusLoading() {
+  const t = usePick(COPY);
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#1D1236] text-[#FFF3E6]">
       <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#FFF3E6]/25 border-t-[#FFC85C]" />
-      <p className="text-sm font-semibold">Cargando el campus…</p>
+      <p className="text-sm font-semibold">{t.loading}</p>
       <Link href="/" className="text-xs underline opacity-70 hover:opacity-100">
-        Ver versión clásica del sitio
+        {t.classicSite}
       </Link>
     </div>
   );

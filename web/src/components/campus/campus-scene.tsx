@@ -10,7 +10,21 @@ import { hasWebGL } from "./has-webgl";
 import { CampusInfoPanel } from "./campus-info-panel";
 import { CampusPlayer, type Collider, type Gender } from "./campus-player";
 import { NoWebGLFallback } from "./no-webgl-fallback";
+import { useLocale, usePick } from "@/i18n/locale-context";
 import type { Certification, School, Stats } from "@/lib/types";
+
+const COPY = {
+  es: {
+    subtitle: "Campus virtual — prueba de concepto",
+    classicSite: "← Sitio clásico",
+    controlsHint: "Usa las flechas o W A S D para caminar · Acércate a un edificio para explorarlo",
+  },
+  en: {
+    subtitle: "Virtual campus — proof of concept",
+    classicSite: "← Classic site",
+    controlsHint: "Use the arrow keys or W A S D to walk · Get close to a building to explore it",
+  },
+};
 
 const ENTRY_MARGIN = 3.5;
 
@@ -101,6 +115,8 @@ export function CampusScene({
   stats: Stats;
   gender?: Gender;
 }) {
+  const t = usePick(COPY);
+  const { locale } = useLocale();
   const [webglOk] = useState(() => (typeof window !== "undefined" ? hasWebGL() : true));
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const playerRef = useRef<THREE.Group>(null);
@@ -121,16 +137,16 @@ export function CampusScene({
     <div className="absolute inset-0">
       <div className="pointer-events-none absolute top-4 left-4 z-10 text-[#FFF3E6]">
         <div className="text-lg font-extrabold">KUN University AI</div>
-        <div className="text-xs opacity-70">Campus virtual — prueba de concepto</div>
+        <div className="text-xs opacity-70">{t.subtitle}</div>
       </div>
       <Link
         href="/"
         className="absolute top-4 right-4 z-10 rounded-full bg-black/30 px-4 py-2 text-xs font-bold text-[#FFF3E6] backdrop-blur-sm transition hover:bg-black/50"
       >
-        ← Sitio clásico
+        {t.classicSite}
       </Link>
       <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-center text-[11px] font-semibold tracking-[0.04em] text-[#FFF3E6]/70">
-        Usa las flechas o W A S D para caminar · Acércate a un edificio para explorarlo
+        {t.controlsHint}
       </div>
 
       <CampusInfoPanel school={buildings.find((b) => b.school.slug === activeSlug)?.school ?? null} />
@@ -150,7 +166,7 @@ export function CampusScene({
 
         {buildings.map(({ school, layout }) => (
           <group key={school.slug} position={[layout.x, 0, layout.z]}>
-            <layout.Component />
+            <layout.Component label={school.name[locale].replace(/^(Escuela de |School of )/, "")} />
             {activeSlug === school.slug && <ActiveRing radius={layout.radius} />}
           </group>
         ))}

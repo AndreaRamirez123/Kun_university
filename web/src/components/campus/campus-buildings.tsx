@@ -17,7 +17,7 @@ function Plaza({ radius, color = "#EFE6D2" }: { radius: number; color?: string }
   );
 }
 
-function IngenieriaBuilding() {
+function IngenieriaBuilding({ label }: { label: string }) {
   return (
     <group>
       <Plaza radius={5} />
@@ -39,12 +39,12 @@ function IngenieriaBuilding() {
         <cylinderGeometry args={[0.08, 0.08, 2.6, 6]} />
         <meshStandardMaterial color={CREAM} />
       </mesh>
-      <CampusLabel text="Ingeniería" color={NAVY} position={[0, 14.5, 0]} />
+      <CampusLabel text={label} color={NAVY} position={[0, 14.5, 0]} />
     </group>
   );
 }
 
-function NegociosBuilding() {
+function NegociosBuilding({ label }: { label: string }) {
   const tiers: Array<[number, number, number]> = [
     [7, 2.2, 6],
     [5.4, 2.2, 4.6],
@@ -75,12 +75,12 @@ function NegociosBuilding() {
         <coneGeometry args={[0.7, 2.6, 4]} />
         <meshStandardMaterial color={CREAM} />
       </mesh>
-      <CampusLabel text="Transformación de Negocios" color={BRASS} position={[0, y + 3.2, 0]} />
+      <CampusLabel text={label} color={BRASS} position={[0, y + 3.2, 0]} />
     </group>
   );
 }
 
-function BienestarBuilding() {
+function BienestarBuilding({ label }: { label: string }) {
   return (
     <group>
       <Plaza radius={5.6} color="#DFF2EA" />
@@ -105,12 +105,12 @@ function BienestarBuilding() {
         <cylinderGeometry args={[0.45, 0.45, 1.1, 10]} />
         <meshStandardMaterial color={CREAM} />
       </mesh>
-      <CampusLabel text="Bienestar y Desarrollo Humano" color={TEAL} position={[0, 9.4, 0]} />
+      <CampusLabel text={label} color={TEAL} position={[0, 9.4, 0]} />
     </group>
   );
 }
 
-function DisenoBuilding() {
+function DisenoBuilding({ label }: { label: string }) {
   const blocks: Array<[number, string, number]> = [
     [0, CORAL, 0],
     [1, NAVY, 0.45],
@@ -129,14 +129,14 @@ function DisenoBuilding() {
         <torusGeometry args={[2.4, 0.4, 12, 32]} />
         <meshStandardMaterial color={BRASS} roughness={0.3} metalness={0.4} />
       </mesh>
-      <CampusLabel text="Diseño y Tecnologías de Comunicación" color={CORAL} position={[0, 14.5, 0]} />
+      <CampusLabel text={label} color={CORAL} position={[0, 14.5, 0]} />
     </group>
   );
 }
 
 export const BUILDING_LAYOUT: Record<
   string,
-  { x: number; z: number; radius: number; Component: () => React.ReactElement }
+  { x: number; z: number; radius: number; Component: (props: { label: string }) => React.ReactElement }
 > = {
   ingenieria: { x: 0, z: -18, radius: 6.5, Component: IngenieriaBuilding },
   "transformacion-de-negocios": { x: 18, z: 0, radius: 6.5, Component: NegociosBuilding },

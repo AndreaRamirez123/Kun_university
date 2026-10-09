@@ -2,6 +2,16 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Reveal } from "./reveal";
+import { usePick } from "@/i18n/locale-context";
+
+const COPY = {
+  es: {
+    viewMore: "Ver más",
+  },
+  en: {
+    viewMore: "View more",
+  },
+};
 
 export type AccordionItem = {
   id: string;
@@ -22,6 +32,7 @@ export type AccordionTheme = {
 };
 
 function GridCard({ item, theme, delay }: { item: AccordionItem; theme: AccordionTheme; delay: number }) {
+  const t = usePick(COPY);
   return (
     <Reveal
       delay={delay}
@@ -48,7 +59,7 @@ function GridCard({ item, theme, delay }: { item: AccordionItem; theme: Accordio
           className="mt-auto rounded-full py-1.5 text-center text-[10px] font-bold text-white uppercase md:py-2.5 md:text-xs"
           style={{ background: item.accent }}
         >
-          Ver más
+          {t.viewMore}
         </div>
       </div>
     </Reveal>

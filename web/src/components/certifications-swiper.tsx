@@ -6,7 +6,25 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectCards, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-cards";
+import { useLocale, usePick } from "@/i18n/locale-context";
 import type { Certification } from "@/lib/types";
+
+const COPY = {
+  es: {
+    badge: (hours: number) => `${hours}h · 100% online`,
+    learnMore: "Ver más",
+    prev: "Certificación anterior",
+    next: "Siguiente certificación",
+    goTo: (name: string) => `Ir a ${name}`,
+  },
+  en: {
+    badge: (hours: number) => `${hours}h · 100% online`,
+    learnMore: "Learn more",
+    prev: "Previous certification",
+    next: "Next certification",
+    goTo: (name: string) => `Go to ${name}`,
+  },
+};
 
 export function CertificationsSwiper({
   certifications,
@@ -22,6 +40,8 @@ export function CertificationsSwiper({
   const swiperRef = useRef<SwiperType | null>(null);
   const total = certifications.length;
   const [active, setActive] = useState(0);
+  const t = usePick(COPY);
+  const { locale } = useLocale();
 
   return (
     <div className="mx-auto flex w-full max-w-85 flex-col items-center max-md:max-w-52">
@@ -59,7 +79,7 @@ export function CertificationsSwiper({
                     className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold tracking-[0.05em] uppercase max-md:px-2.5 max-md:py-0.5 max-md:text-[9px]"
                     style={{ color: accent }}
                   >
-                    {cert.hours}h · 100% online
+                    {t.badge(cert.hours)}
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col justify-end p-6 max-md:p-4">
@@ -70,14 +90,14 @@ export function CertificationsSwiper({
                     {cert.name}
                   </div>
                   <p className="mb-5 text-sm leading-[1.6] text-white/90 max-md:mb-3 max-md:text-xs">
-                    {cert.description}
+                    {cert.description[locale]}
                   </p>
                   <a
                     href="#informacion"
                     className="block rounded-full bg-white py-3 text-center text-sm font-bold uppercase transition hover:-translate-y-0.5 max-md:py-2 max-md:text-xs"
                     style={{ color: accent }}
                   >
-                    Ver más
+                    {t.learnMore}
                   </a>
                 </div>
               </div>
@@ -89,7 +109,7 @@ export function CertificationsSwiper({
       <div className="mt-6 flex items-center gap-5">
         <button
           type="button"
-          aria-label="Certificación anterior"
+          aria-label={t.prev}
           onClick={() => swiperRef.current?.slidePrev()}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition hover:-translate-y-0.5"
           style={{ borderColor: ink, color: ink }}
@@ -104,7 +124,7 @@ export function CertificationsSwiper({
             <button
               key={c.slug}
               type="button"
-              aria-label={`Ir a ${c.name}`}
+              aria-label={t.goTo(c.name)}
               onClick={() => swiperRef.current?.slideToLoop(i)}
               className="h-2.5 w-2.5 rounded-full transition"
               style={{ background: i === active ? ink : `${ink}33` }}
@@ -114,7 +134,7 @@ export function CertificationsSwiper({
 
         <button
           type="button"
-          aria-label="Siguiente certificación"
+          aria-label={t.next}
           onClick={() => swiperRef.current?.slideNext()}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition hover:-translate-y-0.5"
           style={{ borderColor: ink, color: ink }}

@@ -1,3 +1,8 @@
+export interface Localized {
+  es: string;
+  en: string;
+}
+
 export interface Course {
   code: string;
   title: string;
@@ -18,8 +23,8 @@ export interface Program {
 
 export interface School {
   slug: string;
-  name: string;
-  tagline: string;
+  name: Localized;
+  tagline: Localized;
   programs: Program[];
 }
 
@@ -27,7 +32,7 @@ export interface Certification {
   slug: string;
   name: string;
   hours: number;
-  description: string;
+  description: Localized;
 }
 
 export interface Stats {

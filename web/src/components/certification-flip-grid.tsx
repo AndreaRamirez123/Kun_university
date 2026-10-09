@@ -1,6 +1,7 @@
  "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useLocale, usePick } from "@/i18n/locale-context";
 import type { Certification } from "@/lib/types";
 
 const RED = "#BF0404";
@@ -8,6 +9,17 @@ const NAVY = "#003D54";
 const INK = "#10101A";
 const CREAM = "#FFF9EC";
 const DISPLAY = "var(--font-archivo-black), sans-serif";
+
+const COPY = {
+  es: {
+    enroll: "Inscríbete →",
+    viewMore: "Ver más",
+  },
+  en: {
+    enroll: "Enroll →",
+    viewMore: "View more",
+  },
+};
 
 export function CertificationFlipGrid({ certifications }: { certifications: Certification[] }) {
   return (
@@ -160,6 +172,8 @@ function GradCapIcon({ color }: { color: string }) {
 }
 
 function BookFlipCard({ cert, accent }: { cert: Certification; accent: string }) {
+  const t = usePick(COPY);
+  const { locale } = useLocale();
   const [open, setOpen] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -211,7 +225,7 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
           {cert.name}
         </div>
         <p className="mt-1.5 text-[9px] leading-[1.4] md:mt-2.5 md:text-[13px] md:leading-[1.5]" style={{ color: INK }}>
-          {cert.description}
+          {cert.description[locale]}
         </p>
         <a
           href="#informacion"
@@ -223,7 +237,7 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
             className="absolute inset-0 origin-bottom scale-y-0 transition-transform duration-300 group-hover:scale-y-100"
             style={{ background: accent }}
           />
-          <span className="relative transition-colors duration-300 group-hover:text-white">Inscríbete →</span>
+          <span className="relative transition-colors duration-300 group-hover:text-white">{t.enroll}</span>
         </a>
       </div>
 
@@ -266,7 +280,7 @@ function BookFlipCard({ cert, accent }: { cert: Certification; accent: string })
               className="py-1.5 text-center text-[9px] font-extrabold tracking-[0.06em] uppercase md:py-2.5 md:text-xs"
               style={{ color: CREAM }}
             >
-              Ver más
+              {t.viewMore}
             </div>
           </div>
 

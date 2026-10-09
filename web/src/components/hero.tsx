@@ -1,7 +1,39 @@
+"use client";
+
 import { CountUp } from "./count-up";
 import { GreetingBadge } from "./greeting-badge";
 import { Parallax } from "./parallax";
+import { usePick } from "@/i18n/locale-context";
 import type { Stats } from "@/lib/types";
+
+const COPY = {
+  es: {
+    greeting: "Saludos desde KUN University · Florida",
+    titleStart: "La universidad que se",
+    titleHighlight: "rediseñó alrededor de la IA",
+    titleEnd: ", no al revés.",
+    body: "KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los semestres.",
+    ctaPrimary: "Explora los programas",
+    ctaSecondary: "Certifícate gratis en 40h",
+    schools: "Escuelas",
+    programs: "Programas",
+    certs: "Certif. IA",
+    online: "Online/Global",
+  },
+  en: {
+    greeting: "Greetings from KUN University · Florida",
+    titleStart: "The university that",
+    titleHighlight: "redesigned itself around AI",
+    titleEnd: ", not the other way around.",
+    body: "KUN University AI trains professionals in Health, Technology, Business and Digital Media with a curriculum that updates at the speed of science, not of semesters.",
+    ctaPrimary: "Explore the programs",
+    ctaSecondary: "Get certified free in 40h",
+    schools: "Schools",
+    programs: "Programs",
+    certs: "AI Certs.",
+    online: "Online/Global",
+  },
+};
 
 function PalmSilhouette({ flip = false }: { flip?: boolean }) {
   return (
@@ -23,6 +55,7 @@ function PalmSilhouette({ flip = false }: { flip?: boolean }) {
 }
 
 export function Hero({ stats }: { stats: Stats }) {
+  const t = usePick(COPY);
   return (
     <div className="relative overflow-hidden">
       <div
@@ -55,42 +88,38 @@ export function Hero({ stats }: { stats: Stats }) {
 
       <div className="relative z-10 mx-auto max-w-220 px-14 pt-16 pb-10 text-center max-md:px-6 max-md:pt-6 lg:max-w-320">
         <div className="mx-auto max-w-170 rounded-t-[110px] rounded-b-3xl border-2 border-burgundy/50 bg-cream/95 px-12 py-14 shadow-[0_40px_80px_rgba(3,62,140,0.28)] backdrop-blur-sm max-md:rounded-t-[36px] max-md:px-6 max-md:py-10 lg:max-w-none lg:w-full">
-          <GreetingBadge>Saludos desde KUN University · Florida</GreetingBadge>
+          <GreetingBadge>{t.greeting}</GreetingBadge>
 
           <h1 className="font-display mb-5.5 text-[46px] leading-[1.2] font-normal max-md:text-[30px]">
-            La universidad que se{" "}
+            {t.titleStart}{" "}
             <span className="bg-linear-to-r from-cyan to-burgundy bg-clip-text text-transparent">
-              rediseñó alrededor de la IA
+              {t.titleHighlight}
             </span>
-            , no al revés.
+            {t.titleEnd}
           </h1>
-          <p className="mx-auto mb-8 max-w-120 text-[16px] leading-[1.65] text-muted-ink">
-            KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios
-            Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los
-            semestres.
-          </p>
+          <p className="mx-auto mb-8 max-w-120 text-[16px] leading-[1.65] text-muted-ink">{t.body}</p>
 
           <div className="flex flex-wrap justify-center gap-3.5">
             <a
               href="#programas"
               className="rounded-full bg-navy px-7 py-4 text-[15px] font-bold text-cream shadow-[0_14px_28px_rgba(3,62,140,0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(3,62,140,0.55)]"
             >
-              Explora los programas
+              {t.ctaPrimary}
             </a>
             <a
               href="#continua"
               className="rounded-full border-[1.5px] border-hairline px-7 py-4 text-[15px] font-bold transition hover:border-teal/40 hover:bg-surface-alt"
             >
-              Certifícate gratis en 40h
+              {t.ctaSecondary}
             </a>
           </div>
         </div>
 
         <div className="mt-14 flex flex-wrap justify-center gap-6 md:justify-between md:gap-4">
-          <StampStat label="Escuelas" value={stats.schools} />
-          <StampStat label="Programas" value={stats.programs} />
-          <StampStat label="Certif. IA" value={stats.certifications} />
-          <StampStat label="Online/Global" value={stats.online} suffix="%" />
+          <StampStat label={t.schools} value={stats.schools} />
+          <StampStat label={t.programs} value={stats.programs} />
+          <StampStat label={t.certs} value={stats.certifications} />
+          <StampStat label={t.online} value={stats.online} suffix="%" />
         </div>
       </div>
     </div>

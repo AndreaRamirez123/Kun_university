@@ -2,6 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Reveal } from "./reveal";
+import { usePick } from "@/i18n/locale-context";
+
+const COPY = {
+  es: {
+    hintSelected: "Toca de nuevo para volver",
+    hintNarrow: "Toca una escuela para leerla completa",
+    hintWide: "Pasa el mouse y toca una escuela para leerla completa",
+  },
+  en: {
+    hintSelected: "Tap again to go back",
+    hintNarrow: "Tap a school to read it in full",
+    hintWide: "Hover and tap a school to read it in full",
+  },
+};
 
 export type FanItem = {
   id: string;
@@ -29,6 +43,7 @@ export function FanStack({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const t = usePick(COPY);
 
   useEffect(() => {
     function onResize() {
@@ -160,11 +175,7 @@ export function FanStack({
         })}
       </div>
       <div className="mt-3 text-center text-[11px] font-medium" style={{ color: hintColor ?? mutedText }}>
-        {selected !== null
-          ? "Toca de nuevo para volver"
-          : isNarrow
-            ? "Toca una escuela para leerla completa"
-            : "Pasa el mouse y toca una escuela para leerla completa"}
+        {selected !== null ? t.hintSelected : isNarrow ? t.hintNarrow : t.hintWide}
       </div>
     </Reveal>
   );

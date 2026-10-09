@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePick } from "@/i18n/locale-context";
+
+const COPY = { es: { label: "Volver arriba" }, en: { label: "Back to top" } };
 
 export function ScrollToTop({ bg = "#10182B" }: { bg?: string }) {
+  const t = usePick(COPY);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -19,7 +23,7 @@ export function ScrollToTop({ bg = "#10182B" }: { bg?: string }) {
   return (
     <button
       type="button"
-      aria-label="Volver arriba"
+      aria-label={t.label}
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       className="fixed right-5 bottom-5 z-50 flex h-11 w-11 items-center justify-center rounded-full text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5 max-md:bottom-20"
       style={{ background: bg }}

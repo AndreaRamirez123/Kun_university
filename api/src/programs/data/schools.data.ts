@@ -16,19 +16,26 @@ export interface Program {
   semesters?: Semester[];
 }
 
+export interface Localized {
+  es: string;
+  en: string;
+}
+
 export interface School {
   slug: string;
-  name: string;
-  tagline: string;
+  name: Localized;
+  tagline: Localized;
   programs: Program[];
 }
 
 export const schools: School[] = [
   {
     slug: 'ingenieria',
-    name: 'Escuela de Ingeniería',
-    tagline:
-      'Donde se construye la infraestructura del mundo digital: datos, inteligencia artificial y ciberseguridad.',
+    name: { es: 'Escuela de Ingeniería', en: 'School of Engineering' },
+    tagline: {
+      es: 'Donde se construye la infraestructura del mundo digital: datos, inteligencia artificial y ciberseguridad.',
+      en: 'Where the infrastructure of the digital world is built: data, artificial intelligence and cybersecurity.',
+    },
     programs: [
       {
         name: 'Cybersecurity',
@@ -272,8 +279,11 @@ export const schools: School[] = [
   },
   {
     slug: 'transformacion-de-negocios',
-    name: 'Escuela de Transformación de Negocios',
-    tagline: 'Para quienes quieren liderar organizaciones, no solo administrarlas.',
+    name: { es: 'Escuela de Transformación de Negocios', en: 'School of Business Transformation' },
+    tagline: {
+      es: 'Para quienes quieren liderar organizaciones, no solo administrarlas.',
+      en: 'For those who want to lead organizations, not just manage them.',
+    },
     programs: [
       {
         name: 'Business Management and Entrepreneurship',
@@ -407,9 +417,11 @@ export const schools: School[] = [
   },
   {
     slug: 'bienestar-y-desarrollo-humano',
-    name: 'Escuela de Bienestar y Desarrollo Humano',
-    tagline:
-      'La ciencia de vivir más y mejor, convertida en una industria de miles de millones de dólares.',
+    name: { es: 'Escuela de Bienestar y Desarrollo Humano', en: 'School of Wellness and Human Development' },
+    tagline: {
+      es: 'La ciencia de vivir más y mejor, convertida en una industria de miles de millones de dólares.',
+      en: 'The science of living longer and better, turned into a multi-billion dollar industry.',
+    },
     programs: [
       {
         name: 'Integrative Wellness and Human Performance',
@@ -625,8 +637,11 @@ export const schools: School[] = [
   },
   {
     slug: 'diseno-y-tecnologias-de-comunicacion',
-    name: 'Escuela de Diseño y Tecnologías de Comunicación',
-    tagline: 'Storytelling, diseño y tecnología para las industrias creativas del futuro.',
+    name: { es: 'Escuela de Diseño y Tecnologías de Comunicación', en: 'School of Design and Communication Technologies' },
+    tagline: {
+      es: 'Storytelling, diseño y tecnología para las industrias creativas del futuro.',
+      en: 'Storytelling, design and technology for the creative industries of the future.',
+    },
     programs: [
       { name: 'Digital Media', degree: 'BS', totalCredits: 120 },
       { name: 'Digital Media, Film & Visual Design', degree: 'MFA', totalCredits: 60 },

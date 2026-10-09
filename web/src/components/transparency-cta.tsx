@@ -1,6 +1,27 @@
+"use client";
+
 import { UniversityIllustration } from "./university-illustration";
+import { usePick } from "@/i18n/locale-context";
+
+const COPY = {
+  es: {
+    heading: "Antes de matricularte, síguenos",
+    body: "El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real, sin necesidad de estar matriculado.",
+    cta: "Únete a la comunidad",
+    florida: { label: "Florida CIE", detail: "Comisión de Educación Independiente" },
+    sacscoc: { label: "SACSCOC · En proceso", detail: "Acreditación institucional en avance" },
+  },
+  en: {
+    heading: "Before you enroll, follow us",
+    body: "The value is proven before we ask you to pay for it. Real educational content, no enrollment required.",
+    cta: "Join the community",
+    florida: { label: "Florida CIE", detail: "Commission for Independent Education" },
+    sacscoc: { label: "SACSCOC · In progress", detail: "Institutional accreditation underway" },
+  },
+};
 
 export function TransparencyCta() {
+  const t = usePick(COPY);
   return (
     <div id="registro" className="relative z-10 mx-auto max-w-260 px-14 pt-14 pb-10 max-md:px-6">
       <div
@@ -12,18 +33,13 @@ export function TransparencyCta() {
       >
         <div className="relative grid grid-cols-[1.1fr_0.9fr] items-center gap-6 p-9 text-left max-md:grid-cols-1 max-md:gap-3 max-md:p-6 max-md:text-center">
           <div>
-            <h2 className="font-display mb-2 text-[22px] font-normal text-navy">
-              Antes de matricularte, síguenos
-            </h2>
-            <p className="mb-4 max-w-[480px] text-sm text-muted-ink max-md:mx-auto">
-              El valor se demuestra antes de pedirte que pagues por él. Contenido educativo real,
-              sin necesidad de estar matriculado.
-            </p>
+            <h2 className="font-display mb-2 text-[22px] font-normal text-navy">{t.heading}</h2>
+            <p className="mb-4 max-w-[480px] text-sm text-muted-ink max-md:mx-auto">{t.body}</p>
             <a
               href="#"
               className="bg-surface-alt text-navy inline-block rounded-full px-7 py-3 text-sm font-bold shadow-[6px_6px_12px_rgba(3,62,140,0.28),-6px_-6px_12px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-200 hover:scale-[0.98] hover:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)] active:scale-[0.98] active:shadow-[inset_4px_4px_8px_rgba(3,62,140,0.28),inset_-4px_-4px_8px_rgba(255,255,255,1)]"
             >
-              Únete a la comunidad
+              {t.cta}
             </a>
           </div>
           <UniversityIllustration />
@@ -35,9 +51,8 @@ export function TransparencyCta() {
         >
           <div aria-hidden className="absolute top-13 right-16 left-16 h-px bg-hairline max-md:hidden" />
           <Porthole
-            label="Florida CIE"
-            detail="Comisión de Educación Independiente"
-            iconColor="#005F7F"
+            label={t.florida.label}
+            detail={t.florida.detail}
             icon={
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#005F7F" strokeWidth="2">
                 <path d="M20 6L9 17l-5-5" />
@@ -45,9 +60,8 @@ export function TransparencyCta() {
             }
           />
           <Porthole
-            label="SACSCOC · En proceso"
-            detail="Acreditación institucional en avance"
-            iconColor="#0092B6"
+            label={t.sacscoc.label}
+            detail={t.sacscoc.detail}
             icon={
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0092B6" strokeWidth="2">
                 <circle cx="12" cy="12" r="9" />
@@ -61,16 +75,7 @@ export function TransparencyCta() {
   );
 }
 
-function Porthole({
-  label,
-  detail,
-  icon,
-}: {
-  label: string;
-  detail: string;
-  icon: React.ReactNode;
-  iconColor: string;
-}) {
+function Porthole({ label, detail, icon }: { label: string; detail: string; icon: React.ReactNode }) {
   return (
     <div className="relative z-10 flex flex-col items-center text-center">
       <div className="bg-surface-alt flex h-18 w-18 items-center justify-center rounded-full shadow-[8px_8px_16px_rgba(3,62,140,0.3),-8px_-8px_16px_rgba(255,255,255,1)] transition-[box-shadow,transform] duration-300 hover:scale-[0.96] hover:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)] active:scale-[0.96] active:shadow-[inset_6px_6px_12px_rgba(3,62,140,0.32),inset_-6px_-6px_12px_rgba(255,255,255,1)] max-md:h-14 max-md:w-14">
