@@ -1,180 +1,258 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Grid } from "@react-three/drei";
+import { Bloom, EffectComposer, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { BlendFunction, ToneMappingMode } from "postprocessing";
 import * as THREE from "three";
-import { BUILDING_LAYOUT } from "./campus-buildings";
-import { hasWebGL } from "./has-webgl";
-import { CampusInfoPanel } from "./campus-info-panel";
-import { CampusPlayer, type Collider, type Gender } from "./campus-player";
-import { NoWebGLFallback } from "./no-webgl-fallback";
-import { useLocale, usePick } from "@/i18n/locale-context";
-import type { Certification, School, Stats } from "@/lib/types";
+import { CampusInterior, INTERIOR_ORIGIN } from "./campus-interior";
+import { CampusPlayer } from "./campus-player";
+import { BeachBalls, KunLetters } from "./campus-props";
+import { campusRuntime } from "./campus-runtime";
+import { CampusWorld, palmColliders, useVegetation } from "./campus-world";
+import { ZONE_ENTRY_MARGIN, ZONES, type Avatar, type Collider, type ZoneDef } from "./campus-zones";
+import type { Locale } from "@/i18n/locale-context";
 
-const COPY = {
-  es: {
-    subtitle: "Campus virtual — prueba de concepto",
-    classicSite: "← Sitio clásico",
-    controlsHint: "Usa las flechas o W A S D para caminar · Acércate a un edificio para explorarlo",
-  },
-  en: {
-    subtitle: "Virtual campus — proof of concept",
-    classicSite: "← Classic site",
-    controlsHint: "Use the arrow keys or W A S D to walk · Get close to a building to explore it",
-  },
-};
+export type CampusPhase = "loading" | "intro" | "playing" | "inside";
 
-const ENTRY_MARGIN = 3.5;
+const UP = new THREE.Vector3(0, 1, 0);
 
-type Building = { school: School; layout: (typeof BUILDING_LAYOUT)[string] };
-
-// Detecta el edificio más cercano dentro de su radio de entrada, sin re-renderizar cada frame.
-function ProximityWatcher({
+// Cámara en cuatro actos, como un sitio de Active Theory:
+// 1) plano general orbitando la isla mientras carga,
+// 2) acercamiento al personaje en la pantalla de creación,
+// 3) vuelo hasta la vista de seguimiento cuando empieza el recorrido,
+// 4) travelling lento dentro del aula de cada edificio.
+function CameraRig({
+  phase,
   playerRef,
-  buildings,
-  onActiveChange,
+  reduceMotion,
 }: {
+  phase: CampusPhase;
   playerRef: React.RefObject<THREE.Group | null>;
-  buildings: Building[];
-  onActiveChange: (slug: string | null) => void;
+  reduceMotion: boolean;
 }) {
-  const current = useRef<string | null>(null);
+  const pos = useRef(new THREE.Vector3(60, 34, 40));
+  const look = useRef(new THREE.Vector3(0, 4, 0));
+  const scratch = useRef({ pos: new THREE.Vector3(), look: new THREE.Vector3(), right: new THREE.Vector3() });
+  const phaseStart = useRef({ phase, t: 0 });
 
-  useFrame(() => {
+  useFrame((state, rawDelta) => {
+    const delta = Math.min(rawDelta, 0.05);
+    const t = state.clock.elapsedTime;
+    const prevPhase = phaseStart.current.phase;
+    if (prevPhase !== phase) phaseStart.current = { phase, t };
+    // Entrar o salir del aula ocurre detrás del telón: la cámara salta de una
+    // vez en lugar de cruzar volando entre la isla y el aula.
+    const teleport = prevPhase !== phase && (phase === "inside" || prevPhase === "inside");
+    const sincePhase = t - phaseStart.current.t;
     const player = playerRef.current;
-    if (!player) return;
-    let closestSlug: string | null = null;
-    let closestDist = Infinity;
-    for (const { school, layout } of buildings) {
-      const dx = player.position.x - layout.x;
-      const dz = player.position.z - layout.z;
-      const dist = Math.hypot(dx, dz);
-      if (dist < layout.radius + ENTRY_MARGIN && dist < closestDist) {
-        closestDist = dist;
-        closestSlug = school.slug;
+    const narrow = state.size.width < 700;
+    const motion = reduceMotion ? 0 : 1;
+    const { pos: desiredPos, look: desiredLook, right } = scratch.current;
+    let k: number;
+
+    if (phase === "loading" || !player) {
+      const a = t * 0.08 * motion + 0.9;
+      desiredPos.set(Math.cos(a) * 62, 34, Math.sin(a) * 62);
+      desiredLook.set(0, 4, 0);
+      k = 1;
+    } else if (phase === "intro") {
+      // Plano cercano que gira despacio frente al personaje y lo deja a la
+      // derecha del encuadre (en móvil, arriba) para no tapar la tarjeta.
+      const a = Math.sin(t * 0.12) * 0.3 * motion;
+      const radius = narrow ? 14 : 9.5;
+      const height = narrow ? 5.5 : 3.4;
+      const px = player.position.x;
+      const pz = player.position.z;
+      desiredPos.set(px + Math.sin(a) * radius, height, pz + Math.cos(a) * radius);
+      // Paralaje sutil con el mouse.
+      desiredPos.x += state.pointer.x * 1.2 * motion;
+      desiredPos.y += state.pointer.y * 0.6 * motion;
+      right.set(Math.cos(a), 0, -Math.sin(a));
+      desiredLook.set(px, narrow ? -4.6 : 2.3, pz).addScaledVector(right, narrow ? 0 : -2.6);
+      k = 1 - Math.exp(-delta * Math.min(2.2, 0.4 + sincePhase * 0.9));
+    } else if (phase === "inside") {
+      const [ox, oy, oz] = INTERIOR_ORIGIN;
+      const drift = Math.sin(t * 0.15) * 1.2 * motion;
+      // El tablero ocupa la derecha (en móvil, la mitad de abajo): el holograma
+      // queda a la izquierda / arriba del encuadre.
+      desiredPos.set(ox + (narrow ? 0 : -3) + drift, oy + (narrow ? 7 : 5.5), oz + (narrow ? 21 : 17));
+      desiredPos.x += state.pointer.x * 1.4 * motion;
+      desiredPos.y += state.pointer.y * 0.7 * motion;
+      desiredLook.set(ox + (narrow ? 0 : 6.5), oy + (narrow ? 1.5 : 4.2), oz);
+      k = 1 - Math.exp(-delta * 1.4);
+      if (teleport) {
+        // Arranca más atrás para que, al abrirse el telón, la cámara entre al aula.
+        pos.current.set(desiredPos.x, desiredPos.y + 2, desiredPos.z + 9);
+        look.current.copy(desiredLook);
+      }
+    } else {
+      const zoom = campusRuntime.zoom;
+      desiredPos.set(
+        player.position.x,
+        player.position.y + (narrow ? 16 : 12) * zoom,
+        player.position.z + (narrow ? 19 : 16) * zoom,
+      );
+      desiredLook.set(player.position.x, player.position.y + 1.5, player.position.z);
+      // Vuelo de entrada más lento, luego seguimiento firme.
+      k = 1 - Math.exp(-delta * Math.min(4.5, 0.8 + sincePhase * 2.2));
+      if (teleport) {
+        pos.current.copy(desiredPos);
+        look.current.copy(desiredLook);
       }
     }
-    if (closestSlug !== current.current) {
-      current.current = closestSlug;
-      onActiveChange(closestSlug);
+
+    // En pantallas angostas se abre el lente para que entre más campus.
+    const cam = state.camera as THREE.PerspectiveCamera;
+    const fov = narrow ? 62 : 50;
+    if (cam.fov !== fov) {
+      cam.fov = fov;
+      cam.updateProjectionMatrix();
     }
+
+    pos.current.lerp(desiredPos, k);
+    look.current.lerp(desiredLook, Math.min(1, k * 1.4));
+    state.camera.position.copy(pos.current);
+    state.camera.up.copy(UP);
+    state.camera.lookAt(look.current);
   });
 
   return null;
 }
 
-// Anillo dorado que pulsa en la plaza del edificio activo.
-function ActiveRing({ radius }: { radius: number }) {
-  const ref = useRef<THREE.Mesh>(null);
 
-  useFrame((state) => {
-    const mesh = ref.current;
-    if (!mesh) return;
-    const t = state.clock.elapsedTime;
-    mesh.scale.setScalar(1 + Math.sin(t * 2.4) * 0.03);
-    (mesh.material as THREE.MeshBasicMaterial).opacity = 0.5 + Math.sin(t * 2.4) * 0.25;
+function ZoneWatcher({
+  enabled,
+  playerRef,
+  onZoneChange,
+}: {
+  enabled: boolean;
+  playerRef: React.RefObject<THREE.Group | null>;
+  onZoneChange: (id: string | null) => void;
+}) {
+  const current = useRef<string | null>(null);
+  useFrame(() => {
+    const player = playerRef.current;
+    let next: string | null = null;
+    if (enabled && player) {
+      let best = Infinity;
+      for (const zn of ZONES) {
+        const d = Math.hypot(player.position.x - zn.x, player.position.z - zn.z);
+        if (d < zn.r + ZONE_ENTRY_MARGIN && d < best) {
+          best = d;
+          next = zn.id;
+        }
+      }
+    }
+    if (next !== current.current) {
+      current.current = next;
+      onZoneChange(next);
+    }
   });
-
-  return (
-    <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
-      <ringGeometry args={[radius - 0.15, radius, 48]} />
-      <meshBasicMaterial color="#FFC85C" transparent opacity={0.6} side={THREE.DoubleSide} />
-    </mesh>
-  );
+  return null;
 }
 
-// Cámara cinematográfica: sigue al personaje suavemente desde atrás, sin control manual de arrastre.
-function CameraRig({ targetRef }: { targetRef: React.RefObject<THREE.Group | null> }) {
-  const desired = useRef(new THREE.Vector3());
-  const lookAt = useRef(new THREE.Vector3());
-
-  useFrame((state, delta) => {
-    const target = targetRef.current;
-    if (!target) return;
-    const t = Math.min(1, delta * 2.4);
-    desired.current.set(target.position.x, 13, target.position.z + 15);
-    state.camera.position.lerp(desired.current, t);
-    lookAt.current.lerp(
-      new THREE.Vector3(target.position.x, target.position.y + 1.5, target.position.z),
-      Math.min(1, delta * 4),
-    );
-    state.camera.lookAt(lookAt.current);
+// Avisa una sola vez cuando la escena ya pintó sus primeros frames, para que
+// el loader no se retire antes de que haya algo bonito detrás.
+function FirstFrames({ onReady }: { onReady: () => void }) {
+  const frames = useRef(0);
+  useFrame(() => {
+    frames.current += 1;
+    if (frames.current === 3) onReady();
   });
-
   return null;
 }
 
 export function CampusScene({
-  schools,
-  gender = "male",
+  phase,
+  avatar,
+  locale,
+  activeZoneId,
+  interiorZone,
+  eventSource,
+  reduceMotion,
+  playerRef,
+  onZoneChange,
+  onReady,
+  onBump,
 }: {
-  schools: School[];
-  certifications: Certification[];
-  stats: Stats;
-  gender?: Gender;
+  phase: CampusPhase;
+  avatar: Avatar;
+  locale: Locale;
+  activeZoneId: string | null;
+  interiorZone: ZoneDef | null;
+  eventSource: React.RefObject<HTMLElement | null>;
+  reduceMotion: boolean;
+  playerRef: React.RefObject<THREE.Group | null>;
+  onZoneChange: (id: string | null) => void;
+  onReady: () => void;
+  onBump: (strength: number) => void;
 }) {
-  const t = usePick(COPY);
-  const { locale } = useLocale();
-  const [webglOk] = useState(() => (typeof window !== "undefined" ? hasWebGL() : true));
-  const [activeSlug, setActiveSlug] = useState<string | null>(null);
-  const playerRef = useRef<THREE.Group>(null);
-
-  const buildings: Building[] = useMemo(
-    () => schools.map((school) => ({ school, layout: BUILDING_LAYOUT[school.slug] })).filter((b) => b.layout),
-    [schools],
-  );
-
+  const vegetation = useVegetation();
   const colliders: Collider[] = useMemo(
-    () => buildings.map((b) => ({ x: b.layout.x, z: b.layout.z, radius: b.layout.radius })),
-    [buildings],
+    () => [...ZONES.map((z) => ({ x: z.x, z: z.z, r: z.r })), ...palmColliders(vegetation.palms)],
+    [vegetation],
   );
-
-  if (!webglOk) return <NoWebGLFallback />;
+  const narrow = typeof window !== "undefined" && window.innerWidth < 700;
 
   return (
-    <div className="absolute inset-0">
-      <div className="pointer-events-none absolute top-4 left-4 z-10 text-[#FFF3E6]">
-        <div className="text-lg font-extrabold">KUN University AI</div>
-        <div className="text-xs opacity-70">{t.subtitle}</div>
-      </div>
-      <Link
-        href="/"
-        className="absolute top-4 right-4 z-10 rounded-full bg-black/30 px-4 py-2 text-xs font-bold text-[#FFF3E6] backdrop-blur-sm transition hover:bg-black/50"
-      >
-        {t.classicSite}
-      </Link>
-      <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-center text-[11px] font-semibold tracking-[0.04em] text-[#FFF3E6]/70">
-        {t.controlsHint}
-      </div>
+    <Canvas
+      shadows="percentage"
+      dpr={narrow ? [1, 1.5] : [1, 2]}
+      camera={{ position: [60, 34, 40], fov: 50, near: 0.1, far: 600 }}
+      gl={{ antialias: false, powerPreference: "high-performance" }}
+      aria-label="Campus 3D de KUN University AI"
+      // El paralaje sigue al mouse aunque esté encima del tablero o de la interfaz.
+      eventSource={eventSource as React.RefObject<HTMLElement>}
+      eventPrefix="client"
+    >
+      <fog attach="fog" args={["#F2906E", 70, 190]} />
+      <hemisphereLight args={["#D9C6FF", "#F7CFA0", 1.15]} />
+      <directionalLight
+        position={[-30, 40, -50]}
+        intensity={1.9}
+        color="#FFCFA0"
+        castShadow
+        shadow-mapSize={narrow ? [1024, 1024] : [2048, 2048]}
+        shadow-camera-left={-60}
+        shadow-camera-right={60}
+        shadow-camera-top={60}
+        shadow-camera-bottom={-60}
+        shadow-camera-near={1}
+        shadow-camera-far={160}
+        shadow-bias={-0.0004}
+      />
 
-      <CampusInfoPanel school={buildings.find((b) => b.school.slug === activeSlug)?.school ?? null} />
+      <group visible={phase !== "inside"}>
+      <CampusWorld
+        locale={locale}
+        activeZoneId={activeZoneId}
+        reduceMotion={reduceMotion}
+        vegetation={vegetation}
+        showLabels={phase === "playing"}
+      />
+      <KunLetters colliders={colliders} onBump={onBump} />
+      <BeachBalls colliders={colliders} onBump={onBump} />
+      <CampusPlayer
+        groupRef={playerRef}
+        avatar={avatar}
+        playing={phase === "playing"}
+        colliders={colliders}
+        onLand={onBump}
+      />
+      </group>
+      {interiorZone && <CampusInterior zone={interiorZone} />}
 
-      <Canvas shadows camera={{ position: [4, 13, 21], fov: 45 }}>
-        <color attach="background" args={["#1D1236"]} />
-        <fog attach="fog" args={["#1D1236", 40, 120]} />
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[-15, 20, -10]} intensity={1.4} castShadow />
-        <hemisphereLight args={["#C9B2FF", "#F2C79A", 0.6]} />
+      <CameraRig phase={phase} playerRef={playerRef} reduceMotion={reduceMotion} />
+      <ZoneWatcher enabled={phase === "playing"} playerRef={playerRef} onZoneChange={onZoneChange} />
+      <FirstFrames onReady={onReady} />
 
-        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-          <circleGeometry args={[30, 48]} />
-          <meshStandardMaterial color="#6DB38A" />
-        </mesh>
-        <Grid args={[60, 60]} position={[0, 0.01, 0]} cellColor="#2A1758" sectionColor="#7A4FD0" fadeDistance={40} />
-
-        {buildings.map(({ school, layout }) => (
-          <group key={school.slug} position={[layout.x, 0, layout.z]}>
-            <layout.Component label={school.name[locale].replace(/^(Escuela de |School of )/, "")} />
-            {activeSlug === school.slug && <ActiveRing radius={layout.radius} />}
-          </group>
-        ))}
-
-        <CampusPlayer groupRef={playerRef} colliders={colliders} gender={gender} />
-        <CameraRig targetRef={playerRef} />
-        <ProximityWatcher playerRef={playerRef} buildings={buildings} onActiveChange={setActiveSlug} />
-      </Canvas>
-    </div>
+      <EffectComposer multisampling={narrow ? 0 : 4}>
+        <Bloom mipmapBlur intensity={0.85} luminanceThreshold={1} luminanceSmoothing={0.25} radius={0.7} />
+        <ToneMapping mode={ToneMappingMode.NEUTRAL} />
+        <Vignette offset={0.28} darkness={0.62} />
+        <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={narrow ? 0 : 0.35} />
+      </EffectComposer>
+    </Canvas>
   );
 }

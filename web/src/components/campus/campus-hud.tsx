@@ -1,0 +1,284 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { usePick } from "@/i18n/locale-context";
+import { campusRuntime } from "./campus-runtime";
+import { GRASS_RADIUS, ISLAND_RADIUS, ZONES } from "./campus-zones";
+
+const COPY = {
+  es: {
+    subtitle: "Campus virtual en Florida",
+    classicSite: "← Sitio clásico",
+    visited: (n: number, total: number) => `Visitaste ${n} de ${total} lugares`,
+    soundOn: "Sonido activado",
+    soundOff: "Activar sonido",
+    jump: "Saltar",
+    map: "Minimapa del campus",
+  },
+  en: {
+    subtitle: "Virtual campus in Florida",
+    classicSite: "← Classic site",
+    visited: (n: number, total: number) => `You visited ${n} of ${total} places`,
+    soundOn: "Sound on",
+    soundOff: "Turn sound on",
+    jump: "Jump",
+    map: "Campus minimap",
+  },
+};
+
+const HINT = {
+  es: [
+    ["W A S D", "caminar"],
+    ["Shift", "correr"],
+    ["Espacio", "saltar"],
+    ["Rueda", "zoom"],
+  ],
+  en: [
+    ["W A S D", "walk"],
+    ["Shift", "run"],
+    ["Space", "jump"],
+    ["Wheel", "zoom"],
+  ],
+};
+
+function Minimap({ visited, label }: { visited: Set<string>; label: string }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const visitedRef = useRef(visited);
+  useEffect(() => {
+    visitedRef.current = visited;
+  }, [visited]);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+    let raf = 0;
+    const W = 300;
+    const s = W / 110;
+    function draw(now: number) {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, W, W);
+      ctx.save();
+      ctx.translate(W / 2, W / 2);
+      ctx.fillStyle = "rgba(242,199,154,.55)";
+      ctx.beginPath();
+      ctx.arc(0, 0, ISLAND_RADIUS * s, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(109,179,138,.75)";
+      ctx.beginPath();
+      ctx.arc(0, 0, GRASS_RADIUS * s, 0, Math.PI * 2);
+      ctx.fill();
+      for (const zn of ZONES) {
+        const done = visitedRef.current.has(zn.id);
+        ctx.fillStyle = zn.color;
+        ctx.beginPath();
+        ctx.arc(zn.x * s, zn.z * s, done ? 14 : 10, 0, Math.PI * 2);
+        ctx.fill();
+        if (done) {
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 4;
+          ctx.stroke();
+        } else {
+          // Los lugares pendientes laten para invitar a visitarlos.
+          ctx.strokeStyle = zn.color;
+          ctx.globalAlpha = 0.5 + Math.sin(now / 300) * 0.3;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(zn.x * s, zn.z * s, 16 + Math.sin(now / 300) * 3, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+      }
+      const p = campusRuntime.player;
+      ctx.translate(p.x * s, p.z * s);
+      ctx.rotate(-p.heading + Math.PI);
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.moveTo(0, -14);
+      ctx.lineTo(10, 10);
+      ctx.lineTo(0, 5);
+      ctx.lineTo(-10, 10);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      raf = requestAnimationFrame(draw);
+    }
+    raf = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <div className="h-37.5 w-37.5 overflow-hidden rounded-full border-2 border-[#FFF3E6]/35 bg-[#1D0C3C]/55 backdrop-blur-md max-md:h-26 max-md:w-26">
+      <canvas ref={ref} width={300} height={300} role="img" aria-label={label} className="h-full w-full" />
+    </div>
+  );
+}
+
+export function CampusHud({
+  visible,
+  visited,
+  soundOn,
+  onToggleSound,
+}: {
+  visible: boolean;
+  visited: Set<string>;
+  soundOn: boolean;
+  onToggleSound: () => void;
+}) {
+  const t = usePick(COPY);
+  const hint = usePick(HINT);
+  const base = `transition-opacity duration-700 ${visible ? "opacity-100" : "pointer-events-none opacity-0"}`;
+
+  return (
+    <>
+      <div className={`absolute top-[calc(16px+env(safe-area-inset-top,0px))] left-5 z-10 text-[#FFF3E6] ${base}`}>
+        <div className="font-(family-name:--font-gabarito) text-xl font-extrabold [text-shadow:0_2px_10px_rgba(20,6,40,.5)]">
+          KUN University AI
+        </div>
+        <div className="text-[13px] text-[#FBE3D3]">{t.subtitle}</div>
+        <Link
+          href="/"
+          className="mt-3 inline-block rounded-full bg-[#1D0C3C]/55 px-3.5 py-1.5 text-xs font-bold backdrop-blur-md transition hover:bg-[#1D0C3C]/80"
+        >
+          {t.classicSite}
+        </Link>
+      </div>
+
+      <div
+        className={`absolute top-[calc(16px+env(safe-area-inset-top,0px))] right-5 z-10 flex flex-col items-end gap-2.5 ${base}`}
+      >
+        <Minimap visited={visited} label={t.map} />
+        <div className="rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-sm font-bold text-[#FFF3E6] backdrop-blur-md" aria-live="polite">
+          {t.visited(visited.size, ZONES.length)}
+        </div>
+        <button
+          type="button"
+          onClick={onToggleSound}
+          aria-pressed={soundOn}
+          className="flex items-center gap-2 rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-xs font-bold text-[#FFF3E6] backdrop-blur-md transition hover:bg-[#1D0C3C]/85"
+        >
+          <span aria-hidden className="flex h-3 items-end gap-[2px]">
+            {[0, 1, 2, 3].map((i) => (
+              <span
+                key={i}
+                className={`w-[3px] rounded-full bg-[#FFC85C] ${soundOn ? "animate-pulse" : ""}`}
+                style={{ height: soundOn ? `${[60, 100, 40, 80][i]}%` : "25%", animationDelay: `${i * 150}ms` }}
+              />
+            ))}
+          </span>
+          {soundOn ? t.soundOn : t.soundOff}
+        </button>
+      </div>
+
+      <div
+        className={`pointer-events-none absolute bottom-[calc(22px+env(safe-area-inset-bottom,0px))] left-1/2 z-10 flex -translate-x-1/2 gap-3 rounded-2xl bg-[#1D0C3C]/55 px-4 py-2.5 text-[13px] text-[#FFF3E6] backdrop-blur-md max-md:hidden ${base}`}
+      >
+        {hint.map(([key, action]) => (
+          <span key={key} className="flex items-center gap-1.5 whitespace-nowrap">
+            <kbd className="rounded-md border border-[#FFF3E6]/35 bg-[#FFF3E6]/15 px-1.5 py-px font-sans text-xs font-bold">
+              {key}
+            </kbd>
+            {action}
+          </span>
+        ))}
+      </div>
+    </>
+  );
+}
+
+// Joystick que aparece donde se apoya el dedo, más un botón para saltar.
+export function CampusTouchControls({ enabled, targetRef }: { enabled: boolean; targetRef: React.RefObject<HTMLElement | null> }) {
+  const t = usePick(COPY);
+  const [stick, setStick] = useState<{ x: number; y: number; kx: number; ky: number } | null>(null);
+  const [touchDevice, setTouchDevice] = useState(false);
+
+  useEffect(() => {
+    const target = targetRef.current;
+    if (!target || !enabled) return;
+    let pointerId: number | null = null;
+    let origin = { x: 0, y: 0 };
+    const MAX = 50;
+
+    function down(e: PointerEvent) {
+      if (e.pointerType === "mouse" || pointerId !== null) return;
+      if ((e.target as HTMLElement).closest("button, a, input, select, [role=dialog], aside")) return;
+      setTouchDevice(true);
+      pointerId = e.pointerId;
+      origin = { x: e.clientX, y: e.clientY };
+      campusRuntime.stick.active = true;
+      setStick({ x: e.clientX, y: e.clientY, kx: 0, ky: 0 });
+    }
+    function move(e: PointerEvent) {
+      if (e.pointerId !== pointerId) return;
+      let dx = e.clientX - origin.x;
+      let dy = e.clientY - origin.y;
+      const l = Math.hypot(dx, dy);
+      if (l > MAX) {
+        dx = (dx / l) * MAX;
+        dy = (dy / l) * MAX;
+      }
+      campusRuntime.stick.x = dx / MAX;
+      campusRuntime.stick.z = dy / MAX;
+      setStick({ x: origin.x, y: origin.y, kx: dx, ky: dy });
+    }
+    function up(e: PointerEvent) {
+      if (e.pointerId !== pointerId) return;
+      pointerId = null;
+      campusRuntime.stick.x = 0;
+      campusRuntime.stick.z = 0;
+      campusRuntime.stick.active = false;
+      setStick(null);
+    }
+    target.addEventListener("pointerdown", down);
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+    return () => {
+      target.removeEventListener("pointerdown", down);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+    };
+  }, [enabled, targetRef]);
+
+  return (
+    <>
+      {stick && (
+        <div
+          className="pointer-events-none fixed z-30 h-30 w-30 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#FFF3E6]/50 bg-[#1D0C3C]/25"
+          style={{ left: stick.x, top: stick.y }}
+        >
+          <div
+            className="absolute top-1/2 left-1/2 -mt-6.5 -ml-6.5 h-13 w-13 rounded-full bg-[#FFF3E6]/85"
+            style={{ transform: `translate(${stick.kx}px, ${stick.ky}px)` }}
+          />
+        </div>
+      )}
+      {enabled && touchDevice && (
+        <button
+          type="button"
+          onPointerDown={() => {
+            campusRuntime.jumpQueued = true;
+          }}
+          className="fixed right-5 bottom-[calc(140px+env(safe-area-inset-bottom,0px))] z-30 h-16 w-16 rounded-full border-2 border-[#FFF3E6]/50 bg-[#1D0C3C]/45 text-xs font-bold text-[#FFF3E6] backdrop-blur-md active:scale-95"
+        >
+          {t.jump}
+        </button>
+      )}
+    </>
+  );
+}
+
+export function CampusToast({ message, visible }: { message: string; visible: boolean }) {
+  return (
+    <div
+      role="status"
+      className={`pointer-events-none absolute bottom-[calc(76px+env(safe-area-inset-bottom,0px))] left-1/2 z-30 max-w-[calc(100%-32px)] -translate-x-1/2 rounded-full bg-[#FFC85C] px-5 py-3 text-center text-sm font-bold text-[#24123F] shadow-[0_14px_30px_-10px_rgba(20,6,40,0.6)] transition-[opacity,translate] duration-300 max-md:bottom-[calc(150px+env(safe-area-inset-bottom,0px))] ${
+        visible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
+      }`}
+    >
+      {message}
+    </div>
+  );
+}
