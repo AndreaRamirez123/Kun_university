@@ -25,20 +25,48 @@ const COPY = {
   },
 };
 
-function SilhouettePreview({ gender }: { gender: Gender }) {
+// Avatares con los mismos tonos de piel/cabello/atuendo que el personaje 3D real,
+// para que la elección se sienta coherente con quién vas a ver en el campus.
+function CharacterAvatar({ gender }: { gender: Gender }) {
+  const skin = "#D9A273";
+  const hair = "#2B1B12";
+  const outfit = gender === "female" ? "#17213A" : gender === "other" ? "#0D3B45" : "#10101A";
+  const clipId = `avatar-clip-${gender}`;
+
   return (
-    <svg
-      width="64"
-      height="84"
-      viewBox="0 0 64 84"
-      fill="currentColor"
-      className="mx-auto text-[#FFF3E6]/75 transition-colors duration-300 group-hover:text-[#FFC85C]"
-    >
-      <circle cx="32" cy="18" r="14" />
-      {gender === "female" && (
-        <path d="M18 11a14 14 0 0 1 28 0c0 9-3 15-3 25h-4c0-9 1-16 1-24a10 10 0 1 0-20 0c0 8 1 15 1 24h-4c0-10-3-16-3-25z" />
-      )}
-      <path d="M14 42c0-7 8-12 18-12s18 5 18 12l4 36H10z" />
+    <svg width="96" height="96" viewBox="0 0 96 96" className="mx-auto">
+      <circle cx="48" cy="48" r="46" fill="#FFC85C" opacity="0.12" />
+      <defs>
+        <clipPath id={clipId}>
+          <circle cx="48" cy="48" r="46" />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${clipId})`}>
+        <path d="M12 96c0-19 16-32 36-32s36 13 36 32v6H12z" fill={outfit} />
+        <rect x="39" y="55" width="18" height="16" rx="7" fill={skin} />
+        <circle cx="48" cy="41" r="20" fill={skin} />
+        {gender === "female" && (
+          <path
+            d="M26 39c-1-16 10-27 22-27s23 11 22 27c0 6-2 11-2 11l-3-2c1-10-2-15-2-19-4 3-11 4-17 4s-13-1-17-4c0 4-3 9-2 19l-3 2s-2-5-2-11z"
+            fill={hair}
+          />
+        )}
+        {gender === "male" && (
+          <path
+            d="M29 37a19 19 0 0 1 38 0c0 2-1 5-1 7-3-6-9-9-18-9s-15 3-18 9c0-2-1-5-1-7z"
+            fill={hair}
+          />
+        )}
+        {gender === "other" && (
+          <path
+            d="M28 35a20 20 0 0 1 40 0c0 3-1 6-2 8-2-4-5-7-9-8 2 3 3 6 2 9-3-3-7-5-11-5s-8 2-11 5c-1-3 0-6 2-9-4 1-7 4-9 8-1-2-2-5-2-8z"
+            fill={hair}
+          />
+        )}
+        <circle cx="41" cy="42" r="1.7" fill="#2B1B12" />
+        <circle cx="55" cy="42" r="1.7" fill="#2B1B12" />
+        <path d="M42 49c2 2.2 4 3.2 6 3.2s4-1 6-3.2" stroke="#2B1B12" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      </g>
     </svg>
   );
 }
@@ -64,7 +92,7 @@ export function CampusCharacterSelect({ onSelect }: { onSelect: (gender: Gender)
             onClick={() => onSelect("female")}
             className="group w-40 rounded-2xl border border-white/15 bg-white/5 px-5 py-8 transition hover:-translate-y-1 hover:border-[#FFC85C]/60 hover:bg-white/10"
           >
-            <SilhouettePreview gender="female" />
+            <CharacterAvatar gender="female" />
             <div className="mt-4 text-sm font-bold">{t.female}</div>
           </button>
           <button
@@ -72,7 +100,7 @@ export function CampusCharacterSelect({ onSelect }: { onSelect: (gender: Gender)
             onClick={() => onSelect("male")}
             className="group w-40 rounded-2xl border border-white/15 bg-white/5 px-5 py-8 transition hover:-translate-y-1 hover:border-[#FFC85C]/60 hover:bg-white/10"
           >
-            <SilhouettePreview gender="male" />
+            <CharacterAvatar gender="male" />
             <div className="mt-4 text-sm font-bold">{t.male}</div>
           </button>
           <button
@@ -80,7 +108,7 @@ export function CampusCharacterSelect({ onSelect }: { onSelect: (gender: Gender)
             onClick={() => onSelect("other")}
             className="group w-40 rounded-2xl border border-white/15 bg-white/5 px-5 py-8 transition hover:-translate-y-1 hover:border-[#FFC85C]/60 hover:bg-white/10"
           >
-            <SilhouettePreview gender="other" />
+            <CharacterAvatar gender="other" />
             <div className="mt-4 text-sm font-bold">{t.other}</div>
           </button>
         </div>
