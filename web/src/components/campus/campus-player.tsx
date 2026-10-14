@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { CharacterModel, type Motion } from "./campus-character";
 import { CampusLabel } from "./campus-label";
 import { campusRuntime } from "./campus-runtime";
 import { GRASS_RADIUS, PLAYER_START, WALK_RADIUS, type Avatar, type Collider } from "./campus-zones";
@@ -22,23 +23,6 @@ function isTyping(target: EventTarget | null) {
   return !!el && (el.tagName === "INPUT" || el.tagName === "SELECT" || el.tagName === "TEXTAREA" || el.isContentEditable);
 }
 
-function Part({
-  args,
-  position,
-  color,
-}: {
-  args: [number, number, number];
-  position: [number, number, number];
-  color: string;
-}) {
-  return (
-    <mesh position={position} castShadow>
-      <boxGeometry args={args} />
-      <meshStandardMaterial color={color} roughness={0.8} flatShading />
-    </mesh>
-  );
-}
-
 export function CampusPlayer({
   groupRef,
   avatar,
@@ -53,13 +37,11 @@ export function CampusPlayer({
   onLand?: (strength: number) => void;
 }) {
   const body = useRef<THREE.Group>(null);
-  const legL = useRef<THREE.Group>(null);
-  const legR = useRef<THREE.Group>(null);
-  const armL = useRef<THREE.Group>(null);
-  const armR = useRef<THREE.Group>(null);
+  // Qué animación debe reproducir el modelo (lo lee CharacterModel cada frame).
+  const anim = useRef<Motion>({ state: "wave", speed: 0 });
   const dust = useRef<THREE.InstancedMesh>(null);
 
-  const motion = useRef({ walk: 0, vy: 0, y: 0, grounded: true, squash: 0, squashV: 0, dustTimer: 0, dustIndex: 0 });
+  const motion = useRef({ vy: 0, y: 0, grounded: true, squash: 0, squashV: 0, dustTimer: 0, dustIndex: 0 });
   // Estado de simulación mutable: vive en refs, no en estado de React.
   const dustState = useRef(
     Array.from({ length: DUST_COUNT }, () => ({ x: 0, y: -10, z: 0, vx: 0, vy: 0, vz: 0, life: 0 })),
@@ -107,13 +89,12 @@ export function CampusPlayer({
     }
   }
 
-  useFrame((state, rawDelta) => {
+  useFrame((_, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05);
     const g = groupRef.current;
     if (!g) return;
     const m = motion.current;
     const k = campusRuntime.keys;
-    const t = state.clock.elapsedTime;
 
     let ix = 0;
     let iz = 0;
@@ -175,7 +156,6 @@ export function CampusPlayer({
       let diff = target - g.rotation.y;
       diff = Math.atan2(Math.sin(diff), Math.cos(diff));
       g.rotation.y += diff * Math.min(1, delta * TURN_SMOOTHING);
-      m.walk += delta * speed * 1.4;
 
       if (m.grounded && speed === RUN_SPEED) {
         m.dustTimer -= delta;
@@ -185,7 +165,6 @@ export function CampusPlayer({
         }
       }
     } else {
-      m.walk *= 0.85;
       if (!playing) {
         // En la pantalla de inicio el personaje mira a la cámara.
         let diff = 0 - g.rotation.y;
@@ -218,33 +197,20 @@ export function CampusPlayer({
     m.squash += m.squashV * delta;
 
     const ground = Math.hypot(g.position.x, g.position.z) < GRASS_RADIUS ? 0.2 : 0.05;
-    const walkAmount = Math.min(1, len * 2);
-    const bob = m.grounded ? Math.abs(Math.sin(m.walk)) * 0.08 * walkAmount : 0;
-    g.position.y = ground + m.y + bob;
+    g.position.y = ground + m.y;
 
     if (body.current) {
       const s = 1 + m.squash;
       body.current.scale.set(1 / Math.sqrt(Math.max(0.5, s)), s, 1 / Math.sqrt(Math.max(0.5, s)));
-      // Respiración suave cuando está quieto.
-      if (walkAmount < 0.1 && m.grounded) body.current.position.y = Math.sin(t * 2) * 0.03;
-      else body.current.position.y = 0;
     }
 
-    const swing = m.grounded ? Math.sin(m.walk) * 0.7 * walkAmount : 0;
-    const air = m.grounded ? 0 : -0.6;
-    if (legL.current) legL.current.rotation.x = swing + air * 0.5;
-    if (legR.current) legR.current.rotation.x = -swing - air * 0.3;
-    if (armL.current) {
-      armL.current.rotation.x = -swing * 0.8 + air;
-      armL.current.rotation.z = m.grounded ? 0 : 0.5;
-    }
-    if (armR.current) {
-      // Saludo en la pantalla de inicio.
-      const wave = !playing ? Math.sin(t * 6) * 0.35 : 0;
-      armR.current.rotation.x = !playing ? -2.6 : swing * 0.8 + air;
-      armR.current.rotation.z = !playing ? -0.3 + wave : m.grounded ? 0 : -0.5;
-    }
-
+    // Saluda en la pantalla de inicio; luego quieto, camina o corre.
+    const moving = len > 0.08;
+    anim.current.speed = Math.hypot(vx, vz);
+    if (!playing) anim.current.state = "wave";
+    else if (!m.grounded) anim.current.state = moving ? anim.current.state : "idle";
+    else if (moving) anim.current.state = speed === RUN_SPEED ? "run" : "walk";
+    else anim.current.state = "idle";
     const mesh = dust.current;
     if (!mesh) return;
     const d = dummy.current;
@@ -266,74 +232,15 @@ export function CampusPlayer({
     mesh.instanceMatrix.needsUpdate = true;
   });
 
-  const skin = "#C98B62";
-  const pants = "#2A1758";
-  const shirt = avatar.shirt;
-
   return (
     <>
       <group ref={groupRef} position={PLAYER_START}>
         <group ref={body}>
-          <group ref={legL} position={[-0.22, 1, 0]}>
-            <Part args={[0.38, 1, 0.42]} position={[0, -0.45, 0]} color={pants} />
-          </group>
-          <group ref={legR} position={[0.22, 1, 0]}>
-            <Part args={[0.38, 1, 0.42]} position={[0, -0.45, 0]} color={pants} />
-          </group>
-          <mesh position={[0, 1.6, 0]} castShadow>
-            <cylinderGeometry args={[0.48, 0.42, 1.2, 10]} />
-            <meshStandardMaterial color={shirt} roughness={0.8} flatShading />
-          </mesh>
-          <group ref={armL} position={[-0.62, 2.1, 0]}>
-            <Part args={[0.24, 1, 0.28]} position={[0, -0.45, 0]} color={shirt} />
-          </group>
-          <group ref={armR} position={[0.62, 2.1, 0]}>
-            <Part args={[0.24, 1, 0.28]} position={[0, -0.45, 0]} color={shirt} />
-          </group>
-          <mesh position={[0, 2.65, 0]} castShadow>
-            <sphereGeometry args={[0.46, 14, 12]} />
-            <meshStandardMaterial color={skin} roughness={0.7} flatShading />
-          </mesh>
-          {/* Mochila */}
-          <Part args={[0.7, 0.85, 0.35]} position={[0, 1.7, -0.55]} color="#FFC85C" />
-          {/* Ojos */}
-          {[-0.16, 0.16].map((x) => (
-            <mesh key={x} position={[x, 2.72, 0.42]}>
-              <sphereGeometry args={[0.07, 6, 6]} />
-              <meshStandardMaterial color="#24123F" />
-            </mesh>
-          ))}
-          {avatar.accessory === "cap" && (
-            <>
-              <mesh position={[0, 2.8, 0]} castShadow>
-                <sphereGeometry args={[0.5, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
-                <meshStandardMaterial color={shirt} roughness={0.8} flatShading />
-              </mesh>
-              <Part args={[0.6, 0.06, 0.5]} position={[0, 2.82, 0.5]} color={shirt} />
-            </>
-          )}
-          {avatar.accessory === "headphones" && (
-            <>
-              <mesh position={[0, 2.7, 0]}>
-                <torusGeometry args={[0.5, 0.07, 6, 20, Math.PI]} />
-                <meshStandardMaterial color="#24123F" />
-              </mesh>
-              {[-0.5, 0.5].map((x) => (
-                <mesh key={x} position={[x, 2.62, 0]} rotation={[0, 0, Math.PI / 2]}>
-                  <cylinderGeometry args={[0.18, 0.18, 0.16, 12]} />
-                  <meshStandardMaterial color="#24123F" emissive="#FF8A4C" emissiveIntensity={0.4} />
-                </mesh>
-              ))}
-            </>
-          )}
-          {avatar.accessory === "none" && (
-            <mesh position={[0, 2.72, -0.04]} castShadow>
-              <sphereGeometry args={[0.48, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2.4]} />
-              <meshStandardMaterial color="#3A2410" roughness={0.8} flatShading />
-            </mesh>
-          )}
-        </group>
-        {avatar.name && <CampusLabel text={avatar.name} color="#24123F" position={[0, 3.9, 0]} width={4} />}
+          <Suspense fallback={null}>
+            {/* key: cada personaje monta su propio mezclador de animaciones */}
+            <CharacterModel key={avatar.character} avatar={avatar} motion={anim} />
+          </Suspense>
+        </group>        {avatar.name && <CampusLabel text={avatar.name} color="#24123F" position={[0, 3.9, 0]} width={4} />}
       </group>
       <instancedMesh ref={dust} args={[undefined, undefined, DUST_COUNT]} frustumCulled={false}>
         <icosahedronGeometry args={[1, 0]} />

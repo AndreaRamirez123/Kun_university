@@ -1,7 +1,8 @@
 "use client";
 
-import { usePick } from "@/i18n/locale-context";
-import { SHIRT_COLORS, type Accessory, type Avatar } from "./campus-zones";
+import { useLocale, usePick } from "@/i18n/locale-context";
+import { CHARACTERS, OUTFIT_COLORS, SKIN_TONES, characterById, type Accessory, type Gender } from "./campus-characters";
+import type { Avatar } from "./campus-zones";
 
 const COPY = {
   es: {
@@ -10,10 +11,16 @@ const COPY = {
     body: "Crea tu estudiante y camina por las cuatro escuelas, el currículo vivo, admisiones y la plataforma de lanzamiento de las certificaciones.",
     nameLabel: "Tu nombre",
     namePlaceholder: "Escribe tu nombre",
-    shirt: "Color de tu camiseta",
+    gender: "Personaje",
+    genders: { male: "Hombre", female: "Mujer", other: "Otro" } as Record<Gender, string>,
+    style: "Estilo",
+    skin: "Tono de piel",
+    skinTone: "Tono",
+    helmet: "Con casco: el tono de piel no se ve.",
+    outfit: "Color de la ropa",
     color: "Color",
     accessory: "Accesorio",
-    accessories: { cap: "Gorra", headphones: "Audífonos", none: "Ninguno" } as Record<Accessory, string>,
+    accessories: { cap: "Gorra KUN", headphones: "Audífonos", backpack: "Mochila KUN", none: "Ninguno" } as Record<Accessory, string>,
     start: "Entrar al campus",
     legend: "Muévete con las flechas o WASD, corre con Shift y salta con Espacio. En el celular, arrastra el dedo sobre la pantalla.",
   },
@@ -23,16 +30,58 @@ const COPY = {
     body: "Create your student and walk through the four schools, the living curriculum, admissions and the certifications launch pad.",
     nameLabel: "Your name",
     namePlaceholder: "Type your name",
-    shirt: "T-shirt color",
+    gender: "Character",
+    genders: { male: "Man", female: "Woman", other: "Other" } as Record<Gender, string>,
+    style: "Style",
+    skin: "Skin tone",
+    skinTone: "Tone",
+    helmet: "Wearing a helmet: skin tone isn't visible.",
+    outfit: "Outfit color",
     color: "Color",
     accessory: "Accessory",
-    accessories: { cap: "Cap", headphones: "Headphones", none: "None" } as Record<Accessory, string>,
+    accessories: { cap: "KUN cap", headphones: "Headphones", backpack: "KUN backpack", none: "None" } as Record<Accessory, string>,
     start: "Enter the campus",
     legend: "Move with the arrow keys or WASD, run with Shift and jump with Space. On your phone, drag your finger across the screen.",
   },
 };
 
-const ACCESSORIES: Accessory[] = ["cap", "headphones", "none"];
+const ACCESSORIES: Accessory[] = ["cap", "headphones", "backpack", "none"];
+const GENDERS: Gender[] = ["male", "female", "other"];
+
+const PILL = "h-10 cursor-pointer rounded-full border-2 px-3.5 text-[14px] font-bold transition";
+const PILL_ON = "border-[#24123F] bg-[#24123F] text-[#FFF3E6]";
+const PILL_OFF = "border-[#E2D4EC] bg-white text-[#24123F] hover:border-[#24123F]";
+
+function Swatches({
+  colors,
+  value,
+  label,
+  onPick,
+  disabled,
+}: {
+  colors: string[];
+  value: string;
+  label: string;
+  onPick: (c: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <div className={`flex flex-wrap gap-2 ${disabled ? "pointer-events-none opacity-40" : ""}`}>
+      {colors.map((c, i) => (
+        <button
+          key={c}
+          type="button"
+          disabled={disabled}
+          aria-label={`${label} ${i + 1}`}
+          aria-pressed={value === c}
+          onClick={() => onPick(c)}
+          className="h-9 w-9 cursor-pointer rounded-full border-[3px] border-white transition hover:scale-110 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#FFC85C]"
+          style={{ background: c, boxShadow: value === c ? "0 0 0 3px #24123F" : "0 0 0 2px #E2D4EC" }}
+        />
+      ))}
+    </div>
+  );
+}
 const FADE = "transition-[translate,opacity] duration-700 ease-[cubic-bezier(.16,1,.3,1)]";
 
 // Titular que entra letra por letra, como los títulos de Active Theory.
@@ -80,6 +129,8 @@ export function CampusIntro({
   onStart: () => void;
 }) {
   const t = usePick(COPY);
+  const { locale } = useLocale();
+  const character = characterById(avatar.character);
   const shown = visible && !leaving;
   const fade = (delay: number): React.CSSProperties => ({
     translate: shown || reduceMotion ? "0 0" : "0 24px",
@@ -138,46 +189,85 @@ export function CampusIntro({
           </label>
 
           <fieldset className="m-0 border-0 p-0">
-            <legend className="mb-2 p-0 text-[15px] font-bold">{t.shirt}</legend>
-            <div className="flex flex-wrap gap-2.5">
-              {SHIRT_COLORS.map((c, i) => (
-                <button
-                  key={c}
-                  type="button"
-                  aria-label={`${t.color} ${i + 1}`}
-                  aria-pressed={avatar.shirt === c}
-                  onClick={() => onChange({ ...avatar, shirt: c })}
-                  className="h-11 w-11 cursor-pointer rounded-full border-[3px] border-white transition hover:scale-110 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#FFC85C]"
-                  style={{
-                    background: c,
-                    boxShadow: avatar.shirt === c ? "0 0 0 3px #24123F" : "0 0 0 2px #E2D4EC",
-                  }}
-                />
-              ))}
+            <legend className="mb-2 p-0 text-[15px] font-bold">{t.gender}</legend>
+            <div className="flex flex-wrap gap-2">
+              {GENDERS.map((g) => {
+                const on = character.gender === g;
+                return (
+                  <button
+                    key={g}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => {
+                      if (on) return;
+                      const first = CHARACTERS.find((ch) => ch.gender === g);
+                      if (first) onChange({ ...avatar, character: first.id });
+                    }}
+                    className={`${PILL} ${on ? PILL_ON : PILL_OFF}`}
+                  >
+                    {t.genders[g]}
+                  </button>
+                );
+              })}
             </div>
           </fieldset>
 
           <fieldset className="m-0 border-0 p-0">
-            <legend className="mb-2 p-0 text-[15px] font-bold">{t.accessory}</legend>
-            <div className="flex flex-wrap gap-2.5">
-              {ACCESSORIES.map((a) => (
+            <legend className="mb-2 p-0 text-[15px] font-bold">{t.style}</legend>
+            <div className="flex flex-wrap gap-2">
+              {CHARACTERS.filter((ch) => ch.gender === character.gender).map((ch) => (
                 <button
-                  key={a}
+                  key={ch.id}
                   type="button"
-                  aria-pressed={avatar.accessory === a}
-                  onClick={() => onChange({ ...avatar, accessory: a })}
-                  className={`h-11 cursor-pointer rounded-full border-2 px-4 text-[15px] font-bold transition ${
-                    avatar.accessory === a
-                      ? "border-[#24123F] bg-[#24123F] text-[#FFF3E6]"
-                      : "border-[#E2D4EC] bg-white text-[#24123F] hover:border-[#24123F]"
-                  }`}
+                  aria-pressed={avatar.character === ch.id}
+                  onClick={() => onChange({ ...avatar, character: ch.id })}
+                  className={`${PILL} ${avatar.character === ch.id ? PILL_ON : PILL_OFF}`}
                 >
-                  {t.accessories[a]}
+                  {ch.label[locale]}
                 </button>
               ))}
             </div>
           </fieldset>
 
+          <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-2 p-0 text-[15px] font-bold">{t.skin}</legend>
+              <Swatches
+                colors={SKIN_TONES}
+                value={avatar.skin}
+                label={t.skinTone}
+                disabled={character.helmet}
+                onPick={(skin) => onChange({ ...avatar, skin })}
+              />
+              {character.helmet && <p className="m-0 mt-1.5 text-[12px] text-[#5C4A72]">{t.helmet}</p>}
+            </fieldset>
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-2 p-0 text-[15px] font-bold">{t.outfit}</legend>
+              <Swatches colors={OUTFIT_COLORS} value={avatar.outfit} label={t.color} onPick={(outfit) => onChange({ ...avatar, outfit })} />
+            </fieldset>
+          </div>
+
+          <fieldset className="m-0 border-0 p-0">
+            <legend className="mb-2 p-0 text-[15px] font-bold">{t.accessory}</legend>
+            <div className="flex flex-wrap gap-2">
+              {ACCESSORIES.map((a) => {
+                // Con casco solo tiene sentido la mochila.
+                const blocked = character.helmet && (a === "cap" || a === "headphones");
+                return (
+                  <button
+                    key={a}
+                    type="button"
+                    disabled={blocked}
+                    aria-pressed={avatar.accessory === a}
+                    onClick={() => onChange({ ...avatar, accessory: a })}
+                    className={`${PILL} ${avatar.accessory === a ? PILL_ON : PILL_OFF} disabled:cursor-not-allowed disabled:opacity-40`}
+                  >
+                    {t.accessories[a]}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
           <button
             type="submit"
             className="group relative h-14 cursor-pointer overflow-hidden rounded-[18px] font-(family-name:--font-gabarito) text-xl font-extrabold text-[#24123F] shadow-[0_14px_30px_-12px_rgba(255,140,80,0.9)] transition hover:-translate-y-0.5"

@@ -13,7 +13,8 @@ import { CampusPortal, CampusZonePrompt, type PortalStage } from "./campus-porta
 import { campusRuntime, resetCampusInput } from "./campus-runtime";
 import type { CampusPhase } from "./campus-scene";
 import { skyLabel, useFloridaSky, type SkyMode } from "./campus-sky";
-import { PLAYER_START, SHIRT_COLORS, ZONES, type Avatar } from "./campus-zones";
+import { OUTFIT_COLORS, SKIN_TONES } from "./campus-characters";
+import { PLAYER_START, ZONES, type Avatar } from "./campus-zones";
 import { hasWebGL } from "./has-webgl";
 import { NoWebGLFallback } from "./no-webgl-fallback";
 import { useLocale, usePick } from "@/i18n/locale-context";
@@ -86,7 +87,7 @@ export function CampusExperience(props: {
   const [phase, setPhase] = useState<CampusPhase>("loading");
   const [sceneReady, setSceneReady] = useState(false);
   const [leavingIntro, setLeavingIntro] = useState(false);
-  const [avatar, setAvatar] = useState<Avatar>({ name: "", shirt: SHIRT_COLORS[0], accessory: "cap" });
+  const [avatar, setAvatar] = useState<Avatar>({ name: "", character: "woman-casual", skin: SKIN_TONES[2], outfit: OUTFIT_COLORS[0], accessory: "cap" });
   const [activeZoneId, setActiveZoneId] = useState<string | null>(null);
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [soundOn, setSoundOn] = useState(false);

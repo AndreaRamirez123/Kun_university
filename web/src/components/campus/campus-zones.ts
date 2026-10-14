@@ -105,11 +105,16 @@ export const WALK_RADIUS = 48;
 
 export const PLAYER_START: [number, number, number] = [0, 0.2, 31];
 
-export const SHIRT_COLORS = ["#E8735A", "#3D6FD9", "#1E9C7E", "#FFC85C", "#C2387A"];
+export type { Accessory } from "./campus-characters";
 
-export type Accessory = "cap" | "headphones" | "none";
-
-export type Avatar = { name: string; shirt: string; accessory: Accessory };
+export type Avatar = {
+  name: string;
+  /** Id de CHARACTERS (campus-characters.ts). */
+  character: string;
+  skin: string;
+  outfit: string;
+  accessory: import("./campus-characters").Accessory;
+};
 
 export type Collider = { x: number; z: number; r: number };
 

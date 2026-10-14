@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { Suspense, useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Bloom, EffectComposer, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
 import { BlendFunction, ToneMappingMode } from "postprocessing";
 import * as THREE from "three";
+import { usePreloadedCharacters } from "./campus-character";
 import { FLORIDA_COLLIDERS } from "./campus-florida";
 import { CampusInterior, INTERIOR_ORIGIN } from "./campus-interior";
 import { CampusPlayer } from "./campus-player";
@@ -155,8 +156,10 @@ function ZoneWatcher({
 }
 
 // Avisa una sola vez cuando la escena ya pintó sus primeros frames, para que
-// el loader no se retire antes de que haya algo bonito detrás.
+// el loader no se retire antes de que haya algo bonito detrás. Vive dentro de
+// un Suspense que además espera a los modelos de los personajes.
 function FirstFrames({ onReady }: { onReady: () => void }) {
+  usePreloadedCharacters();
   const frames = useRef(0);
   useFrame(() => {
     frames.current += 1;
@@ -255,7 +258,9 @@ export function CampusScene({
 
       <CameraRig phase={phase} playerRef={playerRef} reduceMotion={reduceMotion} />
       <ZoneWatcher enabled={phase === "playing"} playerRef={playerRef} onZoneChange={onZoneChange} />
-      <FirstFrames onReady={onReady} />
+      <Suspense fallback={null}>
+        <FirstFrames onReady={onReady} />
+      </Suspense>
 
       <EffectComposer multisampling={narrow ? 0 : 4}>
         <Bloom mipmapBlur intensity={0.85} luminanceThreshold={1} luminanceSmoothing={0.25} radius={0.7} />
