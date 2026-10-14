@@ -196,101 +196,48 @@ const LETTERS = [
   { char: "N", x: 4.6, color: "#7A4FD0" },
 ];
 const LETTER_RADIUS = 1.5;
+const LETTER_COLLIDER_RADIUS = 1.4;
 
-export function KunLetters({ colliders, onBump }: { colliders: Collider[]; onBump?: (strength: number) => void }) {
+export function KunLetters({ onBump }: { onBump?: (strength: number) => void }) {
   const refs = useRef<Array<THREE.Group | null>>([]);
-  const bodies = useRef(
-    LETTERS.map((l) => ({
-      x: l.x,
-      z: LETTERS_Z,
-      vx: 0,
-      vz: 0,
-      tiltX: 0,
-      tiltZ: 0,
-      tiltVX: 0,
-      tiltVZ: 0,
-      yaw: 0,
-      yawV: 0,
-      cooldown: 0,
-    })),
-  );
+  // Las letras no se desplazan (son sólidas para el personaje, ver
+  // LETTER_COLLIDERS): solo se tambalean al chocarlas y vuelven a quedar de pie.
+  const bodies = useRef(LETTERS.map(() => ({ tiltX: 0, tiltZ: 0, tiltVX: 0, tiltVZ: 0, cooldown: 0, lastDist: Infinity })));
 
   useFrame((_, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05);
     const p = campusRuntime.player;
-    const all = bodies.current;
-    all.forEach((b, i) => {
+    bodies.current.forEach((b, i) => {
       b.cooldown = Math.max(0, b.cooldown - delta);
-      const dx = b.x - p.x;
-      const dz = b.z - p.z;
+      const dx = LETTERS[i].x - p.x;
+      const dz = LETTERS_Z - p.z;
       const dist = Math.hypot(dx, dz);
-      const min = LETTER_RADIUS + PLAYER_RADIUS;
-      if (dist < min && dist > 0.0001) {
+      // Impacto: en el frame en que el personaje llega al borde de la letra,
+      // con la velocidad que traía (después el collider lo frena en seco).
+      const contact = LETTER_COLLIDER_RADIUS + PLAYER_RADIUS + 0.2;
+      const approach = Number.isFinite(b.lastDist) ? (b.lastDist - dist) / Math.max(delta, 0.001) : 0;
+      const speed = Math.max(Math.hypot(p.vx, p.vz), approach);
+      if (dist < contact && b.lastDist >= contact && dist > 0.0001 && speed > 0.5 && b.cooldown === 0) {
         const nx = dx / dist;
         const nz = dz / dist;
-        b.x = p.x + nx * min;
-        b.z = p.z + nz * min;
-        const playerSpeed = Math.hypot(p.vx, p.vz);
-        // Pesadas: se deslizan poco pero se tambalean mucho.
-        b.vx += nx * playerSpeed * 0.25;
-        b.vz += nz * playerSpeed * 0.25;
-        b.tiltVX += nz * playerSpeed * 0.35;
-        b.tiltVZ -= nx * playerSpeed * 0.35;
-        b.yawV += (Math.random() - 0.5) * playerSpeed * 0.2;
-        if (b.cooldown === 0 && playerSpeed > 1) {
-          onBump?.(Math.min(1, playerSpeed / 12) * 0.8);
-          b.cooldown = 0.3;
-        }
+        b.tiltVX += nz * speed * 0.35;
+        b.tiltVZ -= nx * speed * 0.35;
+        onBump?.(Math.min(1, speed / 12) * 0.8);
+        b.cooldown = 0.35;
       }
-      // Letras entre sí.
-      for (let j = i + 1; j < all.length; j++) {
-        const o = all[j];
-        const ox = o.x - b.x;
-        const oz = o.z - b.z;
-        const od = Math.hypot(ox, oz);
-        if (od < LETTER_RADIUS * 2 && od > 0.0001) {
-          const overlap = (LETTER_RADIUS * 2 - od) / 2;
-          b.x -= (ox / od) * overlap;
-          b.z -= (oz / od) * overlap;
-          o.x += (ox / od) * overlap;
-          o.z += (oz / od) * overlap;
-        }
-      }
-      // Edificios y palmeras las frenan (la U no termina dentro de la fuente).
-      for (const c of colliders) {
-        const cx = b.x - c.x;
-        const cz = b.z - c.z;
-        const cd = Math.hypot(cx, cz);
-        const cmin = c.r + LETTER_RADIUS;
-        if (cd < cmin && cd > 0.0001) {
-          b.x = c.x + (cx / cd) * cmin;
-          b.z = c.z + (cz / cd) * cmin;
-          b.vx = 0;
-          b.vz = 0;
-        }
-      }
-      const friction = Math.exp(-4 * delta);
-      b.vx *= friction;
-      b.vz *= friction;
-      b.x += b.vx * delta;
-      b.z += b.vz * delta;
+      b.lastDist = dist;
       // Resorte amortiguado que las devuelve a estar de pie.
       b.tiltVX += -b.tiltX * 60 * delta;
       b.tiltVZ += -b.tiltZ * 60 * delta;
       b.tiltVX *= Math.exp(-3.5 * delta);
       b.tiltVZ *= Math.exp(-3.5 * delta);
-      b.tiltX = THREE.MathUtils.clamp(b.tiltX + b.tiltVX * delta, -0.9, 0.9);
-      b.tiltZ = THREE.MathUtils.clamp(b.tiltZ + b.tiltVZ * delta, -0.9, 0.9);
-      b.yawV *= Math.exp(-3 * delta);
-      b.yaw += b.yawV * delta;
+      b.tiltX = THREE.MathUtils.clamp(b.tiltX + b.tiltVX * delta, -0.35, 0.35);
+      b.tiltZ = THREE.MathUtils.clamp(b.tiltZ + b.tiltVZ * delta, -0.35, 0.35);
 
       const g = refs.current[i];
-      if (!g) return;
-      g.position.set(b.x, 0.2, b.z);
-      g.rotation.set(b.tiltX, b.yaw, b.tiltZ);
+      if (g) g.rotation.set(b.tiltX, 0, b.tiltZ);
     });
   });
-
   return (
     <>
       {LETTERS.map((l, i) => (
@@ -312,6 +259,9 @@ export function KunLetters({ colliders, onBump }: { colliders: Collider[]; onBum
     </>
   );
 }
+
+/** Las letras bloquean al personaje como un edificio pequeño. */
+export const LETTER_COLLIDERS: Collider[] = LETTERS.map((l) => ({ x: l.x, z: LETTERS_Z, r: LETTER_COLLIDER_RADIUS }));
 
 /** Zonas de exclusión de las letras, para no sembrar arbustos encima. */
 export const LETTER_SPOTS = LETTERS.map((l) => ({ x: l.x, z: LETTERS_Z, r: LETTER_RADIUS + 1 }));

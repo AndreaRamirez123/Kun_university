@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePick } from "@/i18n/locale-context";
 import { campusRuntime } from "./campus-runtime";
+import type { SkyMode } from "./campus-sky";
 import { GRASS_RADIUS, ISLAND_RADIUS, ZONES } from "./campus-zones";
 
 const COPY = {
@@ -15,6 +16,11 @@ const COPY = {
     soundOff: "Activar sonido",
     jump: "Saltar",
     map: "Minimapa del campus",
+    sky: { day: "Día", sunset: "Atardecer", night: "Noche" },
+    auto: "Hora real",
+    manual: "Vista previa",
+    miami: "Miami",
+    skyHint: "Cambiar el momento del día",
   },
   en: {
     subtitle: "Virtual campus in Florida",
@@ -24,6 +30,11 @@ const COPY = {
     soundOff: "Turn sound on",
     jump: "Jump",
     map: "Campus minimap",
+    sky: { day: "Day", sunset: "Sunset", night: "Night" },
+    auto: "Live time",
+    manual: "Preview",
+    miami: "Miami",
+    skyHint: "Change the time of day",
   },
 };
 
@@ -115,16 +126,45 @@ function Minimap({ visited, label }: { visited: Set<string>; label: string }) {
   );
 }
 
+function SkyIcon({ kind }: { kind: "day" | "sunset" | "night" }) {
+  if (kind === "night")
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#E6ECFF" aria-hidden>
+        <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+      </svg>
+    );
+  if (kind === "sunset")
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFC85C" strokeWidth="2" aria-hidden>
+        <path d="M5 16a7 7 0 0 1 14 0M3 19h18M7 22h10M12 3v4M4.2 8.2l2.1 2.1M19.8 8.2l-2.1 2.1" strokeLinecap="round" />
+      </svg>
+    );
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFD166" strokeWidth="2" aria-hidden>
+      <circle cx="12" cy="12" r="4.5" fill="#FFD166" />
+      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function CampusHud({
   visible,
   visited,
   soundOn,
   onToggleSound,
+  skyMode,
+  skyKind,
+  floridaTime,
+  onCycleSky,
 }: {
   visible: boolean;
   visited: Set<string>;
   soundOn: boolean;
   onToggleSound: () => void;
+  skyMode: SkyMode;
+  skyKind: "day" | "sunset" | "night";
+  floridaTime: string;
+  onCycleSky: () => void;
 }) {
   const t = usePick(COPY);
   const hint = usePick(HINT);
@@ -168,6 +208,21 @@ export function CampusHud({
             ))}
           </span>
           {soundOn ? t.soundOn : t.soundOff}
+        </button>
+        <button
+          type="button"
+          onClick={onCycleSky}
+          title={t.skyHint}
+          aria-label={`${t.skyHint}: ${t.sky[skyKind]}`}
+          className="flex items-center gap-2 rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-xs font-bold text-[#FFF3E6] backdrop-blur-md transition hover:bg-[#1D0C3C]/85"
+        >
+          <SkyIcon kind={skyKind} />
+          <span>
+            {t.sky[skyKind]} · {t.miami} {floridaTime}
+          </span>
+          <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold text-white/75">
+            {skyMode === "auto" ? t.auto : t.manual}
+          </span>
         </button>
       </div>
 

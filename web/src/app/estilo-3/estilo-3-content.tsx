@@ -1,5 +1,6 @@
 "use client";
 
+import { ADMISSIONS_EMAIL } from "@/lib/contact";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { AccordionShowcase, type AccordionItem } from "@/components/accordion-showcase";
@@ -726,7 +727,12 @@ export function Estilo3Content({
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t-[3px] border-[#10101A] pt-6">
-          <div className="text-[13px] font-semibold">{t.footer.copyright}</div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <div className="text-[13px] font-semibold">{t.footer.copyright}</div>
+            <a href={`mailto:${ADMISSIONS_EMAIL}`} className="text-[13px] font-bold hover:text-[#BF0404]">
+              {ADMISSIONS_EMAIL}
+            </a>
+          </div>
           <div className="flex gap-5">
             <a href="#" className="text-[13px] font-bold hover:text-[#BF0404]">YouTube</a>
             <a href="#" className="text-[13px] font-bold hover:text-[#BF0404]">LinkedIn</a>

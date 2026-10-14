@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useLocale, usePick } from "@/i18n/locale-context";
+import { ADMISSIONS_EMAIL } from "@/lib/contact";
 import type { School } from "@/lib/types";
 
 const COPY = {
@@ -15,6 +16,7 @@ const COPY = {
     choose: "Elige un programa",
     submit: "Enviar solicitud",
     close: "Cerrar",
+    orEmail: "¿Prefieres escribirnos?",
   },
   en: {
     title: "Request information",
@@ -26,6 +28,7 @@ const COPY = {
     choose: "Choose a program",
     submit: "Send request",
     close: "Close",
+    orEmail: "Prefer email?",
   },
 };
 
@@ -126,6 +129,12 @@ export function CampusFormModal({
           >
             {t.submit}
           </button>
+          <p className="m-0 text-center text-[13px] text-[#5C4A72]">
+            {t.orEmail}{" "}
+            <a href={`mailto:${ADMISSIONS_EMAIL}`} className="font-bold text-[#24123F] underline">
+              {ADMISSIONS_EMAIL}
+            </a>
+          </p>
         </form>
       </div>
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { ADMISSIONS_EMAIL } from "@/lib/contact";
 import Image from "next/image";
 import { usePick } from "@/i18n/locale-context";
 
@@ -103,6 +104,9 @@ export function SiteFooter() {
         </div>
 
         <div className="py-6 text-center">
+          <a href={`mailto:${ADMISSIONS_EMAIL}`} className="mb-2 inline-block text-sm font-bold text-cream hover:text-cyan">
+            {ADMISSIONS_EMAIL}
+          </a>
           <div className="small-caps text-xs text-navy-muted">{t.copyright}</div>
         </div>
       </div>

@@ -5,6 +5,8 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { getDotTexture } from "./campus-dot-texture";
 import { seeded } from "./campus-random";
+import type { SkyPreset } from "./campus-sky";
+import { CelestialBody, SkyDome, Stars } from "./campus-sky-dome";
 import type { ZoneDef } from "./campus-zones";
 
 // Aula virtual de cada lugar del campus: una plataforma que flota sobre el mar
@@ -14,59 +16,24 @@ import type { ZoneDef } from "./campus-zones";
 
 export const INTERIOR_ORIGIN: [number, number, number] = [0, -400, 0];
 
-const DOME_VERTEX = /* glsl */ `
-  varying vec3 vDir;
-  void main() {
-    vDir = normalize(position);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-const DOME_FRAGMENT = /* glsl */ `
-  varying vec3 vDir;
-  void main() {
-    float h = vDir.y;
-    vec3 horizon = vec3(1.0, 0.6, 0.35);
-    vec3 mid = vec3(0.78, 0.26, 0.5);
-    vec3 top = vec3(0.08, 0.04, 0.22);
-    vec3 c = mix(horizon, mid, smoothstep(-0.02, 0.2, h));
-    c = mix(c, top, smoothstep(0.18, 0.7, h));
-    if (h < -0.02) c = vec3(0.07, 0.2, 0.28);
-    gl_FragColor = vec4(c, 1.0);
-  }
-`;
-
 function color(hex: string, boost = 1) {
   return new THREE.Color(hex).multiplyScalar(boost);
 }
 
-function Backdrop() {
+const SEA_BELOW = new THREE.Color("#07202C");
+
+function Backdrop({ sky }: { sky: SkyPreset }) {
   return (
     <group>
-      <mesh>
-        <sphereGeometry args={[120, 32, 16]} />
-        <shaderMaterial side={THREE.BackSide} depthWrite={false} fog={false} vertexShader={DOME_VERTEX} fragmentShader={DOME_FRAGMENT} />
-      </mesh>
-      {/* Sol Art Deco detrás del ventanal */}
-      <group position={[0, 10, -95]}>
-        <mesh>
-          <circleGeometry args={[16, 48]} />
-          <meshBasicMaterial color={[2.2, 1.5, 0.7]} toneMapped={false} fog={false} />
-        </mesh>
-        {[-3, -6, -8.6, -11, -13].map((y, i) => (
-          <mesh key={y} position={[0, y, 0.1]}>
-            <planeGeometry args={[40, 0.9 + i * 0.4]} />
-            <meshBasicMaterial color="#C8507A" fog={false} />
-          </mesh>
-        ))}
-      </group>
-      {/* Mar: disco con olas suaves */}
-      <InteriorSea />
+      <SkyDome sky={sky} radius={120} below={SEA_BELOW} />
+      <Stars sky={sky} radius={112} />
+      {/* El mismo sol o luna de la isla, más cerca porque el domo es más chico */}
+      <CelestialBody sky={sky} scale={0.42} />
+      <InteriorSea color={sky.ocean} />
     </group>
   );
 }
-
-function InteriorSea() {
+function InteriorSea({ color }: { color: THREE.Color }) {
   const ref = useRef<THREE.Mesh>(null);
   const base = useRef<Float32Array | null>(null);
   useFrame((state) => {
@@ -85,7 +52,7 @@ function InteriorSea() {
   return (
     <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]}>
       <planeGeometry args={[240, 240, 60, 60]} />
-      <meshStandardMaterial color="#17647C" roughness={0.25} metalness={0.3} flatShading />
+      <meshStandardMaterial color={color} roughness={0.25} metalness={0.3} flatShading />
     </mesh>
   );
 }
@@ -480,10 +447,10 @@ function Motes({ tint }: { tint: string }) {
   );
 }
 
-export function CampusInterior({ zone }: { zone: ZoneDef }) {
+export function CampusInterior({ zone, sky }: { zone: ZoneDef; sky: SkyPreset }) {
   return (
     <group position={INTERIOR_ORIGIN}>
-      <Backdrop />
+      <Backdrop sky={sky} />
       <PalmSilhouette x={-24} z={-30} s={2.2} />
       <PalmSilhouette x={-31} z={-40} s={1.7} />
       <PalmSilhouette x={25} z={-32} s={2} flip />

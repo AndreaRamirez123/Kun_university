@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocale, usePick, type Dict } from "@/i18n/locale-context";
 import type { Certification, School, Stats } from "@/lib/types";
 import type { ZoneDef } from "./campus-zones";
+import { ADMISSIONS_EMAIL } from "@/lib/contact";
 
 // Tablero del aula, al estilo de las interfaces de Active Theory: vidrio oscuro,
 // esquinas de HUD, secciones numeradas, títulos que se "descifran" letra por
@@ -59,6 +60,7 @@ const COMMON = {
     life: ["Campus", "Estudiantes", "Comunidad", "Equipo docente"],
     contactTitle: "¿Quieres que te contemos más?",
     contactBody: "Te contamos todo sobre programas, becas y fechas de inicio. Sin compromiso.",
+    writeUs: "Escríbenos a admisiones",
     certsTitle: "No tienes que esperar a graduarte",
     certsBody: (n: number) =>
       `${n} certificaciones de 36 a 40 horas, diseñadas para aplicar lo aprendido desde la primera semana.`,
@@ -116,6 +118,7 @@ const COMMON = {
     life: ["Campus", "Students", "Community", "Faculty"],
     contactTitle: "Want to hear more?",
     contactBody: "We'll tell you everything about programs, scholarships and start dates. No commitment.",
+    writeUs: "Email admissions",
     certsTitle: "You don't have to wait until you graduate",
     certsBody: (n: number) => `${n} certifications of 36 to 40 hours, designed so you apply what you learn from the first week.`,
     hours: (h: number) => `${h} hours · 100% online`,
@@ -786,6 +789,24 @@ function AdmissionContent({
       <SectionTitle n={n}>{t.contactTitle}</SectionTitle>
       <In i={0}>
         <p className="m-0 text-[15px] leading-relaxed text-white/75">{t.contactBody}</p>
+      </In>
+      <In i={1}>
+        <a
+          href={`mailto:${ADMISSIONS_EMAIL}`}
+          className="group flex items-center gap-4 rounded-2xl border p-4 no-underline transition hover:-translate-y-0.5"
+          style={{ borderColor: `${color}88`, background: `${color}1A` }}
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full" style={{ background: color }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 7l9 6 9-6" />
+            </svg>
+          </span>
+          <span className="min-w-0">
+            <span className="block font-mono text-[10px] tracking-[0.2em] text-white/55 uppercase">{t.writeUs}</span>
+            <span className="block truncate text-[16px] font-bold text-[#FFF3E6] group-hover:underline">{ADMISSIONS_EMAIL}</span>
+          </span>
+        </a>
       </In>
       <In i={1} className="flex flex-wrap gap-2.5">
         <Btn primary color={color} onClick={() => actions.onRequestInfo(program)}>

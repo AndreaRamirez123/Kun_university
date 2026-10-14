@@ -8,68 +8,14 @@ import { CampusLabel } from "./campus-label";
 import { LETTER_SPOTS } from "./campus-props";
 import { getDotTexture } from "./campus-dot-texture";
 import { seeded } from "./campus-random";
+import type { SkyPreset } from "./campus-sky";
+import { CelestialBody, SkyDome, Stars } from "./campus-sky-dome";
+import { FLORIDA_SPOTS, FloridaDecor } from "./campus-florida";
 import { GRASS_RADIUS, ISLAND_RADIUS, ZONES, type Collider, type ZoneDef } from "./campus-zones";
 import type { Locale } from "@/i18n/locale-context";
 
 
-const SKY_VERTEX = /* glsl */ `
-  varying vec3 vDir;
-  void main() {
-    vDir = normalize(position);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-const SKY_FRAGMENT = /* glsl */ `
-  varying vec3 vDir;
-  void main() {
-    float h = vDir.y;
-    vec3 horizon = vec3(1.0, 0.62, 0.36);
-    vec3 mid = vec3(0.86, 0.3, 0.48);
-    vec3 top = vec3(0.12, 0.06, 0.3);
-    vec3 c = mix(horizon, mid, smoothstep(0.0, 0.18, h));
-    c = mix(c, top, smoothstep(0.15, 0.6, h));
-    if (h < 0.0) c = horizon;
-    gl_FragColor = vec4(c, 1.0);
-  }
-`;
-
-function Sky() {
-  return (
-    <mesh renderOrder={-1}>
-      <sphereGeometry args={[300, 32, 16]} />
-      <shaderMaterial
-        side={THREE.BackSide}
-        depthWrite={false}
-        fog={false}
-        vertexShader={SKY_VERTEX}
-        fragmentShader={SKY_FRAGMENT}
-      />
-    </mesh>
-  );
-}
-
-// Sol con franjas horizontales Art Deco, a propósito más brillante que 1.0
-// para que el bloom lo convierta en un halo.
-function DecoSun() {
-  const bars = [-4, -8, -11.5, -14.5, -17];
-  return (
-    <group position={[-20, 14, -230]}>
-      <mesh>
-        <circleGeometry args={[22, 48]} />
-        <meshBasicMaterial color={[2.2, 1.55, 0.7]} toneMapped={false} fog={false} />
-      </mesh>
-      {bars.map((y, i) => (
-        <mesh key={y} position={[0, y, 0.1]}>
-          <planeGeometry args={[50, 1.2 + i * 0.5]} />
-          <meshBasicMaterial color="#FF9C6B" fog={false} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-function Ocean({ reduceMotion }: { reduceMotion: boolean }) {
+function Ocean({ reduceMotion, color }: { reduceMotion: boolean; color: THREE.Color }) {
   const ref = useRef<THREE.Mesh>(null);
   const base = useRef<Float32Array | null>(null);
 
@@ -92,7 +38,7 @@ function Ocean({ reduceMotion }: { reduceMotion: boolean }) {
   return (
     <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.7, 0]} receiveShadow>
       <planeGeometry args={[420, 420, 90, 90]} />
-      <meshStandardMaterial color="#1C7A93" roughness={0.3} metalness={0.2} flatShading />
+      <meshStandardMaterial color={color} roughness={0.3} metalness={0.2} flatShading />
     </mesh>
   );
 }
@@ -198,7 +144,7 @@ const FIREFLY_COUNT = 220;
 
 // Luciérnagas doradas flotando sobre la isla: le dan profundidad y movimiento
 // a la escena y el bloom las convierte en puntitos de luz.
-function Fireflies({ reduceMotion }: { reduceMotion: boolean }) {
+function Fireflies({ reduceMotion, sky }: { reduceMotion: boolean; sky: SkyPreset }) {
   const ref = useRef<THREE.Points>(null);
   const seeds = useMemo(() => {
     const rnd = seeded(99);
@@ -216,7 +162,10 @@ function Fireflies({ reduceMotion }: { reduceMotion: boolean }) {
 
   useFrame((state) => {
     const pts = ref.current;
-    if (!pts || reduceMotion) return;
+    if (!pts) return;
+    // De día casi no se ven; al atardecer y de noche brillan.
+    (pts.material as THREE.PointsMaterial).opacity = 0.15 + 0.75 * (1 - sky.day);
+    if (reduceMotion) return;
     const t = state.clock.elapsedTime;
     const attr = pts.geometry.getAttribute("position") as THREE.BufferAttribute;
     for (let i = 0; i < FIREFLY_COUNT; i++) {
@@ -281,6 +230,7 @@ export function useVegetation() {
     const far = (x: number, z: number, margin: number) =>
       ZONES.every((zn) => Math.hypot(x - zn.x, z - zn.z) > zn.r + margin) &&
       LETTER_SPOTS.every((l) => Math.hypot(x - l.x, z - l.z) > l.r + margin) &&
+      FLORIDA_SPOTS.every((s) => Math.hypot(x - s.x, z - s.z) > s.r + margin * 0.5) &&
       Math.hypot(x, z) > 12 &&
       // Deja libre el camino de llegada y el corredor por donde pasa la cámara.
       !(Math.abs(x) < 3 && z > 10) &&
@@ -332,21 +282,25 @@ export function CampusWorld({
   reduceMotion,
   vegetation,
   showLabels,
+  sky,
 }: {
   locale: Locale;
   activeZoneId: string | null;
   reduceMotion: boolean;
   vegetation: ReturnType<typeof useVegetation>;
   showLabels: boolean;
+  sky: SkyPreset;
 }) {
   const activeZone = ZONES.find((z) => z.id === activeZoneId) ?? null;
 
   return (
     <>
-      <Sky />
-      <DecoSun />
-      <Ocean reduceMotion={reduceMotion} />
+      <SkyDome sky={sky} radius={300} />
+      <Stars sky={sky} radius={280} />
+      <CelestialBody sky={sky} />
+      <Ocean reduceMotion={reduceMotion} color={sky.ocean} />
       <Island />
+      <FloridaDecor sky={sky} />
 
       {ZONES.map((zn) => {
         const Building = BUILDINGS[zn.id];
@@ -378,7 +332,7 @@ export function CampusWorld({
         </mesh>
       ))}
 
-      <Fireflies reduceMotion={reduceMotion} />
+      <Fireflies reduceMotion={reduceMotion} sky={sky} />
     </>
   );
 }

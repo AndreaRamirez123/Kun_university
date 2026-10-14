@@ -12,6 +12,7 @@ import { CampusLoader } from "./campus-loader";
 import { CampusPortal, CampusZonePrompt, type PortalStage } from "./campus-portal";
 import { campusRuntime, resetCampusInput } from "./campus-runtime";
 import type { CampusPhase } from "./campus-scene";
+import { skyLabel, useFloridaSky, type SkyMode } from "./campus-sky";
 import { PLAYER_START, SHIRT_COLORS, ZONES, type Avatar } from "./campus-zones";
 import { hasWebGL } from "./has-webgl";
 import { NoWebGLFallback } from "./no-webgl-fallback";
@@ -36,6 +37,28 @@ const COPY = {
     submitted: "Request ready. In the final version it will reach admissions.",
   },
 };
+
+const SKY_CYCLE: SkyMode[] = ["auto", "day", "sunset", "night"];
+
+/** Hora actual en Miami, formateada para el HUD. */
+function useFloridaClock(locale: "es" | "en") {
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat(locale === "es" ? "es-CO" : "en-US", {
+      timeZone: "America/New_York",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    const update = () => setTime(fmt.format(new Date()));
+    const first = window.setTimeout(update, 0);
+    const id = window.setInterval(update, 15_000);
+    return () => {
+      window.clearTimeout(first);
+      window.clearInterval(id);
+    };
+  }, [locale]);
+  return time;
+}
 
 function usePrefersReducedMotion() {
   const [reduce, setReduce] = useState(false);
@@ -70,6 +93,9 @@ export function CampusExperience(props: {
   const [form, setForm] = useState<{ open: boolean; program: string }>({ open: false, program: "" });
   const [toast, setToast] = useState({ message: "", visible: false });
   const [interiorId, setInteriorId] = useState<string | null>(null);
+  const [skyMode, setSkyMode] = useState<SkyMode>("auto");
+  const sky = useFloridaSky(skyMode);
+  const floridaTime = useFloridaClock(locale);
   const [portal, setPortal] = useState<{ stage: PortalStage; zoneId: string | null; leaving: boolean }>({
     stage: "idle",
     zoneId: null,
@@ -232,6 +258,7 @@ export function CampusExperience(props: {
           activeZoneId={activeZoneId}
           interiorZone={interiorZone}
           eventSource={wrapperRef}
+          sky={sky}
           reduceMotion={reduceMotion}
           playerRef={playerRef}
           onZoneChange={handleZoneChange}
@@ -248,7 +275,16 @@ export function CampusExperience(props: {
         onChange={setAvatar}
         onStart={start}
       />
-      <CampusHud visible={playing} visited={visited} soundOn={soundOn} onToggleSound={toggleSound} />
+      <CampusHud
+        visible={playing}
+        visited={visited}
+        soundOn={soundOn}
+        onToggleSound={toggleSound}
+        skyMode={skyMode}
+        skyKind={skyLabel(sky)}
+        floridaTime={floridaTime}
+        onCycleSky={() => setSkyMode((m) => SKY_CYCLE[(SKY_CYCLE.indexOf(m) + 1) % SKY_CYCLE.length])}
+      />
       <CampusZonePrompt
         zone={playing && portal.stage === "idle" ? activeZone : null}
         schools={schools}

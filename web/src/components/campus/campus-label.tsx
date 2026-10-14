@@ -8,7 +8,7 @@ import * as THREE from "three";
 // descarga una fuente de un CDN externo — el mismo tipo de dependencia frágil que
 // ya nos rompió la Fase 1 con <Environment preset>). Usa la Gabarito que ya cargó
 // next/font en el layout del campus, leyendo su nombre real desde la variable CSS.
-function labelFontFamily() {
+export function labelFontFamily() {
   const root = document.getElementById("campus-root") ?? document.body;
   const family = getComputedStyle(root).getPropertyValue("--font-gabarito").trim();
   return family || "system-ui, -apple-system, Segoe UI, sans-serif";
@@ -53,7 +53,7 @@ function makeLabelTexture(text: string, color: string) {
 
 // Re-dibuja los letreros cuando termina de cargar la fuente, para no quedarse
 // con la tipografía de respaldo si el canvas se pintó antes.
-function useFontsReady() {
+export function useFontsReady() {
   const [ready, setReady] = useState(false);
   useEffect(() => {
     let alive = true;

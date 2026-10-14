@@ -1,5 +1,6 @@
 "use client";
 
+import { ADMISSIONS_EMAIL } from "@/lib/contact";
 import Image from "next/image";
 import { CertificationsSwiper } from "@/components/certifications-swiper";
 import { FanStack, type FanItem } from "@/components/fan-stack";
@@ -744,7 +745,12 @@ export function Estilo2Content({
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t-4 pt-6" style={{ borderColor: INK }}>
-          <div className="text-[13px] font-semibold">{t.footer.copyright}</div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <div className="text-[13px] font-semibold">{t.footer.copyright}</div>
+            <a href={`mailto:${ADMISSIONS_EMAIL}`} className="text-[13px] font-bold hover:text-[#8C0303]">
+              {ADMISSIONS_EMAIL}
+            </a>
+          </div>
           <div className="flex gap-5">
             <a href="#" className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.youtube}</a>
             <a href="#" className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.linkedin}</a>

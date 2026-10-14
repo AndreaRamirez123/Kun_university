@@ -5,10 +5,12 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Bloom, EffectComposer, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
 import { BlendFunction, ToneMappingMode } from "postprocessing";
 import * as THREE from "three";
+import { FLORIDA_COLLIDERS } from "./campus-florida";
 import { CampusInterior, INTERIOR_ORIGIN } from "./campus-interior";
 import { CampusPlayer } from "./campus-player";
-import { BeachBalls, KunLetters } from "./campus-props";
+import { BeachBalls, KunLetters, LETTER_COLLIDERS } from "./campus-props";
 import { campusRuntime } from "./campus-runtime";
+import type { SkyPreset } from "./campus-sky";
 import { CampusWorld, palmColliders, useVegetation } from "./campus-world";
 import { ZONE_ENTRY_MARGIN, ZONES, type Avatar, type Collider, type ZoneDef } from "./campus-zones";
 import type { Locale } from "@/i18n/locale-context";
@@ -170,6 +172,7 @@ export function CampusScene({
   activeZoneId,
   interiorZone,
   eventSource,
+  sky,
   reduceMotion,
   playerRef,
   onZoneChange,
@@ -182,6 +185,7 @@ export function CampusScene({
   activeZoneId: string | null;
   interiorZone: ZoneDef | null;
   eventSource: React.RefObject<HTMLElement | null>;
+  sky: SkyPreset;
   reduceMotion: boolean;
   playerRef: React.RefObject<THREE.Group | null>;
   onZoneChange: (id: string | null) => void;
@@ -190,10 +194,15 @@ export function CampusScene({
 }) {
   const vegetation = useVegetation();
   const colliders: Collider[] = useMemo(
-    () => [...ZONES.map((z) => ({ x: z.x, z: z.z, r: z.r })), ...palmColliders(vegetation.palms)],
+    () => [...ZONES.map((z) => ({ x: z.x, z: z.z, r: z.r })), ...palmColliders(vegetation.palms), ...LETTER_COLLIDERS, ...FLORIDA_COLLIDERS],
     [vegetation],
   );
   const narrow = typeof window !== "undefined" && window.innerWidth < 700;
+  // La luz principal sale del sol o de la luna, nunca por debajo del horizonte.
+  const lightPosition = useMemo<[number, number, number]>(() => {
+    const v = sky.body.clone().normalize().multiplyScalar(70);
+    return [v.x, Math.max(25, v.y), v.z];
+  }, [sky]);
 
   return (
     <Canvas
@@ -206,12 +215,12 @@ export function CampusScene({
       eventSource={eventSource as React.RefObject<HTMLElement>}
       eventPrefix="client"
     >
-      <fog attach="fog" args={["#F2906E", 70, 190]} />
-      <hemisphereLight args={["#D9C6FF", "#F7CFA0", 1.15]} />
+      <fog attach="fog" args={[sky.fog.getHex(), 70, 190]} />
+      <hemisphereLight color={sky.hemiSky} groundColor={sky.hemiGround} intensity={sky.hemiIntensity} />
       <directionalLight
-        position={[-30, 40, -50]}
-        intensity={1.9}
-        color="#FFCFA0"
+        position={lightPosition}
+        intensity={sky.lightIntensity}
+        color={sky.lightColor}
         castShadow
         shadow-mapSize={narrow ? [1024, 1024] : [2048, 2048]}
         shadow-camera-left={-60}
@@ -230,8 +239,9 @@ export function CampusScene({
         reduceMotion={reduceMotion}
         vegetation={vegetation}
         showLabels={phase === "playing"}
+        sky={sky}
       />
-      <KunLetters colliders={colliders} onBump={onBump} />
+      <KunLetters onBump={onBump} />
       <BeachBalls colliders={colliders} onBump={onBump} />
       <CampusPlayer
         groupRef={playerRef}
@@ -241,7 +251,7 @@ export function CampusScene({
         onLand={onBump}
       />
       </group>
-      {interiorZone && <CampusInterior zone={interiorZone} />}
+      {interiorZone && <CampusInterior zone={interiorZone} sky={sky} />}
 
       <CameraRig phase={phase} playerRef={playerRef} reduceMotion={reduceMotion} />
       <ZoneWatcher enabled={phase === "playing"} playerRef={playerRef} onZoneChange={onZoneChange} />
