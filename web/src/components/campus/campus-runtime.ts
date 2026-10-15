@@ -14,6 +14,8 @@ export const campusRuntime = {
   launchAt: 0,
   /** Multiplicador de distancia de la cámara (rueda del mouse). */
   zoom: 1,
+  /** Posición de Krucn, la mascota, para el minimapa. */
+  krucn: { x: 13, z: -10.9 },
 };
 
 export function resetCampusInput() {

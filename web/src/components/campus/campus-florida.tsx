@@ -42,7 +42,8 @@ const ORANGE_TREES = [
   { x: 12, z: -31 },
 ];
 
-const LAMPS = [13.5, 24, 36].flatMap((z) => [
+// Detrás del punto de partida, para no tapar la fila de personajes del creador.
+const LAMPS = [13.5, 21.5, 27].flatMap((z) => [
   { x: -2.4, z },
   { x: 2.4, z },
 ]);

@@ -7,13 +7,15 @@ import { playBump, playChime, playFanfare, playLaunch, setCampusSound } from "./
 import { CampusFormModal } from "./campus-form-modal";
 import { CampusHud, CampusToast, CampusTouchControls } from "./campus-hud";
 import { CampusBoard } from "./campus-board";
-import { CampusIntro } from "./campus-intro";
+import { CampusGenderStep, CampusIntro } from "./campus-intro";
+import { LINEUP, LINEUP_ORDER } from "./campus-lineup";
 import { CampusLoader } from "./campus-loader";
 import { CampusPortal, CampusZonePrompt, type PortalStage } from "./campus-portal";
+import { KrucnDialog, KrucnPrompt } from "./campus-krucn-dialog";
 import { campusRuntime, resetCampusInput } from "./campus-runtime";
 import type { CampusPhase } from "./campus-scene";
 import { skyLabel, useFloridaSky, type SkyMode } from "./campus-sky";
-import { OUTFIT_COLORS, SKIN_TONES } from "./campus-characters";
+import { DEFAULT_AVATAR, type Gender } from "./campus-avatar";
 import { PLAYER_START, ZONES, type Avatar } from "./campus-zones";
 import { hasWebGL } from "./has-webgl";
 import { NoWebGLFallback } from "./no-webgl-fallback";
@@ -87,13 +89,20 @@ export function CampusExperience(props: {
   const [phase, setPhase] = useState<CampusPhase>("loading");
   const [sceneReady, setSceneReady] = useState(false);
   const [leavingIntro, setLeavingIntro] = useState(false);
-  const [avatar, setAvatar] = useState<Avatar>({ name: "", character: "woman-casual", skin: SKIN_TONES[2], outfit: OUTFIT_COLORS[0], accessory: "cap" });
+  const [avatar, setAvatar] = useState<Avatar>(DEFAULT_AVATAR);
   const [activeZoneId, setActiveZoneId] = useState<string | null>(null);
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [soundOn, setSoundOn] = useState(false);
   const [form, setForm] = useState<{ open: boolean; program: string }>({ open: false, program: "" });
   const [toast, setToast] = useState({ message: "", visible: false });
   const [interiorId, setInteriorId] = useState<string | null>(null);
+  // Creador en dos pasos: primero elegir personaje (con vista previa), luego personalizar.
+  const [introStep, setIntroStep] = useState<"choose" | "edit">("choose");
+  const [chosen, setChosen] = useState<Gender>("female");
+  // Krucn, la mascota: si está cerca y si se está conversando con él.
+  const [krucnNear, setKrucnNear] = useState(false);
+  const [talking, setTalking] = useState(false);
+  const [talk, setTalk] = useState(0);
   const [skyMode, setSkyMode] = useState<SkyMode>("auto");
   const sky = useFloridaSky(skyMode);
   const floridaTime = useFloridaClock(locale);
@@ -187,18 +196,32 @@ export function CampusExperience(props: {
     });
   }
 
-  // Teclado: E / Enter para entrar al edificio cercano, Esc para salir del aula.
-  const live = useRef({ phase, activeZoneId, formOpen: form.open, enter: enterZone, exit: () => exitZone() });
+  function startTalk() {
+    resetCampusInput();
+    setTalk((n) => n + 1);
+    setTalking(true);
+  }
+
+  // Teclado: E / Enter para hablar con Krucn o entrar al edificio cercano, Esc para cerrar.
+  const live = useRef({ phase, activeZoneId, formOpen: form.open, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk });
   useEffect(() => {
-    live.current = { phase, activeZoneId, formOpen: form.open, enter: enterZone, exit: () => exitZone() };
+    live.current = { phase, activeZoneId, formOpen: form.open, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk };
   });
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const s = live.current;
       if (s.formOpen) return;
+      if (s.talking && e.code === "Escape") {
+        setTalking(false);
+        return;
+      }
       const el = e.target as HTMLElement | null;
       if (el?.closest?.("input, select, textarea, button, a")) return;
-      if (s.phase === "playing" && s.activeZoneId && (e.code === "KeyE" || e.code === "Enter")) {
+      if (s.phase === "playing" && !s.talking && s.krucnNear && (e.code === "KeyE" || e.code === "Enter")) {
+        // Krucn tiene prioridad sobre el edificio cercano.
+        e.preventDefault();
+        s.talk();
+      } else if (s.phase === "playing" && !s.talking && s.activeZoneId && (e.code === "KeyE" || e.code === "Enter")) {
         e.preventDefault();
         s.enter(s.activeZoneId);
       } else if (s.phase === "inside" && e.code === "Escape") {
@@ -260,6 +283,9 @@ export function CampusExperience(props: {
           interiorZone={interiorZone}
           eventSource={wrapperRef}
           sky={sky}
+          lineupGender={phase !== "playing" && phase !== "inside" && introStep === "choose" ? chosen : null}
+          krucnTalking={talking}
+          onKrucnNear={setKrucnNear}
           reduceMotion={reduceMotion}
           playerRef={playerRef}
           onZoneChange={handleZoneChange}
@@ -268,8 +294,18 @@ export function CampusExperience(props: {
         />
       </div>
 
+      <CampusGenderStep
+        visible={phase === "intro" && introStep === "choose"}
+        selected={chosen}
+        order={LINEUP_ORDER}
+        onSelect={setChosen}
+        onContinue={() => {
+          setAvatar((a) => ({ ...LINEUP[chosen], name: a.name }));
+          setIntroStep("edit");
+        }}
+      />
       <CampusIntro
-        visible={phase === "intro"}
+        visible={phase === "intro" && introStep === "edit"}
         leaving={leavingIntro}
         avatar={avatar}
         reduceMotion={reduceMotion}
@@ -287,9 +323,17 @@ export function CampusExperience(props: {
         onCycleSky={() => setSkyMode((m) => SKY_CYCLE[(SKY_CYCLE.indexOf(m) + 1) % SKY_CYCLE.length])}
       />
       <CampusZonePrompt
-        zone={playing && portal.stage === "idle" ? activeZone : null}
+        zone={playing && portal.stage === "idle" && !krucnNear && !talking ? activeZone : null}
         schools={schools}
         onEnter={() => activeZoneId && enterZone(activeZoneId)}
+      />
+      <KrucnPrompt visible={playing && portal.stage === "idle" && krucnNear && !talking} onTalk={startTalk} />
+      <KrucnDialog
+        key={talk}
+        open={playing && talking}
+        playerName={avatar.name.trim()}
+        schools={schools}
+        onClose={() => setTalking(false)}
       />
       {phase === "inside" && interiorZone && (
         <CampusBoard
@@ -304,7 +348,7 @@ export function CampusExperience(props: {
           }}
         />
       )}
-      <CampusTouchControls enabled={playing && !form.open} targetRef={wrapperRef} />
+      <CampusTouchControls enabled={playing && !form.open && !talking} targetRef={wrapperRef} />
       <CampusToast message={toast.message} visible={toast.visible} />
       <CampusFormModal
         open={form.open}

@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { CharacterModel, type Motion } from "./campus-character";
+import { MiiAvatar, miiHeight } from "./campus-mii";
 import { CampusLabel } from "./campus-label";
 import { campusRuntime } from "./campus-runtime";
 import { GRASS_RADIUS, PLAYER_START, WALK_RADIUS, type Avatar, type Collider } from "./campus-zones";
@@ -27,21 +27,29 @@ export function CampusPlayer({
   groupRef,
   avatar,
   playing,
+  frozen = false,
+  visible = true,
   colliders,
   onLand,
 }: {
   groupRef: React.RefObject<THREE.Group | null>;
   avatar: Avatar;
   playing: boolean;
+  /** En el campus pero sin moverse (p. ej. mientras conversa con Krucn). */
+  frozen?: boolean;
+  visible?: boolean;
   colliders: Collider[];
   onLand?: (strength: number) => void;
 }) {
   const body = useRef<THREE.Group>(null);
-  // Qué animación debe reproducir el modelo (lo lee CharacterModel cada frame).
-  const anim = useRef<Motion>({ state: "wave", speed: 0 });
+  const legL = useRef<THREE.Group>(null);
+  const legR = useRef<THREE.Group>(null);
+  const armL = useRef<THREE.Group>(null);
+  const armR = useRef<THREE.Group>(null);
+  const head = useRef<THREE.Group>(null);
   const dust = useRef<THREE.InstancedMesh>(null);
 
-  const motion = useRef({ vy: 0, y: 0, grounded: true, squash: 0, squashV: 0, dustTimer: 0, dustIndex: 0 });
+  const motion = useRef({ walk: 0, vy: 0, y: 0, grounded: true, squash: 0, squashV: 0, dustTimer: 0, dustIndex: 0 });
   // Estado de simulación mutable: vive en refs, no en estado de React.
   const dustState = useRef(
     Array.from({ length: DUST_COUNT }, () => ({ x: 0, y: -10, z: 0, vx: 0, vy: 0, vz: 0, life: 0 })),
@@ -89,18 +97,19 @@ export function CampusPlayer({
     }
   }
 
-  useFrame((_, rawDelta) => {
+  useFrame((state, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05);
     const g = groupRef.current;
     if (!g) return;
     const m = motion.current;
     const k = campusRuntime.keys;
+    const t = state.clock.elapsedTime;
 
     let ix = 0;
     let iz = 0;
     let len = 0;
     let speed = 0;
-    if (playing) {
+    if (playing && !frozen) {
       if (k.KeyW || k.ArrowUp) iz -= 1;
       if (k.KeyS || k.ArrowDown) iz += 1;
       if (k.KeyA || k.ArrowLeft) ix -= 1;
@@ -156,6 +165,7 @@ export function CampusPlayer({
       let diff = target - g.rotation.y;
       diff = Math.atan2(Math.sin(diff), Math.cos(diff));
       g.rotation.y += diff * Math.min(1, delta * TURN_SMOOTHING);
+      m.walk += delta * speed * 1.4;
 
       if (m.grounded && speed === RUN_SPEED) {
         m.dustTimer -= delta;
@@ -165,6 +175,7 @@ export function CampusPlayer({
         }
       }
     } else {
+      m.walk *= 0.85;
       if (!playing) {
         // En la pantalla de inicio el personaje mira a la cámara.
         let diff = 0 - g.rotation.y;
@@ -197,20 +208,36 @@ export function CampusPlayer({
     m.squash += m.squashV * delta;
 
     const ground = Math.hypot(g.position.x, g.position.z) < GRASS_RADIUS ? 0.2 : 0.05;
-    g.position.y = ground + m.y;
+    const walkAmount = Math.min(1, len * 2);
+    const bob = m.grounded ? Math.abs(Math.sin(m.walk)) * 0.08 * walkAmount : 0;
+    g.position.y = ground + m.y + bob;
 
     if (body.current) {
       const s = 1 + m.squash;
       body.current.scale.set(1 / Math.sqrt(Math.max(0.5, s)), s, 1 / Math.sqrt(Math.max(0.5, s)));
+      // Respiración suave cuando está quieto.
+      body.current.position.y = walkAmount < 0.1 && m.grounded ? Math.sin(t * 2) * 0.025 : 0;
     }
 
-    // Saluda en la pantalla de inicio; luego quieto, camina o corre.
-    const moving = len > 0.08;
-    anim.current.speed = Math.hypot(vx, vz);
-    if (!playing) anim.current.state = "wave";
-    else if (!m.grounded) anim.current.state = moving ? anim.current.state : "idle";
-    else if (moving) anim.current.state = speed === RUN_SPEED ? "run" : "walk";
-    else anim.current.state = "idle";
+    // Balanceo de piernas y brazos, saludo en la pantalla de inicio y pose en el aire.
+    const swing = m.grounded ? Math.sin(m.walk) * 0.7 * walkAmount : 0;
+    const air = m.grounded ? 0 : -0.6;
+    if (legL.current) legL.current.rotation.x = swing + air * 0.5;
+    if (legR.current) legR.current.rotation.x = -swing - air * 0.3;
+    if (armL.current) {
+      armL.current.rotation.x = -swing * 0.8 + air;
+      armL.current.rotation.z = m.grounded ? -0.08 : -0.5;
+    }
+    if (armR.current) {
+      const wave = !playing ? Math.sin(t * 6) * 0.35 : 0;
+      armR.current.rotation.x = !playing ? 0 : swing * 0.8 + air;
+      armR.current.rotation.z = !playing ? 2.5 + wave : m.grounded ? 0.08 : 0.5;
+    }
+    // La cabeza acompaña: se inclina un poco al saludar y oscila al caminar.
+    if (head.current) {
+      head.current.rotation.z = !playing ? Math.sin(t * 1.5) * 0.08 : Math.sin(m.walk) * 0.04 * walkAmount;
+      head.current.rotation.x = !playing ? -0.05 : 0;
+    }
     const mesh = dust.current;
     if (!mesh) return;
     const d = dummy.current;
@@ -234,13 +261,12 @@ export function CampusPlayer({
 
   return (
     <>
-      <group ref={groupRef} position={PLAYER_START}>
+      <group ref={groupRef} position={PLAYER_START} visible={visible}>
         <group ref={body}>
-          <Suspense fallback={null}>
-            {/* key: cada personaje monta su propio mezclador de animaciones */}
-            <CharacterModel key={avatar.character} avatar={avatar} motion={anim} />
-          </Suspense>
-        </group>        {avatar.name && <CampusLabel text={avatar.name} color="#24123F" position={[0, 3.9, 0]} width={4} />}
+          <MiiAvatar avatar={avatar} legLRef={legL} legRRef={legR} armLRef={armL} armRRef={armR} headRef={head} />
+        </group>        {avatar.name.trim() && (
+          <CampusLabel text={avatar.name.trim()} color="#24123F" position={[0, miiHeight(avatar) + 0.75, 0]} width={4.4} />
+        )}
       </group>
       <instancedMesh ref={dust} args={[undefined, undefined, DUST_COUNT]} frustumCulled={false}>
         <icosahedronGeometry args={[1, 0]} />

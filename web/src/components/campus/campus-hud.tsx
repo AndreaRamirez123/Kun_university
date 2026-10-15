@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { usePick } from "@/i18n/locale-context";
+import { useLocale, usePick } from "@/i18n/locale-context";
 import { campusRuntime } from "./campus-runtime";
 import type { SkyMode } from "./campus-sky";
 import { GRASS_RADIUS, ISLAND_RADIUS, ZONES } from "./campus-zones";
@@ -16,6 +16,8 @@ const COPY = {
     soundOff: "Activar sonido",
     jump: "Saltar",
     map: "Minimapa del campus",
+    visitedTag: "Visitado",
+    pendingTag: "Pendiente",
     sky: { day: "Día", sunset: "Atardecer", night: "Noche" },
     auto: "Hora real",
     manual: "Vista previa",
@@ -30,6 +32,8 @@ const COPY = {
     soundOff: "Turn sound on",
     jump: "Jump",
     map: "Campus minimap",
+    visitedTag: "Visited",
+    pendingTag: "Pending",
     sky: { day: "Day", sunset: "Sunset", night: "Night" },
     auto: "Live time",
     manual: "Preview",
@@ -53,64 +57,115 @@ const HINT = {
   ],
 };
 
-function Minimap({ visited, label }: { visited: Set<string>; label: string }) {
+// Minimapa: los lugares empiezan en gris y se pintan de su color (con ✓) cuando
+// entras a su aula, así se ve de un vistazo qué te falta. Cada punto lleva su
+// nombre para orientarse.
+function Minimap({ visited, label, names }: { visited: Set<string>; label: string; names: Record<string, string> }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const visitedRef = useRef(visited);
+  const namesRef = useRef(names);
   useEffect(() => {
     visitedRef.current = visited;
-  }, [visited]);
+    namesRef.current = names;
+  }, [visited, names]);
 
   useEffect(() => {
     const canvas = ref.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
     let raf = 0;
-    const W = 300;
-    const s = W / 110;
+    const W = 440;
+    // La isla llena el recuadro (radio 50 ≈ mitad del canvas).
+    const s = W / 102;
+    const family = getComputedStyle(document.getElementById("campus-root") ?? document.body).getPropertyValue("--font-gabarito").trim() || "system-ui, sans-serif";
+    function tag(text: string, x: number, y: number, color: string) {
+      if (!ctx) return;
+      ctx.font = `800 27px ${family}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = 7;
+      ctx.strokeStyle = "rgba(20,8,40,0.9)";
+      // Que el nombre nunca se salga del recuadro (p. ej. "Certificaciones" en el borde).
+      const half = ctx.measureText(text).width / 2 + 8;
+      const cx = Math.min(W / 2 - half, Math.max(-W / 2 + half, x));
+      ctx.strokeText(text, cx, y);
+      ctx.fillStyle = color;
+      ctx.fillText(text, cx, y);
+    }
     function draw(now: number) {
       if (!ctx) return;
       ctx.clearRect(0, 0, W, W);
       ctx.save();
       ctx.translate(W / 2, W / 2);
-      ctx.fillStyle = "rgba(242,199,154,.55)";
+      ctx.fillStyle = "rgba(242,199,154,.6)";
       ctx.beginPath();
       ctx.arc(0, 0, ISLAND_RADIUS * s, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = "rgba(109,179,138,.75)";
+      ctx.fillStyle = "rgba(109,179,138,.8)";
       ctx.beginPath();
       ctx.arc(0, 0, GRASS_RADIUS * s, 0, Math.PI * 2);
       ctx.fill();
+      const pulse = Math.sin(now / 300);
       for (const zn of ZONES) {
         const done = visitedRef.current.has(zn.id);
-        ctx.fillStyle = zn.color;
-        ctx.beginPath();
-        ctx.arc(zn.x * s, zn.z * s, done ? 14 : 10, 0, Math.PI * 2);
-        ctx.fill();
+        const x = zn.x * s;
+        const y = zn.z * s;
         if (done) {
+          ctx.fillStyle = zn.color;
+          ctx.beginPath();
+          ctx.arc(x, y, 18, 0, Math.PI * 2);
+          ctx.fill();
           ctx.strokeStyle = "#fff";
           ctx.lineWidth = 4;
           ctx.stroke();
-        } else {
-          // Los lugares pendientes laten para invitar a visitarlos.
-          ctx.strokeStyle = zn.color;
-          ctx.globalAlpha = 0.5 + Math.sin(now / 300) * 0.3;
-          ctx.lineWidth = 2;
+          // ✓ de visitado
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 4;
+          ctx.lineCap = "round";
           ctx.beginPath();
-          ctx.arc(zn.x * s, zn.z * s, 16 + Math.sin(now / 300) * 3, 0, Math.PI * 2);
+          ctx.moveTo(x - 6, y);
+          ctx.lineTo(x - 1, y + 5);
+          ctx.lineTo(x + 7, y - 5);
+          ctx.stroke();
+        } else {
+          // Pendiente: gris y con un pulso suave que invita a visitarlo.
+          ctx.fillStyle = "#8F8A99";
+          ctx.beginPath();
+          ctx.arc(x, y, 13, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "rgba(255,255,255,0.55)";
+          ctx.lineWidth = 2;
+          ctx.globalAlpha = 0.45 + pulse * 0.3;
+          ctx.beginPath();
+          ctx.arc(x, y, 20 + pulse * 3, 0, Math.PI * 2);
           ctx.stroke();
           ctx.globalAlpha = 1;
         }
+        tag(namesRef.current[zn.id] ?? "", x, y + 23, done ? "#FFFFFF" : "rgba(235,230,242,0.8)");
       }
+      // Krucn, la mascota: punto verde con borde blanco.
+      const k = campusRuntime.krucn;
+      ctx.fillStyle = "#3FA34D";
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(k.x * s, k.z * s, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
       const p = campusRuntime.player;
       ctx.translate(p.x * s, p.z * s);
       ctx.rotate(-p.heading + Math.PI);
       ctx.fillStyle = "#fff";
+      ctx.strokeStyle = "#24123F";
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(0, -14);
-      ctx.lineTo(10, 10);
-      ctx.lineTo(0, 5);
-      ctx.lineTo(-10, 10);
+      ctx.moveTo(0, -16);
+      ctx.lineTo(11, 11);
+      ctx.lineTo(0, 6);
+      ctx.lineTo(-11, 11);
       ctx.closePath();
+      ctx.stroke();
       ctx.fill();
       ctx.restore();
       raf = requestAnimationFrame(draw);
@@ -120,8 +175,27 @@ function Minimap({ visited, label }: { visited: Set<string>; label: string }) {
   }, []);
 
   return (
-    <div className="h-37.5 w-37.5 overflow-hidden rounded-full border-2 border-[#FFF3E6]/35 bg-[#1D0C3C]/55 backdrop-blur-md max-md:h-26 max-md:w-26">
-      <canvas ref={ref} width={300} height={300} role="img" aria-label={label} className="h-full w-full" />
+    <div className="h-55 w-55 overflow-hidden rounded-[28px] border-2 border-[#FFF3E6]/35 bg-[#1D0C3C]/60 backdrop-blur-md max-md:h-36 max-md:w-36 max-md:rounded-[20px]">
+      <canvas ref={ref} width={440} height={440} role="img" aria-label={label} className="h-full w-full" />
+    </div>
+  );
+}
+
+function MinimapLegend({ visitedLabel, pendingLabel }: { visitedLabel: string; pendingLabel: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-full bg-[#1D0C3C]/60 px-3 py-1 text-[11px] font-semibold text-[#FFF3E6]/85 backdrop-blur-md max-md:hidden">
+      <span className="flex items-center gap-1.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#E8735A] ring-2 ring-white" />
+        {visitedLabel}
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#8F8A99]" />
+        {pendingLabel}
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#3FA34D] ring-2 ring-white" />
+        Krucn
+      </span>
     </div>
   );
 }
@@ -168,6 +242,8 @@ export function CampusHud({
 }) {
   const t = usePick(COPY);
   const hint = usePick(HINT);
+  const { locale } = useLocale();
+  const names = useMemo(() => Object.fromEntries(ZONES.map((z) => [z.id, z.label[locale]])), [locale]);
   const base = `transition-opacity duration-700 ${visible ? "opacity-100" : "pointer-events-none opacity-0"}`;
 
   return (
@@ -188,7 +264,8 @@ export function CampusHud({
       <div
         className={`absolute top-[calc(16px+env(safe-area-inset-top,0px))] right-5 z-10 flex flex-col items-end gap-2.5 ${base}`}
       >
-        <Minimap visited={visited} label={t.map} />
+        <Minimap visited={visited} label={t.map} names={names} />
+        <MinimapLegend visitedLabel={t.visitedTag} pendingLabel={t.pendingTag} />
         <div className="rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-sm font-bold text-[#FFF3E6] backdrop-blur-md" aria-live="polite">
           {t.visited(visited.size, ZONES.length)}
         </div>

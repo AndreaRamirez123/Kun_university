@@ -5,7 +5,10 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Bloom, EffectComposer, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
 import { BlendFunction, ToneMappingMode } from "postprocessing";
 import * as THREE from "three";
-import { usePreloadedCharacters } from "./campus-character";
+import { CampusAnimals } from "./campus-animals";
+import type { Gender } from "./campus-avatar";
+import { CampusLineup } from "./campus-lineup";
+import { Krucn } from "./campus-krucn";
 import { FLORIDA_COLLIDERS } from "./campus-florida";
 import { CampusInterior, INTERIOR_ORIGIN } from "./campus-interior";
 import { CampusPlayer } from "./campus-player";
@@ -27,10 +30,12 @@ const UP = new THREE.Vector3(0, 1, 0);
 // 4) travelling lento dentro del aula de cada edificio.
 function CameraRig({
   phase,
+  lineup,
   playerRef,
   reduceMotion,
 }: {
   phase: CampusPhase;
+  lineup: boolean;
   playerRef: React.RefObject<THREE.Group | null>;
   reduceMotion: boolean;
 }) {
@@ -73,6 +78,11 @@ function CameraRig({
       desiredPos.y += state.pointer.y * 0.6 * motion;
       right.set(Math.cos(a), 0, -Math.sin(a));
       desiredLook.set(px, narrow ? -4.6 : 2.3, pz).addScaledVector(right, narrow ? 0 : -2.6);
+      if (lineup) {
+        // Selección de personaje: los tres centrados, la cámara un poco más atrás.
+        desiredPos.set(px + Math.sin(a) * 4, narrow ? 6 : 4.4, pz + (narrow ? 17 : 13.5));
+        desiredLook.set(px, narrow ? 0.4 : 2.1, pz);
+      }
       k = 1 - Math.exp(-delta * Math.min(2.2, 0.4 + sincePhase * 0.9));
     } else if (phase === "inside") {
       const [ox, oy, oz] = INTERIOR_ORIGIN;
@@ -156,10 +166,8 @@ function ZoneWatcher({
 }
 
 // Avisa una sola vez cuando la escena ya pintó sus primeros frames, para que
-// el loader no se retire antes de que haya algo bonito detrás. Vive dentro de
-// un Suspense que además espera a los modelos de los personajes.
+// el loader no se retire antes de que haya algo bonito detrás.
 function FirstFrames({ onReady }: { onReady: () => void }) {
-  usePreloadedCharacters();
   const frames = useRef(0);
   useFrame(() => {
     frames.current += 1;
@@ -176,6 +184,9 @@ export function CampusScene({
   interiorZone,
   eventSource,
   sky,
+  lineupGender,
+  krucnTalking,
+  onKrucnNear,
   reduceMotion,
   playerRef,
   onZoneChange,
@@ -189,6 +200,11 @@ export function CampusScene({
   interiorZone: ZoneDef | null;
   eventSource: React.RefObject<HTMLElement | null>;
   sky: SkyPreset;
+  /** Si no es null, se muestra la fila de personajes para elegir (primer paso del creador). */
+  lineupGender: Gender | null;
+  /** Krucn, la mascota, está conversando con el jugador. */
+  krucnTalking: boolean;
+  onKrucnNear: (near: boolean) => void;
   reduceMotion: boolean;
   playerRef: React.RefObject<THREE.Group | null>;
   onZoneChange: (id: string | null) => void;
@@ -250,13 +266,18 @@ export function CampusScene({
         groupRef={playerRef}
         avatar={avatar}
         playing={phase === "playing"}
+        frozen={krucnTalking}
+        visible={lineupGender === null}
         colliders={colliders}
         onLand={onBump}
       />
+      {lineupGender !== null && <CampusLineup selected={lineupGender} />}
+      <CampusAnimals playing={phase === "playing"} pet={lineupGender !== null ? "dog" : avatar.pet} />
+      <Krucn talking={krucnTalking} onNearChange={onKrucnNear} />
       </group>
       {interiorZone && <CampusInterior zone={interiorZone} sky={sky} />}
 
-      <CameraRig phase={phase} playerRef={playerRef} reduceMotion={reduceMotion} />
+      <CameraRig phase={phase} lineup={lineupGender !== null} playerRef={playerRef} reduceMotion={reduceMotion} />
       <ZoneWatcher enabled={phase === "playing"} playerRef={playerRef} onZoneChange={onZoneChange} />
       <Suspense fallback={null}>
         <FirstFrames onReady={onReady} />
