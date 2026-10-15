@@ -6,6 +6,7 @@ import type * as THREE from "three";
 import { playBump, playChime, playFanfare, playLaunch, setCampusSound } from "./campus-audio";
 import { CampusFormModal } from "./campus-form-modal";
 import { CampusHud, CampusToast, CampusTouchControls } from "./campus-hud";
+import { AdmissionsRoom } from "./campus-admissions-ui";
 import { CampusBoard } from "./campus-board";
 import { CampusGenderStep, CampusIntro } from "./campus-intro";
 import { LINEUP, LINEUP_ORDER } from "./campus-lineup";
@@ -286,6 +287,7 @@ export function CampusExperience(props: {
           lineupGender={phase !== "playing" && phase !== "inside" && introStep === "choose" ? chosen : null}
           krucnTalking={talking}
           onKrucnNear={setKrucnNear}
+          stats={stats}
           reduceMotion={reduceMotion}
           playerRef={playerRef}
           onZoneChange={handleZoneChange}
@@ -335,7 +337,16 @@ export function CampusExperience(props: {
         schools={schools}
         onClose={() => setTalking(false)}
       />
-      {phase === "inside" && interiorZone && (
+      {phase === "inside" && interiorZone?.kind === "admissions" && (
+        <AdmissionsRoom
+          schools={schools}
+          stats={stats}
+          playerName={avatar.name.trim()}
+          onExit={() => exitZone()}
+          onSubmitted={() => showToast(t.submitted)}
+        />
+      )}
+      {phase === "inside" && interiorZone && interiorZone.kind !== "admissions" && (
         <CampusBoard
           zone={interiorZone}
           schools={schools}

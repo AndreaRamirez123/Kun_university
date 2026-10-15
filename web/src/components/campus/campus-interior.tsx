@@ -8,6 +8,9 @@ import { seeded } from "./campus-random";
 import type { SkyPreset } from "./campus-sky";
 import { CelestialBody, SkyDome, Stars } from "./campus-sky-dome";
 import type { ZoneDef } from "./campus-zones";
+import { AdmissionsStudio } from "./campus-admissions-studio";
+import type { Locale } from "@/i18n/locale-context";
+import type { Stats } from "@/lib/types";
 
 // Aula virtual de cada lugar del campus: una plataforma que flota sobre el mar
 // de Florida al atardecer, con ventanal Art Deco, pupitres con pantallas
@@ -447,7 +450,15 @@ function Motes({ tint }: { tint: string }) {
   );
 }
 
-export function CampusInterior({ zone, sky }: { zone: ZoneDef; sky: SkyPreset }) {
+export function CampusInterior({ zone, sky, locale, stats }: { zone: ZoneDef; sky: SkyPreset; locale: Locale; stats: Stats }) {
+  // Admisiones tiene su propia sala: el video explicativo en pantallas flotantes.
+  if (zone.id === "adm") {
+    return (
+      <group position={INTERIOR_ORIGIN}>
+        <AdmissionsStudio locale={locale} stats={stats} />
+      </group>
+    );
+  }
   return (
     <group position={INTERIOR_ORIGIN}>
       <Backdrop sky={sky} />

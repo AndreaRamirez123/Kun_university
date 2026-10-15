@@ -18,6 +18,7 @@ import type { SkyPreset } from "./campus-sky";
 import { CampusWorld, palmColliders, useVegetation } from "./campus-world";
 import { ZONE_ENTRY_MARGIN, ZONES, type Avatar, type Collider, type ZoneDef } from "./campus-zones";
 import type { Locale } from "@/i18n/locale-context";
+import type { Stats } from "@/lib/types";
 
 export type CampusPhase = "loading" | "intro" | "playing" | "inside";
 
@@ -31,11 +32,13 @@ const UP = new THREE.Vector3(0, 1, 0);
 function CameraRig({
   phase,
   lineup,
+  studio,
   playerRef,
   reduceMotion,
 }: {
   phase: CampusPhase;
   lineup: boolean;
+  studio: boolean;
   playerRef: React.RefObject<THREE.Group | null>;
   reduceMotion: boolean;
 }) {
@@ -93,6 +96,11 @@ function CameraRig({
       desiredPos.x += state.pointer.x * 1.4 * motion;
       desiredPos.y += state.pointer.y * 0.7 * motion;
       desiredLook.set(ox + (narrow ? 0 : 6.5), oy + (narrow ? 1.5 : 4.2), oz);
+      if (studio) {
+        // Admisiones: frente a la pantalla del video, centrada.
+        desiredPos.set(ox + drift * 0.6 + state.pointer.x * 1.2 * motion, oy + 5.6 + state.pointer.y * 0.6 * motion, oz + (narrow ? 24 : 16.5));
+        desiredLook.set(ox, oy + (narrow ? 6.5 : 5.2), oz);
+      }
       k = 1 - Math.exp(-delta * 1.4);
       if (teleport) {
         // Arranca más atrás para que, al abrirse el telón, la cámara entre al aula.
@@ -187,6 +195,7 @@ export function CampusScene({
   lineupGender,
   krucnTalking,
   onKrucnNear,
+  stats,
   reduceMotion,
   playerRef,
   onZoneChange,
@@ -205,6 +214,7 @@ export function CampusScene({
   /** Krucn, la mascota, está conversando con el jugador. */
   krucnTalking: boolean;
   onKrucnNear: (near: boolean) => void;
+  stats: Stats;
   reduceMotion: boolean;
   playerRef: React.RefObject<THREE.Group | null>;
   onZoneChange: (id: string | null) => void;
@@ -275,9 +285,15 @@ export function CampusScene({
       <CampusAnimals playing={phase === "playing"} pet={lineupGender !== null ? "dog" : avatar.pet} />
       <Krucn talking={krucnTalking} onNearChange={onKrucnNear} />
       </group>
-      {interiorZone && <CampusInterior zone={interiorZone} sky={sky} />}
+      {interiorZone && <CampusInterior zone={interiorZone} sky={sky} locale={locale} stats={stats} />}
 
-      <CameraRig phase={phase} lineup={lineupGender !== null} playerRef={playerRef} reduceMotion={reduceMotion} />
+      <CameraRig
+        phase={phase}
+        lineup={lineupGender !== null}
+        studio={interiorZone?.id === "adm"}
+        playerRef={playerRef}
+        reduceMotion={reduceMotion}
+      />
       <ZoneWatcher enabled={phase === "playing"} playerRef={playerRef} onZoneChange={onZoneChange} />
       <Suspense fallback={null}>
         <FirstFrames onReady={onReady} />

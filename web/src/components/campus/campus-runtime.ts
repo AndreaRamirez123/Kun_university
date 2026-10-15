@@ -16,6 +16,8 @@ export const campusRuntime = {
   zoom: 1,
   /** Posición de Krucn, la mascota, para el minimapa. */
   krucn: { x: 13, z: -10.9 },
+  /** Reproducción del video explicativo de Admisiones (la avanza la pantalla 3D). */
+  explainer: { chapter: 0, local: 0, playing: true, count: 7 },
 };
 
 export function resetCampusInput() {
