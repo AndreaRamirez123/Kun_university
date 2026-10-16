@@ -1,13 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type * as THREE from "three";
 import { playBump, playChime, playFanfare, playLaunch, setCampusSound } from "./campus-audio";
 import { CampusFormModal } from "./campus-form-modal";
 import { CampusHud, CampusToast, CampusTouchControls } from "./campus-hud";
-import { AdmissionsRoom } from "./campus-admissions-ui";
-import { CampusBoard } from "./campus-board";
+import { StudioRoom } from "./campus-admissions-ui";
+import { CampusCatalog } from "./campus-catalog";
+import { zoneChapters } from "./campus-zone-chapters";
 import { CampusGenderStep, CampusIntro } from "./campus-intro";
 import { LINEUP, LINEUP_ORDER } from "./campus-lineup";
 import { CampusLoader } from "./campus-loader";
@@ -32,6 +33,8 @@ const COPY = {
     allVisited: "Recorriste todo el campus. Admisiones te espera.",
     launch: "Despegue. Tu carrera también arranca aquí.",
     submitted: "Solicitud lista. En la versión final llegará a admisiones.",
+    launchRocket: "Despegar el cohete",
+    coursePlan: "Programas y materias →",
   },
   en: {
     defaultName: "Student",
@@ -39,6 +42,8 @@ const COPY = {
     allVisited: "You explored the whole campus. Admissions is waiting for you.",
     launch: "Liftoff. Your career takes off here too.",
     submitted: "Request ready. In the final version it will reach admissions.",
+    launchRocket: "Launch the rocket",
+    coursePlan: "Programs and courses →",
   },
 };
 
@@ -95,6 +100,8 @@ export function CampusExperience(props: {
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [soundOn, setSoundOn] = useState(false);
   const [form, setForm] = useState<{ open: boolean; program: string }>({ open: false, program: "" });
+  // Catálogo académico (escuelas → programas → materias), leído de src/data.
+  const [catalogView, setCatalogView] = useState<{ open: boolean; school?: string }>({ open: false });
   const [toast, setToast] = useState({ message: "", visible: false });
   const [interiorId, setInteriorId] = useState<string | null>(null);
   // Creador en dos pasos: primero elegir personaje (con vista previa), luego personalizar.
@@ -204,9 +211,9 @@ export function CampusExperience(props: {
   }
 
   // Teclado: E / Enter para hablar con Krucn o entrar al edificio cercano, Esc para cerrar.
-  const live = useRef({ phase, activeZoneId, formOpen: form.open, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk });
+  const live = useRef({ phase, activeZoneId, formOpen: form.open || catalogView.open, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk });
   useEffect(() => {
-    live.current = { phase, activeZoneId, formOpen: form.open, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk };
+    live.current = { phase, activeZoneId, formOpen: form.open || catalogView.open, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk };
   });
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -258,10 +265,18 @@ export function CampusExperience(props: {
     setCampusSound(next);
   }
 
+  const interiorZone = ZONES.find((z) => z.id === interiorId) ?? null;
+  // Video de cada lugar, armado con sus datos (escuela, certificaciones…).
+  const interiorChapters = useMemo(
+    () => (interiorZone ? zoneChapters(interiorZone, locale, stats, schools, certifications) : null),
+    [interiorZone, locale, stats, schools, certifications],
+  );
+
   if (!webglOk) return <NoWebGLFallback />;
 
   const activeZone = ZONES.find((z) => z.id === activeZoneId) ?? null;
-  const interiorZone = ZONES.find((z) => z.id === interiorId) ?? null;
+  const interiorSchool = interiorZone?.schoolSlug ? schools.find((s) => s.slug === interiorZone.schoolSlug) : undefined;
+  const roomTitle = interiorZone ? `${interiorSchool ? interiorSchool.name[locale] : interiorZone.label[locale]} · KUN University AI` : "";
   const portalZone = ZONES.find((z) => z.id === portal.zoneId) ?? null;
   const playing = phase === "playing";
 
@@ -288,6 +303,7 @@ export function CampusExperience(props: {
           krucnTalking={talking}
           onKrucnNear={setKrucnNear}
           stats={stats}
+          interiorChapters={interiorChapters}
           reduceMotion={reduceMotion}
           playerRef={playerRef}
           onZoneChange={handleZoneChange}
@@ -323,6 +339,7 @@ export function CampusExperience(props: {
         skyKind={skyLabel(sky)}
         floridaTime={floridaTime}
         onCycleSky={() => setSkyMode((m) => SKY_CYCLE[(SKY_CYCLE.indexOf(m) + 1) % SKY_CYCLE.length])}
+        onOpenCatalog={() => setCatalogView({ open: true })}
       />
       <CampusZonePrompt
         zone={playing && portal.stage === "idle" && !krucnNear && !talking ? activeZone : null}
@@ -337,30 +354,37 @@ export function CampusExperience(props: {
         schools={schools}
         onClose={() => setTalking(false)}
       />
-      {phase === "inside" && interiorZone?.kind === "admissions" && (
-        <AdmissionsRoom
+      {phase === "inside" && interiorZone && interiorChapters && (
+        <StudioRoom
+          key={`${interiorZone.id}-${locale}`}
+          chapters={interiorChapters}
+          roomTitle={roomTitle}
           schools={schools}
-          stats={stats}
           playerName={avatar.name.trim()}
+          defaultProgram={interiorSchool?.programs[0]?.name ?? ""}
+          extraAction={
+            interiorZone.kind === "certifications"
+              ? { label: t.launchRocket, onClick: () => exitZone(launch) }
+              : interiorSchool
+                ? { label: t.coursePlan, onClick: () => setCatalogView({ open: true, school: interiorSchool.name.es }) }
+                : undefined
+          }
           onExit={() => exitZone()}
           onSubmitted={() => showToast(t.submitted)}
         />
       )}
-      {phase === "inside" && interiorZone && interiorZone.kind !== "admissions" && (
-        <CampusBoard
-          zone={interiorZone}
-          schools={schools}
-          certifications={certifications}
-          stats={stats}
-          actions={{
-            onExit: () => exitZone(),
-            onRequestInfo: (program) => setForm({ open: true, program: program ?? "" }),
-            onLaunch: () => exitZone(launch),
-          }}
-        />
-      )}
-      <CampusTouchControls enabled={playing && !form.open && !talking} targetRef={wrapperRef} />
+      <CampusTouchControls enabled={playing && !form.open && !talking && !catalogView.open} targetRef={wrapperRef} />
       <CampusToast message={toast.message} visible={toast.visible} />
+      <CampusCatalog
+        key={catalogView.open ? (catalogView.school ?? "all") : "closed"}
+        open={catalogView.open}
+        initialSchool={catalogView.school}
+        onClose={() => setCatalogView({ open: false })}
+        onSignup={(program) => {
+          setCatalogView({ open: false });
+          setForm({ open: true, program });
+        }}
+      />
       <CampusFormModal
         open={form.open}
         schools={schools}

@@ -8,8 +8,8 @@ import { seeded } from "./campus-random";
 import type { SkyPreset } from "./campus-sky";
 import { CelestialBody, SkyDome, Stars } from "./campus-sky-dome";
 import type { ZoneDef } from "./campus-zones";
-import { AdmissionsStudio } from "./campus-admissions-studio";
-import type { Locale } from "@/i18n/locale-context";
+import { ExplainerStudio } from "./campus-admissions-studio";
+import { ZONE_VIDEO_URLS, type Chapter } from "./campus-explainer";
 import type { Stats } from "@/lib/types";
 
 // Aula virtual de cada lugar del campus: una plataforma que flota sobre el mar
@@ -450,12 +450,12 @@ function Motes({ tint }: { tint: string }) {
   );
 }
 
-export function CampusInterior({ zone, sky, locale, stats }: { zone: ZoneDef; sky: SkyPreset; locale: Locale; stats: Stats }) {
-  // Admisiones tiene su propia sala: el video explicativo en pantallas flotantes.
-  if (zone.id === "adm") {
+export function CampusInterior({ zone, sky, stats, chapters }: { zone: ZoneDef; sky: SkyPreset; stats: Stats; chapters: Chapter[] | null }) {
+  // Cada lugar es una sala con su video explicativo en pantallas flotantes.
+  if (chapters) {
     return (
       <group position={INTERIOR_ORIGIN}>
-        <AdmissionsStudio locale={locale} stats={stats} />
+        <ExplainerStudio chapters={chapters} stats={stats} videoUrl={ZONE_VIDEO_URLS[zone.id] ?? null} />
       </group>
     );
   }

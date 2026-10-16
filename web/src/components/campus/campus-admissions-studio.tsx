@@ -3,10 +3,9 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import type { Locale } from "@/i18n/locale-context";
 import type { Stats } from "@/lib/types";
 import { getDotTexture } from "./campus-dot-texture";
-import { ADMISSIONS_VIDEO_URL, CHAPTER_SECONDS, drawExplainer, explainerChapters } from "./campus-explainer";
+import { CHAPTER_SECONDS, drawExplainer, type Chapter } from "./campus-explainer";
 import { labelFontFamily } from "./campus-label";
 import { seeded } from "./campus-random";
 import { campusRuntime } from "./campus-runtime";
@@ -55,7 +54,7 @@ function ParticleCloud({ count, center, radius, color, seed, size }: { count: nu
   );
 }
 
-function useScreenTexture(locale: Locale, stats: Stats) {
+function useScreenTexture() {
   const canvas = useMemo(() => {
     if (typeof document === "undefined") return null;
     const c = document.createElement("canvas");
@@ -69,23 +68,22 @@ function useScreenTexture(locale: Locale, stats: Stats) {
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
   }, [canvas]);
-  const chapters = useMemo(() => explainerChapters(locale, stats), [locale, stats]);
   useEffect(() => () => texture?.dispose(), [texture]);
-  return { canvas, texture, chapters };
+  return texture;
 }
 
-/** Video real (si ADMISSIONS_VIDEO_URL está configurado). */
-function useVideoTexture() {
+/** Video real del lugar, si está configurado en ZONE_VIDEO_URLS. */
+function useVideoTexture(url: string | null) {
   const video = useMemo(() => {
-    if (!ADMISSIONS_VIDEO_URL || typeof document === "undefined") return null;
+    if (!url || typeof document === "undefined") return null;
     const v = document.createElement("video");
-    v.src = ADMISSIONS_VIDEO_URL;
+    v.src = url;
     v.loop = true;
     v.muted = true;
     v.playsInline = true;
     v.crossOrigin = "anonymous";
     return v;
-  }, []);
+  }, [url]);
   const texture = useMemo(() => {
     if (!video) return null;
     const t = new THREE.VideoTexture(video);
@@ -103,7 +101,7 @@ function useVideoTexture() {
   return { video, texture };
 }
 
-function SideScreen({ position, rotation, index, locale, stats }: { position: [number, number, number]; rotation: [number, number, number]; index: number; locale: Locale; stats: Stats }) {
+function SideScreen({ position, rotation, index, chapters, stats }: { position: [number, number, number]; rotation: [number, number, number]; index: number; chapters: Chapter[]; stats: Stats }) {
   const ref = useRef<THREE.Group>(null);
   // Miniatura fija del capítulo, dibujada una vez.
   const texture = useMemo(() => {
@@ -113,13 +111,12 @@ function SideScreen({ position, rotation, index, locale, stats }: { position: [n
     c.height = 360;
     const ctx = c.getContext("2d");
     if (!ctx) return null;
-    const chapters = explainerChapters(locale, stats);
     ctx.scale(0.5, 0.5);
     drawExplainer(ctx, SCREEN_W, SCREEN_H, chapters, index % chapters.length, 0.6, index * 3, labelFontFamily(), stats);
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
-  }, [index, locale, stats]);
+  }, [index, chapters, stats]);
   useEffect(() => () => texture?.dispose(), [texture]);
   useFrame((state) => {
     const g = ref.current;
@@ -142,9 +139,9 @@ function SideScreen({ position, rotation, index, locale, stats }: { position: [n
   );
 }
 
-export function AdmissionsStudio({ locale, stats }: { locale: Locale; stats: Stats }) {
-  const { texture, chapters } = useScreenTexture(locale, stats);
-  const video = useVideoTexture();
+export function ExplainerStudio({ chapters, stats, videoUrl }: { chapters: Chapter[]; stats: Stats; videoUrl: string | null }) {
+  const texture = useScreenTexture();
+  const video = useVideoTexture(videoUrl);
   const screen = useRef<THREE.Group>(null);
   const screenMat = useRef<THREE.MeshBasicMaterial>(null);
   const sculpture = useRef<THREE.Mesh>(null);
@@ -165,6 +162,7 @@ export function AdmissionsStudio({ locale, stats }: { locale: Locale; stats: Sta
         e.chapter = (e.chapter + 1) % chapters.length;
       }
     }
+    if (campusRuntime.explainer.chapter >= chapters.length) campusRuntime.explainer.chapter = 0;
     // Redibuja el frame del video en el canvas que usa la pantalla.
     const map = screenMat.current?.map;
     const source = map?.image as HTMLCanvasElement | undefined;
@@ -221,11 +219,11 @@ export function AdmissionsStudio({ locale, stats }: { locale: Locale; stats: Sta
       </group>
 
       {/* Pantallas laterales flotantes con los capítulos */}
-      <SideScreen position={[-12.5, 7.5, -4]} rotation={[0.05, 0.55, -0.04]} index={1} locale={locale} stats={stats} />
-      <SideScreen position={[-11, 1.6, -2]} rotation={[-0.05, 0.42, 0.03]} index={3} locale={locale} stats={stats} />
-      <SideScreen position={[12.5, 7.8, -4]} rotation={[0.04, -0.55, 0.04]} index={2} locale={locale} stats={stats} />
-      <SideScreen position={[11.5, 1.8, -2.5]} rotation={[-0.04, -0.45, -0.03]} index={5} locale={locale} stats={stats} />
-      <SideScreen position={[0, 13.2, -8]} rotation={[0.35, 0, 0]} index={6} locale={locale} stats={stats} />
+      <SideScreen position={[-12.5, 7.5, -4]} rotation={[0.05, 0.55, -0.04]} index={1} chapters={chapters} stats={stats} />
+      <SideScreen position={[-11, 1.6, -2]} rotation={[-0.05, 0.42, 0.03]} index={3} chapters={chapters} stats={stats} />
+      <SideScreen position={[12.5, 7.8, -4]} rotation={[0.04, -0.55, 0.04]} index={2} chapters={chapters} stats={stats} />
+      <SideScreen position={[11.5, 1.8, -2.5]} rotation={[-0.04, -0.45, -0.03]} index={5} chapters={chapters} stats={stats} />
+      <SideScreen position={[0, 13.2, -8]} rotation={[0.35, 0, 0]} index={6} chapters={chapters} stats={stats} />
 
       <pointLight position={[0, 6, 8]} intensity={40} distance={30} color="#C9A0FF" />
     </group>

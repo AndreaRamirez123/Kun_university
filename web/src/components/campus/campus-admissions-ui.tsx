@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import { ADMISSIONS_EMAIL } from "@/lib/contact";
-import type { School, Stats } from "@/lib/types";
-import { explainerChapters } from "./campus-explainer";
+import type { School } from "@/lib/types";
+import type { Chapter } from "./campus-explainer";
 import { campusRuntime } from "./campus-runtime";
 
 // Interfaz de la sala de Admisiones, inspirada en activetheory.net/work:
@@ -77,22 +77,31 @@ function speak(text: string, locale: "es" | "en", onEnd: () => void) {
   synth.speak(u);
 }
 
-export function AdmissionsRoom({
+export type RoomAction = { label: string; onClick?: () => void; href?: string };
+
+export function StudioRoom({
+  chapters,
+  roomTitle,
   schools,
-  stats,
   playerName,
+  defaultProgram = "",
+  extraAction,
   onExit,
   onSubmitted,
 }: {
+  chapters: Chapter[];
+  roomTitle: string;
   schools: School[];
-  stats: Stats;
   playerName: string;
+  /** Programa preseleccionado en la inscripción (p. ej. el de la escuela). */
+  defaultProgram?: string;
+  /** Botón extra junto a "Inscríbete": el cohete o el plan de estudios. */
+  extraAction?: RoomAction;
   onExit: () => void;
   onSubmitted: () => void;
 }) {
   const t = usePick(COPY);
   const { locale } = useLocale();
-  const chapters = useMemo(() => explainerChapters(locale, stats), [locale, stats]);
   const [chapter, setChapter] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [voice, setVoice] = useState(false);
@@ -167,7 +176,7 @@ export function AdmissionsRoom({
           ← {t.exit}
           <kbd className="rounded border border-white/25 px-1.5 font-mono text-[10px] max-md:hidden">Esc</kbd>
         </button>
-        <span className={`${MONO} pl-2 text-[10px] text-white/50`}>{t.room}</span>
+        <span className={`${MONO} pl-2 text-[10px] text-white/50`}>{roomTitle}</span>
       </div>
 
       {/* Arriba a la derecha: VIDEO —— INSCRIPCIÓN y selector de capítulo */}
@@ -210,13 +219,32 @@ export function AdmissionsRoom({
           </button>
         ))}
       </nav>
-      <button
-        type="button"
-        onClick={() => setMode("signup")}
-        className={`${GLASS} ${MONO} pointer-events-auto absolute bottom-[calc(40px+env(safe-area-inset-bottom,0px))] left-8 cursor-pointer rounded-full px-7 py-3.5 text-[14px] text-[#C9A0FF] transition hover:text-white hover:shadow-[0_0_30px_-6px_rgba(201,160,255,0.8)] max-md:bottom-[calc(96px+env(safe-area-inset-bottom,0px))] max-md:left-1/2 max-md:-translate-x-1/2`}
-      >
-        {t.cta}
-      </button>
+      <div className="pointer-events-auto absolute bottom-[calc(40px+env(safe-area-inset-bottom,0px))] left-8 flex flex-wrap gap-2 max-md:bottom-[calc(96px+env(safe-area-inset-bottom,0px))] max-md:left-1/2 max-md:-translate-x-1/2">
+        <button
+          type="button"
+          onClick={() => setMode("signup")}
+          className={`${GLASS} ${MONO} cursor-pointer rounded-full px-7 py-3.5 text-[14px] text-[#C9A0FF] transition hover:text-white hover:shadow-[0_0_30px_-6px_rgba(201,160,255,0.8)]`}
+        >
+          {t.cta}
+        </button>
+        {extraAction &&
+          (extraAction.href ? (
+            <a
+              href={extraAction.href}
+              className={`${GLASS} ${MONO} rounded-full px-5 py-3.5 text-[12px] text-white/75 no-underline transition hover:text-white max-md:hidden`}
+            >
+              {extraAction.label}
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={extraAction.onClick}
+              className={`${GLASS} ${MONO} cursor-pointer rounded-full px-5 py-3.5 text-[12px] text-white/75 transition hover:text-white`}
+            >
+              {extraAction.label}
+            </button>
+          ))}
+      </div>
 
       {/* Abajo al centro: subtítulos y controles */}
       {mode === "video" && current && (
@@ -261,7 +289,7 @@ export function AdmissionsRoom({
             <input required name="name" defaultValue={playerName} placeholder={t.name} aria-label={t.name} className={FIELD} />
             <input required type="email" name="email" autoComplete="email" placeholder={t.email} aria-label={t.email} className={FIELD} />
             <input required type="tel" name="phone" autoComplete="tel" placeholder={t.phone} aria-label={t.phone} className={FIELD} />
-            <select required name="program" defaultValue="" aria-label={t.program} className={FIELD}>
+            <select required name="program" defaultValue={defaultProgram} aria-label={t.program} className={FIELD}>
               <option value="" disabled className="text-[#24123F]">
                 {t.choose}
               </option>

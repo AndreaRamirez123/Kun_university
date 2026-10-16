@@ -12,6 +12,18 @@ import { ADMISSIONS_EMAIL } from "@/lib/contact";
 // reproducirá en lugar de esta animación.
 export const ADMISSIONS_VIDEO_URL: string | null = null;
 
+// Videos reales por lugar (id de campus-zones). Si un lugar no tiene video
+// grabado, su pantalla muestra la animación generada con sus capítulos.
+export const ZONE_VIDEO_URLS: Record<string, string | null> = {
+  adm: ADMISSIONS_VIDEO_URL,
+  ing: null,
+  neg: null,
+  bie: null,
+  dis: null,
+  cur: null,
+  cont: null,
+};
+
 export const CHAPTER_SECONDS = 9;
 
 export type Chapter = {
@@ -23,6 +35,10 @@ export type Chapter = {
   accent: string;
   // Rótulos de la gráfica del capítulo, ya en el idioma elegido.
   extra?: string[];
+  /** Gráfica a dibujar; por defecto se deduce del id. */
+  graphic?: "logo" | "world" | "numbers" | "steps" | "seals" | "badge";
+  /** Para la gráfica "badge": sello arriba, número grande y su unidad. */
+  badge?: { top: string; value: number; unit: string };
 };
 
 export function explainerChapters(locale: Locale, stats: Stats): Chapter[] {
@@ -119,7 +135,47 @@ export function drawExplainer(
   const k = ease((local - 0.15) / 0.5);
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  if (ch.id === "welcome" || ch.id === "start") {
+  const graphic =
+    ch.graphic ??
+    (ch.id === "welcome" || ch.id === "start"
+      ? "logo"
+      : ch.id === "online"
+        ? "world"
+        : ch.id === "numbers"
+          ? "numbers"
+          : ch.id === "steps"
+            ? "steps"
+            : "seals");
+  if (graphic === "badge" && ch.badge) {
+    // Sello con el título del programa a la izquierda y un contador grande a la derecha.
+    const bx = cx - 230;
+    ctx.save();
+    ctx.translate(bx, h * 0.64);
+    ctx.rotate(time * 0.25);
+    ctx.strokeStyle = ch.accent;
+    ctx.lineWidth = 8;
+    ctx.setLineDash([22, 12]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 120 * k, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    ctx.globalAlpha = exit * k;
+    ctx.fillStyle = ch.accent;
+    ctx.beginPath();
+    ctx.arc(bx, h * 0.64, 92, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = `900 ${ch.badge.top.length > 4 ? 44 : 64}px ${family}`;
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText(ch.badge.top, bx, h * 0.645);
+    ctx.font = `900 150px ${family}`;
+    ctx.fillStyle = "#FFF3E6";
+    ctx.fillText(String(Math.round(ch.badge.value * k)), cx + 200, h * 0.6);
+    ctx.font = `700 28px ui-monospace, Consolas, monospace`;
+    ctx.fillStyle = "rgba(255,243,230,0.7)";
+    ctx.fillText(ch.badge.unit, cx + 200, h * 0.76);
+    ctx.globalAlpha = exit;
+  } else if (graphic === "logo") {
     // Logo "K" en un anillo que se dibuja.
     ctx.strokeStyle = ch.accent;
     ctx.lineWidth = 10;
@@ -129,14 +185,14 @@ export function drawExplainer(
     ctx.font = `900 130px ${family}`;
     ctx.fillStyle = "#FFF3E6";
     ctx.globalAlpha = exit * k;
-    ctx.fillText(ch.id === "start" ? "→" : "K", cx, h * 0.645);
+    ctx.fillText(ch.id === "start" ? "→" : (ch.extra?.[0] ?? "K"), cx, h * 0.645);
     ctx.globalAlpha = exit;
-    if (ch.id === "start") {
+    if (ch.id === "start" && !ch.extra) {
       ctx.font = `700 34px ui-monospace, Consolas, monospace`;
       ctx.fillStyle = "#FFC85C";
       ctx.fillText(ADMISSIONS_EMAIL, cx, h * 0.85);
     }
-  } else if (ch.id === "online") {
+  } else if (graphic === "world") {
     // Puntos del mundo conectados con Florida.
     const fl = { x: cx - 120, y: h * 0.62 };
     const cities = [
@@ -163,7 +219,7 @@ export function drawExplainer(
     ctx.fill();
     ctx.font = `800 28px ${family}`;
     ctx.fillText("Florida", fl.x, fl.y + 40);
-  } else if (ch.id === "numbers") {
+  } else if (graphic === "numbers") {
     const names = ch.extra ?? [];
     const items = [
       [stats.schools, names[0]],
@@ -180,7 +236,7 @@ export function drawExplainer(
       ctx.fillStyle = "rgba(255,243,230,0.65)";
       ctx.fillText(label ?? "", x, h * 0.75);
     });
-  } else if (ch.id === "steps") {
+  } else if (graphic === "steps") {
     ["1", "2", "3"].forEach((n, i) => {
       const p = Math.max(0, Math.min(1, k * 1.8 - i * 0.35));
       const x = cx + (i - 1) * 330;
@@ -209,7 +265,7 @@ export function drawExplainer(
     ctx.globalAlpha = exit;
   } else {
     // Becas / acreditación: sellos que giran.
-    const labels = ch.id === "trust" ? ["Florida CIE", "SACSCOC"] : ["?", "✓"];
+    const labels = ch.extra ?? (ch.id === "trust" ? ["Florida CIE", "SACSCOC"] : ["?", "✓"]);
     labels.forEach((label, i) => {
       const x = cx + (i ? 200 : -200);
       ctx.save();

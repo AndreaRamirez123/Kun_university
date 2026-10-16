@@ -11,6 +11,7 @@ const COPY = {
   es: {
     subtitle: "Campus virtual en Florida",
     classicSite: "← Sitio clásico",
+    catalog: "Catálogo académico",
     visited: (n: number, total: number) => `Visitaste ${n} de ${total} lugares`,
     soundOn: "Sonido activado",
     soundOff: "Activar sonido",
@@ -27,6 +28,7 @@ const COPY = {
   en: {
     subtitle: "Virtual campus in Florida",
     classicSite: "← Classic site",
+    catalog: "Academic catalog",
     visited: (n: number, total: number) => `You visited ${n} of ${total} places`,
     soundOn: "Sound on",
     soundOff: "Turn sound on",
@@ -230,6 +232,7 @@ export function CampusHud({
   skyKind,
   floridaTime,
   onCycleSky,
+  onOpenCatalog,
 }: {
   visible: boolean;
   visited: Set<string>;
@@ -239,6 +242,7 @@ export function CampusHud({
   skyKind: "day" | "sunset" | "night";
   floridaTime: string;
   onCycleSky: () => void;
+  onOpenCatalog: () => void;
 }) {
   const t = usePick(COPY);
   const hint = usePick(HINT);
@@ -259,6 +263,13 @@ export function CampusHud({
         >
           {t.classicSite}
         </Link>
+        <button
+          type="button"
+          onClick={onOpenCatalog}
+          className="mt-2 flex cursor-pointer items-center gap-2 rounded-full bg-[#FFC85C] px-4 py-2 text-[13px] font-bold text-[#24123F] shadow-[0_10px_24px_-10px_rgba(255,200,92,0.9)] transition hover:-translate-y-0.5"
+        >
+          <span aria-hidden>📚</span> {t.catalog}
+        </button>
       </div>
 
       <div

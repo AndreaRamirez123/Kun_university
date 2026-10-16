@@ -9,6 +9,7 @@ import { CampusAnimals } from "./campus-animals";
 import type { Gender } from "./campus-avatar";
 import { CampusLineup } from "./campus-lineup";
 import { Krucn } from "./campus-krucn";
+import type { Chapter } from "./campus-explainer";
 import { FLORIDA_COLLIDERS } from "./campus-florida";
 import { CampusInterior, INTERIOR_ORIGIN } from "./campus-interior";
 import { CampusPlayer } from "./campus-player";
@@ -196,6 +197,7 @@ export function CampusScene({
   krucnTalking,
   onKrucnNear,
   stats,
+  interiorChapters,
   reduceMotion,
   playerRef,
   onZoneChange,
@@ -215,6 +217,7 @@ export function CampusScene({
   krucnTalking: boolean;
   onKrucnNear: (near: boolean) => void;
   stats: Stats;
+  interiorChapters: Chapter[] | null;
   reduceMotion: boolean;
   playerRef: React.RefObject<THREE.Group | null>;
   onZoneChange: (id: string | null) => void;
@@ -285,12 +288,12 @@ export function CampusScene({
       <CampusAnimals playing={phase === "playing"} pet={lineupGender !== null ? "dog" : avatar.pet} />
       <Krucn talking={krucnTalking} onNearChange={onKrucnNear} />
       </group>
-      {interiorZone && <CampusInterior zone={interiorZone} sky={sky} locale={locale} stats={stats} />}
+      {interiorZone && <CampusInterior zone={interiorZone} sky={sky} stats={stats} chapters={interiorChapters} />}
 
       <CameraRig
         phase={phase}
         lineup={lineupGender !== null}
-        studio={interiorZone?.id === "adm"}
+        studio={!!interiorChapters}
         playerRef={playerRef}
         reduceMotion={reduceMotion}
       />
