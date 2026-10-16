@@ -2,10 +2,54 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, usePick } from "@/i18n/locale-context";
-import { ADMISSIONS_EMAIL } from "@/lib/contact";
-import type { School } from "@/lib/types";
-import type { Chapter } from "./campus-explainer";
+import type { Stats } from "@/lib/types";
+import { drawExplainer, THEME_STYLE, type Chapter } from "./campus-explainer";
+import { labelFontFamily } from "./campus-label";
 import { campusRuntime } from "./campus-runtime";
+import { SignupPanel } from "./campus-signup";
+
+// El video se dibuja en un <canvas> de la interfaz (no como textura 3D) a la
+// resolución real de la pantalla: así se ve nítido y sin el grano del post-procesado.
+const VIDEO_W = 1280;
+const VIDEO_H = 720;
+
+function ExplainerCanvas({ chapters, stats }: { chapters: Chapter[]; stats: Stats }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const glow = THEME_STYLE[chapters[0]?.theme ?? "default"].accents[0];
+  useEffect(() => {
+    const canvas = ref.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+    const family = labelFontFamily();
+    let raf = 0;
+    const start = performance.now();
+    function draw(now: number) {
+      if (!canvas || !ctx) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = Math.round(canvas.clientWidth * dpr);
+      const h = Math.round(canvas.clientHeight * dpr);
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+      const e = campusRuntime.explainer;
+      ctx.setTransform(w / VIDEO_W, 0, 0, h / VIDEO_H, 0, 0);
+      drawExplainer(ctx, VIDEO_W, VIDEO_H, chapters, Math.min(e.chapter, chapters.length - 1), e.local, (now - start) / 1000, family, stats);
+      raf = requestAnimationFrame(draw);
+    }
+    raf = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(raf);
+  }, [chapters, stats]);
+  return (
+    <canvas
+      ref={ref}
+      role="img"
+      aria-label={chapters[0]?.title}
+      className="aspect-video w-full rounded-[20px] border"
+      style={{ borderColor: `${glow}66`, boxShadow: `0 0 90px -12px ${glow}AA` }}
+    />
+  );
+}
 
 // Interfaz de la sala de Admisiones, inspirada en activetheory.net/work:
 // menú de capítulos en tipografía mono, selector VIDEO / INSCRIPCIÓN arriba a la
@@ -18,6 +62,7 @@ const COPY = {
     video: "Video",
     signup: "Inscripción",
     lookingFor: "¿Qué quieres saber?",
+    howTo: "Mira el video · salta a una carrera en el menú de la izquierda · inscríbete cuando quieras",
     cta: "Inscríbete ahora…",
     pause: "Pausar",
     play: "Reproducir",
@@ -41,6 +86,7 @@ const COPY = {
     video: "Video",
     signup: "Sign up",
     lookingFor: "What do you want to know?",
+    howTo: "Watch the video · jump to a program from the left menu · sign up whenever you like",
     cta: "Sign up now…",
     pause: "Pause",
     play: "Play",
@@ -62,7 +108,6 @@ const COPY = {
 
 const MONO = "font-mono uppercase tracking-[0.12em]";
 const GLASS = "border border-white/15 bg-[#0A0516]/70 backdrop-blur-xl";
-const FIELD = `h-11 rounded-xl border border-white/20 bg-white/5 px-3.5 text-[15px] text-[#FFF3E6] placeholder:text-white/35 focus:border-[#C9A0FF] focus:outline-none`;
 
 function speak(text: string, locale: "es" | "en", onEnd: () => void) {
   const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
@@ -82,23 +127,27 @@ export type RoomAction = { label: string; onClick?: () => void; href?: string };
 export function StudioRoom({
   chapters,
   roomTitle,
-  schools,
+  stats,
+  videoUrl,
   playerName,
   defaultProgram = "",
   extraAction,
+  schoolName,
   onExit,
-  onSubmitted,
 }: {
   chapters: Chapter[];
   roomTitle: string;
-  schools: School[];
+  stats: Stats;
+  /** Video grabado del lugar (ZONE_VIDEO_URLS); si no hay, se muestra el generado. */
+  videoUrl?: string | null;
   playerName: string;
   /** Programa preseleccionado en la inscripción (p. ej. el de la escuela). */
   defaultProgram?: string;
   /** Botón extra junto a "Inscríbete": el cohete o el plan de estudios. */
   extraAction?: RoomAction;
+  /** Escuela de la sala (para mostrar primero sus carreras al inscribirse). */
+  schoolName?: string;
   onExit: () => void;
-  onSubmitted: () => void;
 }) {
   const t = usePick(COPY);
   const { locale } = useLocale();
@@ -167,6 +216,8 @@ export function StudioRoom({
   }
 
   const current = chapters[chapter];
+  // El menú toma el color de la escuela (antes era lila en todas las salas).
+  const menuColor = THEME_STYLE[chapters[0]?.theme ?? "default"].accents[0];
 
   return (
     <div className="pointer-events-none absolute inset-0 z-30 text-[#FFF3E6]">
@@ -190,7 +241,7 @@ export function StudioRoom({
             {t.signup}
           </button>
         </div>
-        <div className={`${GLASS} flex items-center gap-2 rounded-xl p-1.5`}>
+        <div hidden={mode === "signup"} className={`${GLASS} flex items-center gap-2 rounded-xl p-1.5`}>
           <button type="button" aria-label={t.prev} onClick={() => goTo(chapter - 1)} className="h-9 w-10 cursor-pointer rounded-lg border border-white/15 font-mono text-sm hover:bg-white/10">
             {"<<"}
           </button>
@@ -201,8 +252,26 @@ export function StudioRoom({
         </div>
       </div>
 
+      {/* Centro: el video, nítido, dibujado a la resolución real de la pantalla */}
+      {mode === "video" && (
+        <div className="absolute top-[13%] left-1/2 flex w-[min(54vw,1100px)] -translate-x-1/2 flex-col items-center gap-2 max-md:top-[21%] max-md:w-[94vw]">
+          <p className={`${MONO} m-0 text-center text-[11px] text-white/70 [text-shadow:0_2px_10px_rgba(0,0,0,0.9)]`}>{t.howTo}</p>
+          {videoUrl ? (
+            <video
+              src={videoUrl}
+              controls
+              autoPlay
+              playsInline
+              className="aspect-video w-full rounded-[20px] border border-white/15 bg-black shadow-[0_0_80px_-10px_rgba(201,160,255,0.55)]"
+            />
+          ) : (
+            <ExplainerCanvas chapters={chapters} stats={stats} />
+          )}
+        </div>
+      )}
+
       {/* Izquierda: menú de capítulos */}
-      <nav aria-label={t.lookingFor} className="pointer-events-auto absolute bottom-[calc(120px+env(safe-area-inset-bottom,0px))] left-10 flex flex-col gap-3 max-md:hidden">
+      <nav aria-label={t.lookingFor} hidden={mode === "signup"} className="pointer-events-auto absolute bottom-[calc(120px+env(safe-area-inset-bottom,0px))] left-10 flex max-w-[19vw] flex-col gap-3 max-md:hidden">
         <div className={`${MONO} mb-1 text-[15px] font-bold text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]`}>{t.lookingFor}</div>
         {chapters.map((c, i) => (
           <button
@@ -210,16 +279,18 @@ export function StudioRoom({
             type="button"
             onClick={() => goTo(i)}
             aria-current={i === chapter ? "true" : undefined}
-            className={`${MONO} cursor-pointer text-left text-[15px] transition-[padding,color] [text-shadow:0_2px_12px_rgba(0,0,0,0.8)] ${
-              i === chapter ? "pl-4 font-bold text-white" : "text-[#B9A8FF] hover:pl-2 hover:text-white"
+            title={c.menu}
+            className={`${MONO} cursor-pointer truncate text-left text-[14px] transition-[padding,color] [text-shadow:0_2px_12px_rgba(0,0,0,0.8)] ${
+              i === chapter ? "pl-4 font-bold text-white" : "hover:pl-2 hover:text-white"
             }`}
+            style={i === chapter ? undefined : { color: menuColor }}
           >
             {"-> "}
             {c.menu}
           </button>
         ))}
       </nav>
-      <div className="pointer-events-auto absolute bottom-[calc(40px+env(safe-area-inset-bottom,0px))] left-8 flex flex-wrap gap-2 max-md:bottom-[calc(96px+env(safe-area-inset-bottom,0px))] max-md:left-1/2 max-md:-translate-x-1/2">
+      <div hidden={mode === "signup"} className="pointer-events-auto absolute bottom-[calc(40px+env(safe-area-inset-bottom,0px))] left-8 flex flex-wrap gap-2 max-md:bottom-[calc(96px+env(safe-area-inset-bottom,0px))] max-md:left-1/2 max-md:-translate-x-1/2">
         <button
           type="button"
           onClick={() => setMode("signup")}
@@ -273,49 +344,15 @@ export function StudioRoom({
         </div>
       )}
 
-      {/* Panel de inscripción */}
+      {/* Inscripción: tarjeta centrada y enfocada, en el color de la escuela */}
       {mode === "signup" && (
-        <div className="pointer-events-auto absolute top-1/2 right-6 w-[min(420px,calc(100%-24px))] -translate-y-1/2 max-md:top-auto max-md:right-3 max-md:bottom-[calc(16px+env(safe-area-inset-bottom,0px))] max-md:left-3 max-md:w-auto max-md:translate-y-0">
-          <form
-            className={`${GLASS} reveal-animate-right flex flex-col gap-3 rounded-[24px] p-6 shadow-[0_0_60px_-20px_rgba(201,160,255,0.7)]`}
-            onSubmit={(e) => {
-              e.preventDefault();
-              setMode("video");
-              onSubmitted();
-            }}
-          >
-            <h2 className={`${MONO} m-0 text-xl font-bold`}>{t.formTitle}</h2>
-            <p className="m-0 text-[13px] text-white/60">{t.formBody}</p>
-            <input required name="name" defaultValue={playerName} placeholder={t.name} aria-label={t.name} className={FIELD} />
-            <input required type="email" name="email" autoComplete="email" placeholder={t.email} aria-label={t.email} className={FIELD} />
-            <input required type="tel" name="phone" autoComplete="tel" placeholder={t.phone} aria-label={t.phone} className={FIELD} />
-            <select required name="program" defaultValue={defaultProgram} aria-label={t.program} className={FIELD}>
-              <option value="" disabled className="text-[#24123F]">
-                {t.choose}
-              </option>
-              {schools.flatMap((s) =>
-                s.programs.map((p) => (
-                  <option key={`${s.slug}-${p.name}`} value={p.name} className="text-[#24123F]">
-                    {p.name} · {s.name[locale]}
-                  </option>
-                )),
-              )}
-            </select>
-            <button
-              type="submit"
-              className={`${MONO} mt-1 h-12 cursor-pointer rounded-full bg-white text-[13px] font-bold text-[#0A0516] transition hover:shadow-[0_0_30px_-4px_rgba(255,255,255,0.8)]`}
-            >
-              {t.send}
-            </button>
-            <p className="m-0 text-center text-[12px] text-white/55">
-              {t.orEmail}{" "}
-              <a href={`mailto:${ADMISSIONS_EMAIL}`} className="font-bold text-[#C9A0FF] underline">
-                {ADMISSIONS_EMAIL}
-              </a>
-            </p>
-          </form>
-        </div>
-      )}
-    </div>
+        <SignupPanel
+          accent={menuColor}
+          schoolName={schoolName}
+          defaultProgram={defaultProgram}
+          playerName={playerName}
+          onClose={() => setMode("video")}
+        />
+      )}    </div>
   );
 }

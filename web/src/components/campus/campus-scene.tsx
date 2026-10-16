@@ -306,7 +306,7 @@ export function CampusScene({
         <Bloom mipmapBlur intensity={0.85} luminanceThreshold={1} luminanceSmoothing={0.25} radius={0.7} />
         <ToneMapping mode={ToneMappingMode.NEUTRAL} />
         <Vignette offset={0.28} darkness={0.62} />
-        <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={narrow ? 0 : 0.35} />
+        <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={narrow || phase === "inside" ? 0 : 0.35} />
       </EffectComposer>
     </Canvas>
   );

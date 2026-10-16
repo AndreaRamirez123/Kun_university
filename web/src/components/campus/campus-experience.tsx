@@ -9,6 +9,7 @@ import { CampusHud, CampusToast, CampusTouchControls } from "./campus-hud";
 import { StudioRoom } from "./campus-admissions-ui";
 import { CampusCatalog } from "./campus-catalog";
 import { zoneChapters } from "./campus-zone-chapters";
+import { ZONE_VIDEO_URLS } from "./campus-explainer";
 import { CampusGenderStep, CampusIntro } from "./campus-intro";
 import { LINEUP, LINEUP_ORDER } from "./campus-lineup";
 import { CampusLoader } from "./campus-loader";
@@ -359,7 +360,8 @@ export function CampusExperience(props: {
           key={`${interiorZone.id}-${locale}`}
           chapters={interiorChapters}
           roomTitle={roomTitle}
-          schools={schools}
+          stats={stats}
+          videoUrl={ZONE_VIDEO_URLS[interiorZone.id] ?? null}
           playerName={avatar.name.trim()}
           defaultProgram={interiorSchool?.programs[0]?.name ?? ""}
           extraAction={
@@ -370,7 +372,7 @@ export function CampusExperience(props: {
                 : undefined
           }
           onExit={() => exitZone()}
-          onSubmitted={() => showToast(t.submitted)}
+          schoolName={interiorSchool?.name.es}
         />
       )}
       <CampusTouchControls enabled={playing && !form.open && !talking && !catalogView.open} targetRef={wrapperRef} />

@@ -1,29 +1,9 @@
 "use client";
 
-import { ADMISSIONS_EMAIL } from "@/lib/contact";
+import { ADMISSIONS_EMAIL, SOCIAL_LINKS, socialHref } from "@/lib/contact";
+import { SocialIcon } from "./social-icons";
 import Image from "next/image";
 import { usePick } from "@/i18n/locale-context";
-
-const SOCIAL_ICONS = [
-  <svg key="YouTube" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <rect x="2" y="5" width="20" height="14" rx="4" />
-    <path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none" />
-  </svg>,
-  <svg key="LinkedIn" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <rect x="3" y="3" width="18" height="18" rx="3" />
-    <line x1="8" y1="10" x2="8" y2="17" />
-    <circle cx="8" cy="6.5" r="0.5" fill="currentColor" />
-    <path d="M12 17v-4.5c0-1.5 1-2.5 2.3-2.5s2.2 1 2.2 2.5V17" />
-  </svg>,
-  <svg key="Instagram" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <rect x="3" y="3" width="18" height="18" rx="5" />
-    <circle cx="12" cy="12" r="4" />
-    <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none" />
-  </svg>,
-  <svg key="X" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <path d="M4 4l16 16M20 4L4 20" />
-  </svg>,
-];
 
 const COPY = {
   es: {
@@ -95,8 +75,8 @@ export function SiteFooter() {
 
           <FooterColumn title={t.followTitle}>
             {t.socialLabels.map((label, i) => (
-              <a key={label} href="#" className="flex items-center gap-2 text-cream no-underline transition-colors hover:text-cyan">
-                {SOCIAL_ICONS[i]}
+              <a key={label} href={socialHref(SOCIAL_LINKS[i]?.href ?? "")} className="flex items-center gap-2 text-cream no-underline transition-colors hover:text-cyan">
+                {SOCIAL_LINKS[i] && <SocialIcon network={SOCIAL_LINKS[i].network} />}
                 {label}
               </a>
             ))}

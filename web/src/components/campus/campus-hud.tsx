@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale, usePick } from "@/i18n/locale-context";
+import { ADMISSIONS_EMAIL, SOCIAL_LINKS, socialHref } from "@/lib/contact";
+import { SocialIcon } from "../social-icons";
 import { campusRuntime } from "./campus-runtime";
 import type { SkyMode } from "./campus-sky";
 import { GRASS_RADIUS, ISLAND_RADIUS, ZONES } from "./campus-zones";
@@ -12,6 +14,7 @@ const COPY = {
     subtitle: "Campus virtual en Florida",
     classicSite: "← Sitio clásico",
     catalog: "Catálogo académico",
+    follow: "Síguenos",
     visited: (n: number, total: number) => `Visitaste ${n} de ${total} lugares`,
     soundOn: "Sonido activado",
     soundOff: "Activar sonido",
@@ -29,6 +32,7 @@ const COPY = {
     subtitle: "Virtual campus in Florida",
     classicSite: "← Classic site",
     catalog: "Academic catalog",
+    follow: "Follow us",
     visited: (n: number, total: number) => `You visited ${n} of ${total} places`,
     soundOn: "Sound on",
     soundOff: "Turn sound on",
@@ -315,16 +319,44 @@ export function CampusHud({
       </div>
 
       <div
-        className={`pointer-events-none absolute bottom-[calc(22px+env(safe-area-inset-bottom,0px))] left-1/2 z-10 flex -translate-x-1/2 gap-3 rounded-2xl bg-[#1D0C3C]/55 px-4 py-2.5 text-[13px] text-[#FFF3E6] backdrop-blur-md max-md:hidden ${base}`}
+        className={`absolute bottom-[calc(22px+env(safe-area-inset-bottom,0px))] left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 rounded-2xl bg-[#1D0C3C]/55 px-4 py-2 text-[13px] text-[#FFF3E6] backdrop-blur-md max-md:px-2.5 ${base}`}
       >
         {hint.map(([key, action]) => (
-          <span key={key} className="flex items-center gap-1.5 whitespace-nowrap">
+          <span key={key} className="flex items-center gap-1.5 whitespace-nowrap max-lg:hidden">
             <kbd className="rounded-md border border-[#FFF3E6]/35 bg-[#FFF3E6]/15 px-1.5 py-px font-sans text-xs font-bold">
               {key}
             </kbd>
             {action}
           </span>
         ))}
+        {/* "Footer" del campus: redes y correo de admisiones, compactos */}
+        <span aria-hidden className="h-5 w-px bg-white/20 max-lg:hidden" />
+        <span className="flex items-center gap-0.5" aria-label={t.follow}>
+          {SOCIAL_LINKS.map((s) => (
+            <a
+              key={s.network}
+              href={socialHref(s.href)}
+              target={s.href ? "_blank" : undefined}
+              rel={s.href ? "noopener noreferrer" : undefined}
+              aria-label={s.label}
+              title={s.label}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-[#FFF3E6]/80 transition hover:bg-white/10 hover:text-[#FFC85C]"
+            >
+              <SocialIcon network={s.network} size={14} />
+            </a>
+          ))}
+          <a
+            href={`mailto:${ADMISSIONS_EMAIL}`}
+            aria-label={ADMISSIONS_EMAIL}
+            title={ADMISSIONS_EMAIL}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-[#FFF3E6]/80 transition hover:bg-white/10 hover:text-[#FFC85C]"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 7l9 6 9-6" />
+            </svg>
+          </a>
+        </span>
       </div>
     </>
   );

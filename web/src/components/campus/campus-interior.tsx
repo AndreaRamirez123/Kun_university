@@ -9,7 +9,7 @@ import type { SkyPreset } from "./campus-sky";
 import { CelestialBody, SkyDome, Stars } from "./campus-sky-dome";
 import type { ZoneDef } from "./campus-zones";
 import { ExplainerStudio } from "./campus-admissions-studio";
-import { ZONE_VIDEO_URLS, type Chapter } from "./campus-explainer";
+import type { Chapter } from "./campus-explainer";
 import type { Stats } from "@/lib/types";
 
 // Aula virtual de cada lugar del campus: una plataforma que flota sobre el mar
@@ -455,7 +455,7 @@ export function CampusInterior({ zone, sky, stats, chapters }: { zone: ZoneDef; 
   if (chapters) {
     return (
       <group position={INTERIOR_ORIGIN}>
-        <ExplainerStudio chapters={chapters} stats={stats} videoUrl={ZONE_VIDEO_URLS[zone.id] ?? null} />
+        <ExplainerStudio chapters={chapters} stats={stats} theme={chapters[0]?.theme ?? "default"} />
       </group>
     );
   }

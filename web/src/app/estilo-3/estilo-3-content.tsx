@@ -1,6 +1,6 @@
 "use client";
 
-import { ADMISSIONS_EMAIL } from "@/lib/contact";
+import { ADMISSIONS_EMAIL, SOCIAL_LINKS, socialHref } from "@/lib/contact";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { AccordionShowcase, type AccordionItem } from "@/components/accordion-showcase";
@@ -734,10 +734,10 @@ export function Estilo3Content({
             </a>
           </div>
           <div className="flex gap-5">
-            <a href="#" className="text-[13px] font-bold hover:text-[#BF0404]">YouTube</a>
-            <a href="#" className="text-[13px] font-bold hover:text-[#BF0404]">LinkedIn</a>
-            <a href="#" className="text-[13px] font-bold hover:text-[#BF0404]">Instagram</a>
-            <a href="#" className="text-[13px] font-bold hover:text-[#BF0404]">X</a>
+            <a href={socialHref(SOCIAL_LINKS[0].href)} className="text-[13px] font-bold hover:text-[#BF0404]">YouTube</a>
+            <a href={socialHref(SOCIAL_LINKS[1].href)} className="text-[13px] font-bold hover:text-[#BF0404]">LinkedIn</a>
+            <a href={socialHref(SOCIAL_LINKS[2].href)} className="text-[13px] font-bold hover:text-[#BF0404]">Instagram</a>
+            <a href={socialHref(SOCIAL_LINKS[3].href)} className="text-[13px] font-bold hover:text-[#BF0404]">X</a>
           </div>
         </div>
       </div>

@@ -5,14 +5,14 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { Stats } from "@/lib/types";
 import { getDotTexture } from "./campus-dot-texture";
-import { CHAPTER_SECONDS, drawExplainer, type Chapter } from "./campus-explainer";
+import { CHAPTER_SECONDS, drawExplainer, THEME_STYLE, type Chapter, type Theme } from "./campus-explainer";
 import { labelFontFamily } from "./campus-label";
 import { seeded } from "./campus-random";
 import { campusRuntime } from "./campus-runtime";
 
 // Sala de Admisiones al estilo de activetheory.net/work: un vacío oscuro con
-// nubes de partículas, una escultura tornasol y pantallas flotantes. La pantalla
-// central reproduce el video explicativo (generado en canvas o un MP4 real).
+// nubes de partículas, una escultura tornasol y pantallas flotantes con los
+// capítulos. El video principal va en la interfaz, para que se vea nítido.
 
 const SCREEN_W = 1280;
 const SCREEN_H = 720;
@@ -54,53 +54,6 @@ function ParticleCloud({ count, center, radius, color, seed, size }: { count: nu
   );
 }
 
-function useScreenTexture() {
-  const canvas = useMemo(() => {
-    if (typeof document === "undefined") return null;
-    const c = document.createElement("canvas");
-    c.width = SCREEN_W;
-    c.height = SCREEN_H;
-    return c;
-  }, []);
-  const texture = useMemo(() => {
-    if (!canvas) return null;
-    const t = new THREE.CanvasTexture(canvas);
-    t.colorSpace = THREE.SRGBColorSpace;
-    return t;
-  }, [canvas]);
-  useEffect(() => () => texture?.dispose(), [texture]);
-  return texture;
-}
-
-/** Video real del lugar, si está configurado en ZONE_VIDEO_URLS. */
-function useVideoTexture(url: string | null) {
-  const video = useMemo(() => {
-    if (!url || typeof document === "undefined") return null;
-    const v = document.createElement("video");
-    v.src = url;
-    v.loop = true;
-    v.muted = true;
-    v.playsInline = true;
-    v.crossOrigin = "anonymous";
-    return v;
-  }, [url]);
-  const texture = useMemo(() => {
-    if (!video) return null;
-    const t = new THREE.VideoTexture(video);
-    t.colorSpace = THREE.SRGBColorSpace;
-    return t;
-  }, [video]);
-  useEffect(() => {
-    if (!video) return;
-    void video.play().catch(() => undefined);
-    return () => {
-      video.pause();
-      texture?.dispose();
-    };
-  }, [video, texture]);
-  return { video, texture };
-}
-
 function SideScreen({ position, rotation, index, chapters, stats }: { position: [number, number, number]; rotation: [number, number, number]; index: number; chapters: Chapter[]; stats: Stats }) {
   const ref = useRef<THREE.Group>(null);
   // Miniatura fija del capítulo, dibujada una vez.
@@ -139,13 +92,10 @@ function SideScreen({ position, rotation, index, chapters, stats }: { position: 
   );
 }
 
-export function ExplainerStudio({ chapters, stats, videoUrl }: { chapters: Chapter[]; stats: Stats; videoUrl: string | null }) {
-  const texture = useScreenTexture();
-  const video = useVideoTexture(videoUrl);
-  const screen = useRef<THREE.Group>(null);
-  const screenMat = useRef<THREE.MeshBasicMaterial>(null);
+export function ExplainerStudio({ chapters, stats, theme }: { chapters: Chapter[]; stats: Stats; theme: Theme }) {
   const sculpture = useRef<THREE.Mesh>(null);
-  const family = useMemo(() => (typeof document === "undefined" ? "sans-serif" : labelFontFamily()), []);
+  const style = THEME_STYLE[theme];
+  const sculptureKind = style.sculpture.kind;
 
   useEffect(() => {
     campusRuntime.explainer.count = chapters.length;
@@ -163,60 +113,45 @@ export function ExplainerStudio({ chapters, stats, videoUrl }: { chapters: Chapt
       }
     }
     if (campusRuntime.explainer.chapter >= chapters.length) campusRuntime.explainer.chapter = 0;
-    // Redibuja el frame del video en el canvas que usa la pantalla.
-    const map = screenMat.current?.map;
-    const source = map?.image as HTMLCanvasElement | undefined;
-    if (map && !video.texture && source?.getContext) {
-      const ctx = source.getContext("2d");
-      if (ctx) {
-        drawExplainer(ctx, SCREEN_W, SCREEN_H, chapters, Math.min(e.chapter, chapters.length - 1), e.local, t, family, stats);
-        map.needsUpdate = true;
-      }
-    }
-    if (screen.current) {
-      screen.current.position.y = 5.4 + Math.sin(t * 0.5) * 0.12;
-      screen.current.rotation.y = -0.06 + Math.sin(t * 0.25) * 0.03;
-    }
-    if (sculpture.current) {
-      sculpture.current.rotation.y = t * 0.12;
-      sculpture.current.rotation.x = Math.sin(t * 0.2) * 0.2;
+    const sc = sculpture.current;
+    if (sc) {
+      sc.rotation.y = t * (sculptureKind === "wire" ? 0.25 : 0.12);
+      sc.rotation.x = Math.sin(t * 0.2) * 0.2;
+      // La esfera de Bienestar respira; las demás giran.
+      if (sculptureKind === "breath") sc.scale.setScalar(1.6 + Math.sin(t * 1.2) * 0.12);
     }
   });
 
   return (
     <group>
-      {/* Vacío oscuro */}
+      {/* Vacío oscuro, teñido con el color de fondo de la escuela */}
       <mesh>
         <sphereGeometry args={[110, 32, 16]} />
-        <meshBasicMaterial color="#0A0516" side={THREE.BackSide} fog={false} />
+        <meshBasicMaterial color={style.bg} side={THREE.BackSide} fog={false} />
       </mesh>
-      <ParticleCloud count={2200} center={[-12, 6, -14]} radius={9} color={[1.6, 0.5, 1.4]} seed={3} size={0.16} />
-      <ParticleCloud count={1800} center={[13, 4, -12]} radius={8} color={[0.6, 1.5, 0.9]} seed={8} size={0.15} />
-      <ParticleCloud count={1600} center={[0, 10, -20]} radius={11} color={[0.9, 0.7, 1.8]} seed={13} size={0.14} />
-      <ParticleCloud count={900} center={[0, 1, 4]} radius={14} color={[1.4, 1.1, 0.6]} seed={21} size={0.08} />
+      <ParticleCloud count={2200} center={[-12, 6, -14]} radius={9} color={style.particles[0]} seed={3} size={0.16} />
+      <ParticleCloud count={1800} center={[13, 4, -12]} radius={8} color={style.particles[1]} seed={8} size={0.15} />
+      <ParticleCloud count={1600} center={[0, 10, -20]} radius={11} color={style.particles[2]} seed={13} size={0.14} />
+      <ParticleCloud count={900} center={[0, 1, 4]} radius={14} color={style.particles[3]} seed={21} size={0.08} />
 
-      {/* Escultura tornasol detrás de la pantalla */}
-      <mesh ref={sculpture} position={[0, 6, -11]} scale={[1, 2.2, 1]}>
-        <torusKnotGeometry args={[2.6, 0.75, 220, 24, 3, 7]} />
-        <meshNormalMaterial />
+      {/* Escultura de fondo, distinta en cada escuela */}
+      <mesh ref={sculpture} position={[0, 6, -11]} scale={sculptureKind === "rainbow" ? [1, 2.2, 1] : [1.6, 1.6, 1.6]}>
+        {sculptureKind === "wire" && <icosahedronGeometry args={[3.2, 1]} />}
+        {sculptureKind === "metal" && <octahedronGeometry args={[3.2, 0]} />}
+        {sculptureKind === "breath" && <sphereGeometry args={[2.8, 48, 32]} />}
+        {sculptureKind === "rainbow" && <torusKnotGeometry args={[2.6, 0.75, 220, 24, 3, 7]} />}
+        {sculptureKind === "wire" ? (
+          <meshBasicMaterial color={style.sculpture.color} wireframe toneMapped={false} />
+        ) : sculptureKind === "metal" ? (
+          <meshStandardMaterial color={style.sculpture.color} metalness={0.95} roughness={0.22} emissive="#6B4A10" emissiveIntensity={0.5} flatShading />
+        ) : sculptureKind === "breath" ? (
+          <meshStandardMaterial color={style.sculpture.color} roughness={0.35} emissive={style.sculpture.color} emissiveIntensity={0.45} transparent opacity={0.85} />
+        ) : (
+          <meshNormalMaterial />
+        )}
       </mesh>
 
-      {/* Pantalla principal con el video */}
-      <group ref={screen} position={[0, 5.4, 0]}>
-        {/* Halo suave detrás de la pantalla */}
-        <mesh position={[0, 0, -0.4]}>
-          <planeGeometry args={[17, 10.5]} />
-          <meshBasicMaterial color={[0.9, 0.35, 1.2]} transparent opacity={0.06} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
-        </mesh>
-        <mesh>
-          <boxGeometry args={[13.6, 7.9, 0.3]} />
-          <meshStandardMaterial color="#160E28" roughness={0.25} metalness={0.7} />
-        </mesh>
-        <mesh position={[0, 0, 0.16]}>
-          <planeGeometry args={[13, 7.3125]} />
-          <meshBasicMaterial ref={screenMat} map={video.texture ?? texture} toneMapped={false} />
-        </mesh>
-      </group>
+      {/* El video principal se muestra nítido en la interfaz (StudioRoom), delante de esta escena. */}
 
       {/* Pantallas laterales flotantes con los capítulos */}
       <SideScreen position={[-12.5, 7.5, -4]} rotation={[0.05, 0.55, -0.04]} index={1} chapters={chapters} stats={stats} />

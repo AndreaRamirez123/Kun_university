@@ -1,6 +1,6 @@
 "use client";
 
-import { ADMISSIONS_EMAIL } from "@/lib/contact";
+import { ADMISSIONS_EMAIL, SOCIAL_LINKS, socialHref } from "@/lib/contact";
 import Image from "next/image";
 import { CertificationsSwiper } from "@/components/certifications-swiper";
 import { FanStack, type FanItem } from "@/components/fan-stack";
@@ -752,10 +752,10 @@ export function Estilo2Content({
             </a>
           </div>
           <div className="flex gap-5">
-            <a href="#" className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.youtube}</a>
-            <a href="#" className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.linkedin}</a>
-            <a href="#" className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.instagram}</a>
-            <a href="#" className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.x}</a>
+            <a href={socialHref(SOCIAL_LINKS[0].href)} className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.youtube}</a>
+            <a href={socialHref(SOCIAL_LINKS[1].href)} className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.linkedin}</a>
+            <a href={socialHref(SOCIAL_LINKS[2].href)} className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.instagram}</a>
+            <a href={socialHref(SOCIAL_LINKS[3].href)} className="text-[13px] font-bold hover:text-[#8C0303]">{t.footer.x}</a>
           </div>
         </div>
       </div>
