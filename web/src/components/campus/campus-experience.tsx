@@ -34,6 +34,7 @@ const COPY = {
     allVisited: "Recorriste todo el campus. Admisiones te espera.",
     launch: "Despegue. Tu carrera también arranca aquí.",
     submitted: "Solicitud lista. En la versión final llegará a admisiones.",
+    stayHint: "Sigues en el campus. Para salir usa «← Sitio clásico».",
     launchRocket: "Despegar el cohete",
     coursePlan: "Programas y materias →",
   },
@@ -43,6 +44,7 @@ const COPY = {
     allVisited: "You explored the whole campus. Admissions is waiting for you.",
     launch: "Liftoff. Your career takes off here too.",
     submitted: "Request ready. In the final version it will reach admissions.",
+    stayHint: "You're still on campus. To leave, use “← Classic site”.",
     launchRocket: "Launch the rocket",
     coursePlan: "Programs and courses →",
   },
@@ -222,48 +224,45 @@ export function CampusExperience(props: {
     };
   }, [overlayOpen]);
 
-  // Botón "atrás" del navegador: dentro de una sala (o con el catálogo, el
-  // formulario o Krucn abiertos) vuelve al campus en vez de salir de la página.
-  // Al abrir se agrega una entrada al historial; "atrás" cierra lo de encima.
-  const inOverlay = phase === "inside" || catalogView.open || form.open || talking;
-  const [backTick, setBackTick] = useState(0);
-  const historyRef = useRef({ pushed: false, ignorePop: false });
+  // Botón "atrás" del navegador: nunca saca del campus hacia los modelos 1–3.
+  // Con la primera interacción se agrega una entrada "guardia" al historial (Chrome
+  // ignora al ir atrás las entradas creadas sin un gesto del usuario, por eso se
+  // crea dentro del toque/tecla). Al ir atrás se cierra lo que esté encima (sala,
+  // catálogo, formulario, Krucn) o se avisa cómo salir, y se repone la guardia.
   const closeTop = useRef(() => {});
   useEffect(() => {
     closeTop.current = () => {
       if (form.open) setForm((f) => ({ ...f, open: false }));
       else if (catalogView.open) setCatalogView({ open: false });
       else if (talking) setTalking(false);
-      else if (phase === "inside" && portal.stage === "idle") exitZone();
+      else if (phase === "inside") {
+        if (portal.stage === "idle") exitZone();
+      } else if (phase === "playing") showToast(t.stayHint);
     };
   });
   useEffect(() => {
-    const h = historyRef.current;
-    if (inOverlay && !h.pushed) {
+    let guarded = false;
+    function guard() {
+      if (guarded) return;
+      guarded = true;
       window.history.pushState({ kunCampus: true }, "");
-      h.pushed = true;
-    } else if (!inOverlay && h.pushed) {
-      // Se cerró con un botón de la interfaz: se quita la entrada que agregamos.
-      h.pushed = false;
-      h.ignorePop = true;
-      window.history.back();
     }
-  }, [inOverlay, backTick]);
-  useEffect(() => {
     function onPop() {
-      const h = historyRef.current;
-      if (h.ignorePop) {
-        h.ignorePop = false;
-        return;
-      }
-      if (!h.pushed) return;
-      h.pushed = false;
+      // Cualquier "atrás" que siga dentro de /campus llega aquí.
+      guarded = false;
       closeTop.current();
-      // Si queda algo abierto debajo (p. ej. la sala tras el catálogo), se vuelve a proteger.
-      setBackTick((n) => n + 1);
+      guard();
     }
+    window.addEventListener("pointerdown", guard, true);
+    window.addEventListener("click", guard, true);
+    window.addEventListener("keydown", guard, true);
     window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("pointerdown", guard, true);
+      window.removeEventListener("click", guard, true);
+      window.removeEventListener("keydown", guard, true);
+      window.removeEventListener("popstate", onPop);
+    };
   }, []);
 
   // Teclado: E / Enter para hablar con Krucn o entrar al edificio cercano, Esc para cerrar.
