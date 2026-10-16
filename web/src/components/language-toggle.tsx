@@ -6,7 +6,7 @@ export function LanguageToggle() {
   const { locale, setLocale } = useLocale();
 
   return (
-    <div className="fixed right-5 bottom-5 z-50 flex items-center gap-0.5 rounded-full bg-[#10182B] p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)] max-md:bottom-20">
+    <div className="campus-float fixed right-5 bottom-5 z-50 flex items-center gap-0.5 rounded-full bg-[#10182B] p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)] max-md:bottom-20">
       <button
         type="button"
         onClick={() => setLocale("es")}

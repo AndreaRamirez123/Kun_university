@@ -220,33 +220,35 @@ export function StudioRoom({
   const menuColor = THEME_STYLE[chapters[0]?.theme ?? "default"].accents[0];
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-30 text-[#FFF3E6]">
+    // En celular todo pasa a una sola columna ordenada (salir · video · capítulo ·
+    // subtítulos · inscripción); en escritorio cada pieza flota en su esquina.
+    <div className="pointer-events-none absolute inset-0 z-30 text-[#FFF3E6] max-md:pointer-events-auto max-md:flex max-md:flex-row max-md:flex-wrap max-md:content-start max-md:gap-2.5 max-md:overflow-y-auto max-md:px-3 max-md:pt-[calc(12px+env(safe-area-inset-top,0px))] max-md:pb-[calc(16px+env(safe-area-inset-bottom,0px))]">
       {/* Arriba a la izquierda: salir */}
-      <div className="pointer-events-auto absolute top-[calc(20px+env(safe-area-inset-top,0px))] left-5 flex flex-col gap-2">
-        <button type="button" onClick={onExit} className={`${GLASS} flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition hover:bg-white/10`}>
+      <div className="pointer-events-auto absolute top-[calc(20px+env(safe-area-inset-top,0px))] left-5 flex flex-col gap-2 max-md:static max-md:order-1">
+        <button type="button" onClick={onExit} className={`${GLASS} flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition hover:bg-white/10 max-md:h-10`}>
           ← {t.exit}
           <kbd className="rounded border border-white/25 px-1.5 font-mono text-[10px] max-md:hidden">Esc</kbd>
         </button>
-        <span className={`${MONO} pl-2 text-[10px] text-white/50`}>{roomTitle}</span>
+        <span className={`${MONO} pl-2 text-[10px] text-white/50 max-md:hidden`}>{roomTitle}</span>
       </div>
 
       {/* Arriba a la derecha: VIDEO —— INSCRIPCIÓN y selector de capítulo */}
-      <div className="pointer-events-auto absolute top-[calc(20px+env(safe-area-inset-top,0px))] right-5 flex flex-col items-end gap-3 max-md:top-auto max-md:right-3 max-md:bottom-[calc(200px+env(safe-area-inset-bottom,0px))]">
-        <div className={`${GLASS} flex items-center gap-4 rounded-full px-6 py-3 shadow-[0_0_40px_-10px_rgba(201,160,255,0.6)] max-md:px-4`}>
-          <button type="button" onClick={() => setMode("video")} className={`${MONO} cursor-pointer text-[15px] font-bold transition ${mode === "video" ? "text-white" : "text-white/45 hover:text-white"}`}>
+      <div className="pointer-events-auto absolute top-[calc(20px+env(safe-area-inset-top,0px))] right-5 flex flex-col items-end gap-3 max-md:contents">
+        <div className={`${GLASS} flex items-center gap-4 rounded-full px-6 py-3 shadow-[0_0_40px_-10px_rgba(201,160,255,0.6)] max-md:order-2 max-md:ml-auto max-md:h-10 max-md:gap-2.5 max-md:px-4 max-md:py-0`}>
+          <button type="button" onClick={() => setMode("video")} className={`${MONO} cursor-pointer text-[15px] font-bold transition max-md:text-[12px] ${mode === "video" ? "text-white" : "text-white/45 hover:text-white"}`}>
             {t.video}
           </button>
-          <span aria-hidden className="h-[2px] w-16 rounded-full max-md:w-8" style={{ background: "linear-gradient(90deg, transparent, #fff, transparent)" }} />
-          <button type="button" onClick={() => setMode("signup")} className={`${MONO} cursor-pointer text-[15px] font-bold transition ${mode === "signup" ? "text-white" : "text-white/45 hover:text-white"}`}>
+          <span aria-hidden className="h-[2px] w-16 rounded-full max-md:w-5" style={{ background: "linear-gradient(90deg, transparent, #fff, transparent)" }} />
+          <button type="button" onClick={() => setMode("signup")} className={`${MONO} cursor-pointer text-[15px] font-bold transition max-md:text-[12px] ${mode === "signup" ? "text-white" : "text-white/45 hover:text-white"}`}>
             {t.signup}
           </button>
         </div>
-        <div hidden={mode === "signup"} className={`${GLASS} flex items-center gap-2 rounded-xl p-1.5`}>
-          <button type="button" aria-label={t.prev} onClick={() => goTo(chapter - 1)} className="h-9 w-10 cursor-pointer rounded-lg border border-white/15 font-mono text-sm hover:bg-white/10">
+        <div hidden={mode === "signup"} className={`${GLASS} flex items-center gap-2 rounded-xl p-1.5 max-md:order-4 max-md:w-full`}>
+          <button type="button" aria-label={t.prev} onClick={() => goTo(chapter - 1)} className="h-9 w-10 shrink-0 cursor-pointer rounded-lg border border-white/15 font-mono text-sm hover:bg-white/10">
             {"<<"}
           </button>
-          <span className={`${MONO} w-40 truncate text-center text-[11px] text-white/75`}>{current?.menu}</span>
-          <button type="button" aria-label={t.next} onClick={() => goTo(chapter + 1)} className="h-9 w-10 cursor-pointer rounded-lg border border-white/15 font-mono text-sm hover:bg-white/10">
+          <span className={`${MONO} w-40 truncate text-center text-[11px] text-white/75 max-md:w-auto max-md:flex-1`}>{current?.menu}</span>
+          <button type="button" aria-label={t.next} onClick={() => goTo(chapter + 1)} className="h-9 w-10 shrink-0 cursor-pointer rounded-lg border border-white/15 font-mono text-sm hover:bg-white/10">
             {">>"}
           </button>
         </div>
@@ -254,8 +256,8 @@ export function StudioRoom({
 
       {/* Centro: el video, nítido, dibujado a la resolución real de la pantalla */}
       {mode === "video" && (
-        <div className="absolute top-[13%] left-1/2 flex w-[min(54vw,1100px)] -translate-x-1/2 flex-col items-center gap-2 max-md:top-[21%] max-md:w-[94vw]">
-          <p className={`${MONO} m-0 text-center text-[11px] text-white/70 [text-shadow:0_2px_10px_rgba(0,0,0,0.9)]`}>{t.howTo}</p>
+        <div className="absolute top-[13%] left-1/2 flex w-[min(54vw,1100px)] -translate-x-1/2 flex-col items-center gap-2 max-md:static max-md:order-3 max-md:w-full max-md:translate-x-0">
+          <p className={`${MONO} m-0 text-center text-[11px] text-white/70 [text-shadow:0_2px_10px_rgba(0,0,0,0.9)] max-md:hidden`}>{t.howTo}</p>
           {videoUrl ? (
             <video
               src={videoUrl}
@@ -290,11 +292,12 @@ export function StudioRoom({
           </button>
         ))}
       </nav>
-      <div hidden={mode === "signup"} className="pointer-events-auto absolute bottom-[calc(40px+env(safe-area-inset-bottom,0px))] left-8 flex flex-wrap gap-2 max-md:bottom-[calc(96px+env(safe-area-inset-bottom,0px))] max-md:left-1/2 max-md:-translate-x-1/2">
+      <div hidden={mode === "signup"} className="pointer-events-auto absolute bottom-[calc(40px+env(safe-area-inset-bottom,0px))] left-8 flex flex-wrap gap-2 max-md:static max-md:order-5 max-md:w-full max-md:flex-nowrap">
         <button
           type="button"
           onClick={() => setMode("signup")}
-          className={`${GLASS} ${MONO} cursor-pointer rounded-full px-7 py-3.5 text-[14px] text-[#C9A0FF] transition hover:text-white hover:shadow-[0_0_30px_-6px_rgba(201,160,255,0.8)]`}
+          className={`${GLASS} ${MONO} cursor-pointer rounded-full px-7 py-3.5 text-[14px] text-[#C9A0FF] transition hover:text-white hover:shadow-[0_0_30px_-6px_rgba(201,160,255,0.8)] max-md:flex-1 max-md:border-(--cta) max-md:bg-(--cta-soft) max-md:px-4 max-md:py-3 max-md:text-[13px] max-md:font-bold max-md:text-white`}
+          style={{ "--cta": menuColor, "--cta-soft": `${menuColor}40` } as React.CSSProperties}
         >
           {t.cta}
         </button>
@@ -310,7 +313,7 @@ export function StudioRoom({
             <button
               type="button"
               onClick={extraAction.onClick}
-              className={`${GLASS} ${MONO} cursor-pointer rounded-full px-5 py-3.5 text-[12px] text-white/75 transition hover:text-white`}
+              className={`${GLASS} ${MONO} cursor-pointer rounded-full px-5 py-3.5 text-[12px] text-white/75 transition hover:text-white max-md:shrink-0 max-md:px-4 max-md:py-3 max-md:text-[11px]`}
             >
               {extraAction.label}
             </button>
@@ -319,12 +322,12 @@ export function StudioRoom({
 
       {/* Abajo al centro: subtítulos y controles */}
       {mode === "video" && current && (
-        <div className="pointer-events-auto absolute bottom-[calc(28px+env(safe-area-inset-bottom,0px))] left-1/2 w-[min(640px,calc(100%-32px))] -translate-x-1/2 max-md:bottom-[calc(150px+env(safe-area-inset-bottom,0px))]">
-          <div className={`${GLASS} rounded-2xl px-5 py-3`}>
-            <p className="m-0 text-center text-[15px] leading-snug" aria-live="polite">
+        <div className="pointer-events-auto absolute bottom-[calc(28px+env(safe-area-inset-bottom,0px))] left-1/2 w-[min(640px,calc(100%-32px))] -translate-x-1/2 max-md:static max-md:order-6 max-md:w-full max-md:translate-x-0">
+          <div className={`${GLASS} rounded-2xl px-5 py-3 max-md:px-3.5 max-md:py-2.5`}>
+            <p className="m-0 text-center text-[15px] leading-snug max-md:text-[13px]" aria-live="polite">
               {current.voice}
             </p>
-            <div className="mt-3 flex items-center gap-3">
+            <div className="mt-3 flex items-center gap-3 max-md:mt-2 max-md:gap-2">
               <button type="button" onClick={() => setPlaying((p) => !p)} className={`${MONO} cursor-pointer rounded-full border border-white/20 px-3 py-1 text-[11px] hover:bg-white/10`}>
                 {playing ? `❚❚ ${t.pause}` : `▶ ${t.play}`}
               </button>

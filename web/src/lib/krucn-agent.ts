@@ -16,7 +16,7 @@ export function krucnAgentAvailable() {
   return statusPromise;
 }
 
-/** Envía la conversación y va entregando el texto de la respuesta con onText. */
+/** Envía la conversación, entrega el texto con onText y devuelve el stop_reason. */
 export async function askKrucn(
   body: { messages: KrucnTurn[]; locale: "es" | "en"; playerName?: string; nearestPlace?: string },
   onText: (chunk: string) => void,
@@ -45,4 +45,8 @@ export async function askKrucn(
       const data = JSON.parse(line.slice(5)) as { text?: string; error?: boolean; stop?: string };
       if (data.error) throw new Error("krucn stream error");
       if (data.text) onText(data.text);
-      if (data.stop) stop = data.s
+      if (data.stop) stop = data.stop;
+    }
+  }
+  return stop;
+}

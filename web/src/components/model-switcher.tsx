@@ -13,7 +13,7 @@ export function ModelSwitcher({ current }: { current: number }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-5 left-5 z-50 max-md:bottom-20">
+    <div className="campus-float fixed bottom-5 left-5 z-50 max-md:bottom-20">
       {open && (
         <div className="mb-2 flex flex-col gap-1 rounded-2xl bg-[#10182B] p-2 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
           {MODELS.map((m) => (

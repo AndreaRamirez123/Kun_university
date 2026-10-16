@@ -292,7 +292,7 @@ export function CampusIntro({
   return (
     <section
       aria-labelledby="campus-intro-title"
-      className={`absolute inset-0 z-20 flex items-stretch justify-start px-6 py-5 max-md:items-end max-md:px-3 max-md:pt-3 max-md:pb-24 ${
+      className={`absolute inset-0 z-20 flex items-stretch justify-start px-6 py-5 max-md:items-end max-md:px-3 max-md:pt-3 max-md:pb-[calc(12px+env(safe-area-inset-bottom,0px))] ${
         shown ? "" : "pointer-events-none"
       }`}
       style={{
@@ -303,7 +303,7 @@ export function CampusIntro({
     >
       <form
         noValidate
-        className="flex h-full w-full max-w-115 flex-col gap-3 text-[#FFF3E6] md:pl-2 max-md:h-[62dvh]"
+        className="flex h-full w-full max-w-115 flex-col gap-3 text-[#FFF3E6] md:pl-2 max-md:h-[max(62dvh,min(100%,470px))]"
         onSubmit={(e) => {
           e.preventDefault();
           if (!a.name.trim()) {
@@ -329,8 +329,8 @@ export function CampusIntro({
           className={`${FADE} flex min-h-0 flex-1 flex-col overflow-hidden rounded-[26px] bg-[#FFF8F0]/96 text-[#24123F] shadow-[0_30px_60px_-20px_rgba(10,4,30,0.7)] backdrop-blur-md`}
         >
           {/* Nombre: siempre visible, es lo que aparece sobre el personaje */}
-          <div className="shrink-0 px-5 pt-4">
-            <label className="flex flex-col gap-1 text-[14px] font-bold">
+          <div className="shrink-0 px-5 pt-4 max-md:px-4 max-md:pt-3">
+            <label className="flex flex-col gap-1 text-[14px] font-bold max-md:text-[13px]">
               {t.nameLabel}
               <input
                 ref={nameInput}
@@ -345,13 +345,13 @@ export function CampusIntro({
                   set({ name: e.target.value });
                   if (e.target.value.trim()) setNameError(false);
                 }}
-                className={`h-11 rounded-[14px] border-2 bg-white px-3.5 text-[16px] font-normal text-[#24123F] focus:outline-none ${
+                className={`h-11 rounded-[14px] border-2 bg-white px-3.5 text-[16px] max-md:h-10 font-normal text-[#24123F] focus:outline-none ${
                   nameError && !a.name.trim() ? "border-[#E8735A]" : "border-[#E2D4EC] focus:border-[#24123F]"
                 }`}
               />
             </label>
             {nameError && !a.name.trim() && <p className="m-0 mt-1 text-[12px] font-semibold text-[#C0442C]">{t.nameMissing}</p>}
-            <div className="mt-3">
+            <div className="mt-3 max-md:mt-2">
               <Group label={t.gender}>
                 <div role="radiogroup" aria-label={t.gender} className="grid grid-cols-3 gap-1.5">
                   {OPTIONS.gender.map((g) => (
@@ -361,7 +361,7 @@ export function CampusIntro({
                       role="radio"
                       aria-checked={a.gender === g}
                       onClick={() => a.gender !== g && onChange(withGender(a, g))}
-                      className={`${PILL} h-10 ${a.gender === g ? PILL_ON : PILL_OFF}`}
+                      className={`${PILL} h-10 max-md:h-9 ${a.gender === g ? PILL_ON : PILL_OFF}`}
                     >
                       {L.gender[g]}
                     </button>
@@ -372,7 +372,7 @@ export function CampusIntro({
           </div>
 
           {/* Pestañas al estilo del editor de Mii */}
-          <div role="tablist" className="mx-5 mt-3 flex shrink-0 gap-1 rounded-full bg-[#24123F]/8 p-1">
+          <div role="tablist" className="mx-5 mt-3 flex shrink-0 gap-1 rounded-full bg-[#24123F]/8 p-1 max-md:mx-4 max-md:mt-2">
             {t.tabs.map((label, i) => (
               <button
                 key={label}
@@ -389,7 +389,7 @@ export function CampusIntro({
             ))}
           </div>
 
-          <div role="tabpanel" className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto overscroll-contain px-5 py-4">
+          <div role="tabpanel" className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto overscroll-contain px-5 py-4 max-md:min-h-24 max-md:gap-3 max-md:px-4 max-md:py-3">
             {tab === 0 && (
               <>
 
@@ -524,18 +524,18 @@ export function CampusIntro({
             )}
           </div>
 
-          <div className="flex shrink-0 flex-col gap-2 border-t border-[#24123F]/10 px-5 pt-3 pb-4">
+          <div className="flex shrink-0 flex-col gap-2 border-t border-[#24123F]/10 px-5 pt-3 pb-4 max-md:px-4 max-md:pt-2.5 max-md:pb-3">
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => onChange({ ...randomAvatar(a), name: a.name })}
-                className="h-13 shrink-0 cursor-pointer rounded-[16px] border-2 border-[#24123F]/15 bg-white px-4 text-[14px] font-bold text-[#24123F] transition hover:border-[#24123F]"
+                className="h-13 shrink-0 max-md:h-12 cursor-pointer rounded-[16px] border-2 border-[#24123F]/15 bg-white px-4 text-[14px] font-bold text-[#24123F] transition hover:border-[#24123F]"
               >
                 🎲 {t.random}
               </button>
               <button
                 type="submit"
-                className="group relative h-13 flex-1 cursor-pointer overflow-hidden rounded-[16px] font-(family-name:--font-gabarito) text-lg font-extrabold text-[#24123F] shadow-[0_14px_30px_-12px_rgba(255,140,80,0.9)] transition hover:-translate-y-0.5"
+                className="group relative h-13 flex-1 cursor-pointer max-md:h-12 overflow-hidden rounded-[16px] font-(family-name:--font-gabarito) text-lg font-extrabold text-[#24123F] shadow-[0_14px_30px_-12px_rgba(255,140,80,0.9)] transition hover:-translate-y-0.5"
                 style={{ background: "linear-gradient(180deg, #FFD47A, #FF9A5C)" }}
               >
                 <span className="relative z-10">{t.start} →</span>
@@ -600,7 +600,7 @@ export function CampusGenderStep({
   return (
     <section
       aria-labelledby="campus-gender-title"
-      className={`absolute inset-0 z-20 flex flex-col items-center justify-between px-4 pt-[calc(28px+env(safe-area-inset-top,0px))] pb-[calc(28px+env(safe-area-inset-bottom,0px))] text-center text-[#FFF3E6] transition-opacity duration-700 max-md:pb-28 ${
+      className={`absolute inset-0 z-20 flex flex-col items-center justify-between px-4 pt-[calc(28px+env(safe-area-inset-top,0px))] pb-[calc(28px+env(safe-area-inset-bottom,0px))] text-center text-[#FFF3E6] transition-opacity duration-700 max-md:pb-[calc(20px+env(safe-area-inset-bottom,0px))] ${
         visible ? "opacity-100" : "pointer-events-none opacity-0"
       }`}
       style={{ background: "linear-gradient(180deg, rgba(29,12,60,0.7) 0%, rgba(29,12,60,0) 32%, rgba(29,12,60,0) 70%, rgba(29,12,60,0.75) 100%)" }}

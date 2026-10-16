@@ -390,6 +390,14 @@ body {
   animation: pulse-soft 2.6s ease-in-out infinite;
 }
 
+/* Campus 3D en celular: idioma y selector de modelos solo mientras se recorre
+   el campus, para que no tapen el lobby, las salas ni los diálogos. */
+@media (max-width: 767.98px) {
+  html[data-campus-overlay="on"] .campus-float {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal-hidden,
   .reveal-animate,

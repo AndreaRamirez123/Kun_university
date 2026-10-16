@@ -181,7 +181,7 @@ function Minimap({ visited, label, names }: { visited: Set<string>; label: strin
   }, []);
 
   return (
-    <div className="h-55 w-55 overflow-hidden rounded-[28px] border-2 border-[#FFF3E6]/35 bg-[#1D0C3C]/60 backdrop-blur-md max-md:h-36 max-md:w-36 max-md:rounded-[20px]">
+    <div className="h-55 w-55 overflow-hidden rounded-[28px] border-2 border-[#FFF3E6]/35 bg-[#1D0C3C]/60 backdrop-blur-md max-md:h-32 max-md:w-32 max-md:rounded-[20px]">
       <canvas ref={ref} width={440} height={440} role="img" aria-label={label} className="h-full w-full" />
     </div>
   );
@@ -256,39 +256,53 @@ export function CampusHud({
 
   return (
     <>
-      <div className={`absolute top-[calc(16px+env(safe-area-inset-top,0px))] left-5 z-10 text-[#FFF3E6] ${base}`}>
-        <div className="font-(family-name:--font-gabarito) text-xl font-extrabold [text-shadow:0_2px_10px_rgba(20,6,40,.5)]">
+      <div className={`absolute top-[calc(16px+env(safe-area-inset-top,0px))] left-5 z-10 text-[#FFF3E6] max-md:top-[calc(12px+env(safe-area-inset-top,0px))] max-md:left-3 ${base}`}>
+        <div className="font-(family-name:--font-gabarito) text-xl font-extrabold [text-shadow:0_2px_10px_rgba(20,6,40,.5)] max-md:text-base">
           KUN University AI
         </div>
-        <div className="text-[13px] text-[#FBE3D3]">{t.subtitle}</div>
+        <div className="text-[13px] text-[#FBE3D3] max-md:text-[11px]">{t.subtitle}</div>
         <Link
           href="/"
-          className="mt-3 inline-block rounded-full bg-[#1D0C3C]/55 px-3.5 py-1.5 text-xs font-bold backdrop-blur-md transition hover:bg-[#1D0C3C]/80"
+          className="mt-3 inline-block rounded-full bg-[#1D0C3C]/55 px-3.5 py-1.5 text-xs font-bold backdrop-blur-md transition hover:bg-[#1D0C3C]/80 max-md:mt-2 max-md:px-3 max-md:py-1 max-md:text-[11px]"
         >
           {t.classicSite}
         </Link>
         <button
           type="button"
           onClick={onOpenCatalog}
-          className="mt-2 flex cursor-pointer items-center gap-2 rounded-full bg-[#FFC85C] px-4 py-2 text-[13px] font-bold text-[#24123F] shadow-[0_10px_24px_-10px_rgba(255,200,92,0.9)] transition hover:-translate-y-0.5"
+          className="mt-2 flex cursor-pointer items-center gap-2 rounded-full bg-[#FFC85C] px-4 py-2 text-[13px] font-bold text-[#24123F] shadow-[0_10px_24px_-10px_rgba(255,200,92,0.9)] transition hover:-translate-y-0.5 max-md:mt-1.5 max-md:gap-1.5 max-md:px-3 max-md:py-1.5 max-md:text-xs"
         >
           <span aria-hidden>📚</span> {t.catalog}
         </button>
       </div>
 
       <div
-        className={`absolute top-[calc(16px+env(safe-area-inset-top,0px))] right-5 z-10 flex flex-col items-end gap-2.5 ${base}`}
+        className={`absolute top-[calc(16px+env(safe-area-inset-top,0px))] right-5 z-10 flex flex-col items-end gap-2.5 max-md:top-[calc(12px+env(safe-area-inset-top,0px))] max-md:right-3 max-md:gap-1.5 ${base}`}
       >
-        <Minimap visited={visited} label={t.map} names={names} />
+        <div className="relative">
+          <Minimap visited={visited} label={t.map} names={names} />
+          {/* En celular el contador va como insignia sobre el minimapa. */}
+          <span
+            aria-hidden
+            className="absolute -bottom-1.5 left-1/2 hidden -translate-x-1/2 rounded-full bg-[#FFC85C] px-2 py-0.5 text-[11px] font-black whitespace-nowrap text-[#24123F] max-md:block"
+          >
+            ✓ {visited.size}/{ZONES.length}
+          </span>
+        </div>
         <MinimapLegend visitedLabel={t.visitedTag} pendingLabel={t.pendingTag} />
-        <div className="rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-sm font-bold text-[#FFF3E6] backdrop-blur-md" aria-live="polite">
+        <div
+          className="rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-sm font-bold text-[#FFF3E6] backdrop-blur-md max-md:sr-only"
+          aria-live="polite"
+        >
           {t.visited(visited.size, ZONES.length)}
         </div>
+        <div className="flex flex-col items-end gap-2.5 max-md:mt-2 max-md:flex-row max-md:gap-1.5">
         <button
           type="button"
           onClick={onToggleSound}
           aria-pressed={soundOn}
-          className="flex items-center gap-2 rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-xs font-bold text-[#FFF3E6] backdrop-blur-md transition hover:bg-[#1D0C3C]/85"
+          aria-label={soundOn ? t.soundOn : t.soundOff}
+          className="flex items-center gap-2 rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-xs font-bold text-[#FFF3E6] backdrop-blur-md transition hover:bg-[#1D0C3C]/85 max-md:h-9 max-md:px-3"
         >
           <span aria-hidden className="flex h-3 items-end gap-[2px]">
             {[0, 1, 2, 3].map((i) => (
@@ -299,23 +313,27 @@ export function CampusHud({
               />
             ))}
           </span>
-          {soundOn ? t.soundOn : t.soundOff}
+          <span className="max-md:hidden">{soundOn ? t.soundOn : t.soundOff}</span>
         </button>
         <button
           type="button"
           onClick={onCycleSky}
           title={t.skyHint}
           aria-label={`${t.skyHint}: ${t.sky[skyKind]}`}
-          className="flex items-center gap-2 rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-xs font-bold text-[#FFF3E6] backdrop-blur-md transition hover:bg-[#1D0C3C]/85"
+          className="flex items-center gap-2 rounded-full bg-[#1D0C3C]/60 px-3.5 py-2 text-xs font-bold text-[#FFF3E6] backdrop-blur-md transition hover:bg-[#1D0C3C]/85 max-md:h-9 max-md:gap-1.5 max-md:px-3"
         >
           <SkyIcon kind={skyKind} />
           <span>
-            {t.sky[skyKind]} · {t.miami} {floridaTime}
+            <span className="max-md:hidden">
+              {t.sky[skyKind]} · {t.miami}{" "}
+            </span>
+            {floridaTime}
           </span>
-          <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold text-white/75">
+          <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold text-white/75 max-md:hidden">
             {skyMode === "auto" ? t.auto : t.manual}
           </span>
         </button>
+        </div>
       </div>
 
       <div
@@ -436,7 +454,7 @@ export function CampusTouchControls({ enabled, targetRef }: { enabled: boolean; 
           onPointerDown={() => {
             campusRuntime.jumpQueued = true;
           }}
-          className="fixed right-5 bottom-[calc(140px+env(safe-area-inset-bottom,0px))] z-30 h-16 w-16 rounded-full border-2 border-[#FFF3E6]/50 bg-[#1D0C3C]/45 text-xs font-bold text-[#FFF3E6] backdrop-blur-md active:scale-95"
+          className="fixed right-4 bottom-[calc(128px+env(safe-area-inset-bottom,0px))] z-30 h-16 w-16 rounded-full border-2 border-[#FFF3E6]/50 bg-[#1D0C3C]/45 text-xs font-bold text-[#FFF3E6] backdrop-blur-md active:scale-95"
         >
           {t.jump}
         </button>

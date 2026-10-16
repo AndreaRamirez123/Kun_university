@@ -1,0 +1,11 @@
+# Archivos que NO se suben a Cloud Build al desplegar la API.
+.git
+.firebase
+**/node_modules
+**/.env
+**/dist
+web/.next
+web/out
+web/public
+design
+*.html

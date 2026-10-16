@@ -1,14 +1,18 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // En Cloud Run las peticiones llegan por un proxy: así req.ip es la IP real.
+  app.set('trust proxy', true);
   app.setGlobalPrefix('api');
+  // FRONTEND_URL admite varios orígenes separados por comas (p. ej. web.app y firebaseapp.com).
   app.enableCors({
-    origin: process.env.FRONTEND_URL ?? 'http://localhost:3000',
+    origin: (process.env.FRONTEND_URL ?? 'http://localhost:3000').split(',').map((o) => o.trim()),
   });
   app.useGlobalPipes(
     new ValidationPipe({

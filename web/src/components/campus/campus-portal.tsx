@@ -93,23 +93,23 @@ export function CampusZonePrompt({
   return (
     <div
       key={zone.id}
-      className="reveal-animate absolute bottom-[calc(84px+env(safe-area-inset-bottom,0px))] left-1/2 z-20 w-[min(440px,calc(100%-32px))] -translate-x-1/2 max-md:bottom-[calc(140px+env(safe-area-inset-bottom,0px))]"
+      className="reveal-animate absolute inset-x-0 bottom-[calc(84px+env(safe-area-inset-bottom,0px))] z-20 mx-auto w-[min(440px,calc(100%-32px))] max-md:right-24 max-md:left-4 max-md:mx-0 max-md:w-auto max-md:bottom-[calc(132px+env(safe-area-inset-bottom,0px))]"
     >
-      <div className="flex items-center gap-4 rounded-[22px] border border-white/12 bg-[#0E061E]/80 p-3 pl-5 text-[#FFF3E6] shadow-[0_24px_50px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+      <div className="flex items-center gap-4 rounded-[22px] border border-white/12 bg-[#0E061E]/80 p-3 pl-5 text-[#FFF3E6] max-md:gap-3 max-md:p-2 max-md:pl-3.5 shadow-[0_24px_50px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl">
         <span className="relative flex h-3 w-3 shrink-0">
           <span className="absolute inset-0 animate-ping rounded-full opacity-70" style={{ background: zone.color }} />
           <span className="relative h-3 w-3 rounded-full" style={{ background: zone.color }} />
         </span>
         <div className="min-w-0 flex-1">
           <div className="font-mono text-[10px] tracking-[0.2em] text-white/50 uppercase">{t.kicker[zone.kind]}</div>
-          <div className="truncate font-(family-name:--font-gabarito) text-[17px] leading-tight font-extrabold">
+          <div className="truncate font-(family-name:--font-gabarito) text-[17px] leading-tight font-extrabold max-md:line-clamp-2 max-md:text-[15px] max-md:whitespace-normal">
             {zoneTitle(zone, schools, locale)}
           </div>
         </div>
         <button
           type="button"
           onClick={onEnter}
-          className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5"
+          className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 max-md:px-3.5 max-md:py-2.5"
           style={{ background: zone.color }}
         >
           {t.enter}

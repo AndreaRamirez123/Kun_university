@@ -211,6 +211,61 @@ export function CampusExperience(props: {
     setTalking(true);
   }
 
+  // En celular los botones flotantes del sitio (idioma, modelos) tapan los paneles:
+  // se esconden mientras hay lobby, sala, Krucn, catálogo o formulario abiertos.
+  const overlayOpen = phase !== "playing" || talking || form.open || catalogView.open;
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.campusOverlay = overlayOpen ? "on" : "off";
+    return () => {
+      delete root.dataset.campusOverlay;
+    };
+  }, [overlayOpen]);
+
+  // Botón "atrás" del navegador: dentro de una sala (o con el catálogo, el
+  // formulario o Krucn abiertos) vuelve al campus en vez de salir de la página.
+  // Al abrir se agrega una entrada al historial; "atrás" cierra lo de encima.
+  const inOverlay = phase === "inside" || catalogView.open || form.open || talking;
+  const [backTick, setBackTick] = useState(0);
+  const historyRef = useRef({ pushed: false, ignorePop: false });
+  const closeTop = useRef(() => {});
+  useEffect(() => {
+    closeTop.current = () => {
+      if (form.open) setForm((f) => ({ ...f, open: false }));
+      else if (catalogView.open) setCatalogView({ open: false });
+      else if (talking) setTalking(false);
+      else if (phase === "inside" && portal.stage === "idle") exitZone();
+    };
+  });
+  useEffect(() => {
+    const h = historyRef.current;
+    if (inOverlay && !h.pushed) {
+      window.history.pushState({ kunCampus: true }, "");
+      h.pushed = true;
+    } else if (!inOverlay && h.pushed) {
+      // Se cerró con un botón de la interfaz: se quita la entrada que agregamos.
+      h.pushed = false;
+      h.ignorePop = true;
+      window.history.back();
+    }
+  }, [inOverlay, backTick]);
+  useEffect(() => {
+    function onPop() {
+      const h = historyRef.current;
+      if (h.ignorePop) {
+        h.ignorePop = false;
+        return;
+      }
+      if (!h.pushed) return;
+      h.pushed = false;
+      closeTop.current();
+      // Si queda algo abierto debajo (p. ej. la sala tras el catálogo), se vuelve a proteger.
+      setBackTick((n) => n + 1);
+    }
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
   // Teclado: E / Enter para hablar con Krucn o entrar al edificio cercano, Esc para cerrar.
   const live = useRef({ phase, activeZoneId, formOpen: form.open || catalogView.open, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk });
   useEffect(() => {

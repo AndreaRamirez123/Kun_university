@@ -149,7 +149,7 @@ export function SignupPanel({
 
         {/* Izquierda: la carrera y qué pasa después */}
         <aside
-          className="relative flex flex-col gap-5 overflow-hidden p-8 text-[#FFF3E6] max-md:p-6"
+          className="relative flex flex-col gap-5 overflow-hidden p-8 text-[#FFF3E6] max-md:p-5 max-md:pr-16 max-md:pb-0"
           style={{ background: `linear-gradient(160deg, ${accent}55 0%, ${accent}18 45%, transparent 100%)` }}
         >
           <span aria-hidden className="absolute -top-24 -left-24 h-72 w-72 rounded-full opacity-40 blur-3xl" style={{ background: accent }} />
@@ -162,7 +162,7 @@ export function SignupPanel({
           </div>
 
           {selected && (
-            <div key={selected.programa} className="reveal-animate relative rounded-2xl border border-white/15 bg-black/25 p-5">
+            <div key={selected.programa} className="reveal-animate relative rounded-2xl border border-white/15 bg-black/25 p-5 max-md:hidden">
               <div className="font-mono text-[10px] tracking-[0.2em] text-white/55 uppercase">{t.yourProgram}</div>
               <div className="mt-1 font-(family-name:--font-gabarito) text-[20px] leading-snug font-extrabold">
                 {selected.programa.replace(/\s*\(.*\)\s*$/, "")}
@@ -203,7 +203,7 @@ export function SignupPanel({
         </aside>
 
         {/* Derecha: formulario o confirmación */}
-        <div className="flex flex-col justify-center p-8 max-md:p-6">
+        <div className="flex flex-col justify-center p-8 max-md:p-5">
           {done ? (
             <div className="reveal-animate flex flex-col items-center gap-4 py-8 text-center text-[#FFF3E6]">
               <span className="flex h-20 w-20 items-center justify-center rounded-full" style={{ background: `${accent}33`, boxShadow: `0 0 0 2px ${accent}` }}>
