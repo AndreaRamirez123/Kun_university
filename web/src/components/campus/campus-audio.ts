@@ -113,3 +113,20 @@ export function playBump(strength: number) {
   if (!enabled || !ctx) return;
   tone(140 + strength * 60, ctx.currentTime, 0.18, "sine", Math.min(0.2, 0.05 + strength * 0.05));
 }
+
+/** "Boing" de trampolín al rebotar en una sombrilla: un tono que sube rápido. */
+export function playBoing() {
+  if (!enabled || !ctx || !master) return;
+  const start = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(180, start);
+  osc.frequency.exponentialRampToValueAtTime(620, start + 0.22);
+  gain.gain.setValueAtTime(0, start);
+  gain.gain.linearRampToValueAtTime(0.16, start + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
+  osc.connect(gain).connect(master);
+  osc.start(start);
+  osc.stop(start + 0.4);
+}

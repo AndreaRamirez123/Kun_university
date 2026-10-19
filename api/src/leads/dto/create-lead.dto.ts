@@ -6,6 +6,7 @@ export const LEAD_SOURCES = [
   'continuing_ed_cta',
   'community_cta',
   'newsletter',
+  'krucn_chat',
 ] as const;
 
 export type LeadSource = (typeof LEAD_SOURCES)[number];
@@ -21,6 +22,12 @@ export class CreateLeadDto {
   @MinLength(2)
   @MaxLength(120)
   name?: string;
+
+  @ApiPropertyOptional({ example: 'Cybersecurity' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  program?: string;
 
   @ApiProperty({ enum: LEAD_SOURCES, example: 'hero_cta' })
   @IsIn(LEAD_SOURCES, { message: `source debe ser uno de: ${LEAD_SOURCES.join(', ')}` })

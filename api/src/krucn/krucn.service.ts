@@ -1,10 +1,19 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
+import { LeadsService } from '../leads/leads.service.js';
 import type { KrucnChatDto } from './dto/krucn-chat.dto.js';
 import { buildSystemPrompt } from './krucn.prompt.js';
+import { KRUCN_TOOLS, parseToolInput, type KrucnAction } from './krucn.tools.js';
 
 // Solo los últimos turnos: Krucn es una charla corta, no un chat infinito.
-const MAX_TURNS = 12;
+const MAX_TURNS = 16;
+// Vueltas de herramientas por pregunta (p. ej. guardar el correo y luego guiar).
+const MAX_TOOL_ROUNDS = 4;
+
+export type KrucnEvents = {
+  onText: (text: string) => void;
+  onAction: (action: KrucnAction) => void;
+};
 
 @Injectable()
 export class KrucnService {
@@ -14,12 +23,14 @@ export class KrucnService {
   private readonly client = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
   private readonly system = buildSystemPrompt();
 
+  constructor(private readonly leads: LeadsService) {}
+
   get enabled() {
     return this.client !== null;
   }
 
-  /** Respuesta de Krucn en streaming: emite cada fragmento de texto con onText. */
-  async reply(dto: KrucnChatDto, onText: (text: string) => void, signal: AbortSignal) {
+  /** Respuesta de Krucn en streaming: texto con onText y acciones del campus con onAction. */
+  async reply(dto: KrucnChatDto, events: KrucnEvents, signal: AbortSignal) {
     if (!this.client) {
       throw new ServiceUnavailableException('Krucn no tiene ANTHROPIC_API_KEY configurada');
     }
@@ -40,25 +51,59 @@ export class KrucnService {
       .join(' ');
     messages.push({ role: 'system', content: context });
 
-    const stream = this.client.beta.messages.stream(
-      {
-        model: this.model,
-        max_tokens: 16000,
-        output_config: { effort: 'low' },
-        betas: ['server-side-fallback-2026-07-01'],
-        fallbacks: 'default',
-        system: [{ type: 'text', text: this.system, cache_control: { type: 'ephemeral', ttl: '1h' } }],
-        messages,
-      },
-      { signal },
-    );
-    stream.on('text', onText);
+    let wroteText = false;
+    let stop: string | null = null;
+    for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+      const stream = this.client.beta.messages.stream(
+        {
+          model: this.model,
+          max_tokens: 16000,
+          output_config: { effort: 'low' },
+          betas: ['server-side-fallback-2026-07-01'],
+          fallbacks: 'default',
+          system: [{ type: 'text', text: this.system, cache_control: { type: 'ephemeral', ttl: '1h' } }],
+          tools: KRUCN_TOOLS,
+          messages,
+        },
+        { signal },
+      );
+      let roundText = false;
+      stream.on('text', (text) => {
+        // Separa el texto de una vuelta del de la anterior.
+        if (!roundText && wroteText) events.onText(' ');
+        roundText = true;
+        wroteText = true;
+        events.onText(text);
+      });
 
-    const final = await stream.finalMessage();
-    const { usage } = final;
-    this.logger.log(
-      `stop=${final.stop_reason} in=${usage.input_tokens} cache_read=${usage.cache_read_input_tokens ?? 0} out=${usage.output_tokens}`,
-    );
-    return final.stop_reason;
+      const final = await stream.finalMessage();
+      stop = final.stop_reason;
+      const { usage } = final;
+      this.logger.log(
+        `round=${round} stop=${stop} in=${usage.input_tokens} cache_read=${usage.cache_read_input_tokens ?? 0} out=${usage.output_tokens}`,
+      );
+
+      const toolUses = final.content.filter((b): b is Anthropic.Beta.BetaToolUseBlock => b.type === 'tool_use');
+      // Una entrada cortada por max_tokens puede parecer válida, y un rechazo puede
+      // dejar una herramienta a medias: en ninguno de los dos casos se ejecuta.
+      if (stop !== 'tool_use' || toolUses.length === 0) break;
+
+      const results: Anthropic.Beta.BetaToolResultBlockParam[] = toolUses.map((use) => {
+        const parsed = parseToolInput(use.name, use.input);
+        if (!parsed.ok) {
+          return { type: 'tool_result', tool_use_id: use.id, is_error: true, content: parsed.error };
+        }
+        if (parsed.lead) {
+          this.leads.create({ ...parsed.lead, source: 'krucn_chat' });
+          return { type: 'tool_result', tool_use_id: use.id, content: 'Datos guardados para admisiones.' };
+        }
+        if (parsed.action) events.onAction(parsed.action);
+        return { type: 'tool_result', tool_use_id: use.id, content: 'Hecho: el campus ya lo muestra en pantalla.' };
+      });
+      // El contenido del asistente se devuelve sin cambios (incluye su razonamiento).
+      messages.push({ role: 'assistant', content: final.content });
+      messages.push({ role: 'user', content: results });
+    }
+    return stop;
   }
 }

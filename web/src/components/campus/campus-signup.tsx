@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, usePick } from "@/i18n/locale-context";
-import { catalog, findCatalogSchool, type CatalogProgram } from "@/lib/catalog";
+import { catalog, catalogText, findCatalogSchool, schoolLabel, type CatalogProgram } from "@/lib/catalog";
 import { ADMISSIONS_EMAIL } from "@/lib/contact";
 
 // Inscripción dentro de una sala: tarjeta centrada y enfocada (el resto de la
@@ -158,7 +158,7 @@ export function SignupPanel({
             <h2 id="signup-title" className="m-0 mt-2 font-(family-name:--font-gabarito) text-[30px] leading-[1.05] font-black max-md:text-2xl">
               {t.title}
             </h2>
-            {school && <p className="m-0 mt-2 text-[14px] text-white/70">{school.escuela}</p>}
+            {school && <p className="m-0 mt-2 text-[14px] text-white/70">{schoolLabel(school, locale)}</p>}
           </div>
 
           {selected && (
@@ -170,15 +170,15 @@ export function SignupPanel({
               <dl className="m-0 mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[13px]">
                 <div className="col-span-2">
                   <dt className="font-mono text-[10px] tracking-[0.15em] text-white/50 uppercase">{t.credential}</dt>
-                  <dd className="m-0 text-white/90">{selected.credencial}</dd>
+                  <dd className="m-0 text-white/90">{catalogText(selected.credencial, locale)}</dd>
                 </div>
                 <div>
                   <dt className="font-mono text-[10px] tracking-[0.15em] text-white/50 uppercase">{t.credits}</dt>
-                  <dd className="m-0 text-white/90">{selected.creditos}</dd>
+                  <dd className="m-0 text-white/90">{catalogText(selected.creditos, locale)}</dd>
                 </div>
                 <div>
                   <dt className="font-mono text-[10px] tracking-[0.15em] text-white/50 uppercase">{t.modality}</dt>
-                  <dd className="m-0 text-white/90">{selected.modalidad}</dd>
+                  <dd className="m-0 text-white/90">{catalogText(selected.modalidad, locale)}</dd>
                 </div>
               </dl>
               <div className="mt-3 inline-block rounded-full px-3 py-1 text-[11px] font-bold text-[#0B0716]" style={{ background: accent }}>
@@ -253,10 +253,10 @@ export function SignupPanel({
                     {t.choose}
                   </option>
                   {school && (
-                    <optgroup label={`${t.thisSchool} · ${school.escuela}`} className="bg-[#0B0716]">
+                    <optgroup label={`${t.thisSchool} · ${schoolLabel(school, locale)}`} className="bg-[#0B0716]">
                       {school.programas.map((p) => (
                         <option key={p.programa} value={p.programa} className="bg-[#0B0716]">
-                          {p.programa.replace(/\s*\(.*\)\s*$/, "")} · {p.credencial}
+                          {p.programa.replace(/\s*\(.*\)\s*$/, "")} · {catalogText(p.credencial, locale)}
                         </option>
                       ))}
                     </optgroup>
@@ -265,7 +265,7 @@ export function SignupPanel({
                     {others.flatMap((s) =>
                       s.programas.map((p) => (
                         <option key={`${s.escuela}-${p.programa}`} value={p.programa} className="bg-[#0B0716]">
-                          {p.programa.replace(/\s*\(.*\)\s*$/, "")} · {s.escuela}
+                          {p.programa.replace(/\s*\(.*\)\s*$/, "")} · {schoolLabel(s, locale)}
                         </option>
                       )),
                     )}

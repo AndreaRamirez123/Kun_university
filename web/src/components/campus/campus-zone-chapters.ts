@@ -3,7 +3,7 @@ import { ADMISSIONS_EMAIL } from "@/lib/contact";
 import type { Certification, School, Stats } from "@/lib/types";
 import type { ZoneDef } from "./campus-zones";
 import { explainerChapters, THEME_STYLE, type Chapter, type Theme } from "./campus-explainer";
-import { findCatalogSchool, groupCourses, isByLevel, type CatalogProgram } from "@/lib/catalog";
+import { catalogText, findCatalogSchool, groupCourses, isByLevel, type CatalogProgram } from "@/lib/catalog";
 
 // Capítulos del video de cada lugar del campus, armados con los datos reales
 // de la API: cada escuela narra sus programas, Certificaciones cada curso y el
@@ -151,15 +151,15 @@ export function zoneChapters(
           id: `program-${i}`,
           menu: shortName(p.programa),
           title: shortName(p.programa),
-          voice: t.careerVoice(shortName(p.programa), p.credencial, p.modalidad, p.materias.length, groups.length, isByLevel(p)),
+          voice: t.careerVoice(shortName(p.programa), catalogText(p.credencial, locale), catalogText(p.modalidad, locale), p.materias.length, groups.length, isByLevel(p)),
           accent: pal[(i + 1) % pal.length],
           theme,
           graphic: "career",
           career: {
             kicker: t.careerKicker(i + 1, programs.length),
-            credential: p.credencial,
-            credits: t.creditsLabel(p.creditos),
-            modality: p.modalidad,
+            credential: catalogText(p.credencial, locale),
+            credits: t.creditsLabel(catalogText(p.creditos, locale)),
+            modality: catalogText(p.modalidad, locale),
             coursesLabel: t.featured,
             courses: featuredCourses(p).map((c) => ({ code: c.codigo, name: c.materia })),
             footer: t.careerFooter(p.materias.length, groups.length, isByLevel(p)),

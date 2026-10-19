@@ -8,12 +8,16 @@ import * as THREE from "three";
 import { CampusAnimals } from "./campus-animals";
 import type { Gender } from "./campus-avatar";
 import { CampusLineup } from "./campus-lineup";
-import { Krucn } from "./campus-krucn";
+import { GuideBeacon, Krucn } from "./campus-krucn";
 import type { Chapter } from "./campus-explainer";
 import { FLORIDA_COLLIDERS } from "./campus-florida";
 import { CampusInterior, INTERIOR_ORIGIN } from "./campus-interior";
 import { CampusPlayer } from "./campus-player";
-import { BeachBalls, KunLetters, LETTER_COLLIDERS } from "./campus-props";
+import { BeachBalls, KunLetters, KunShield, LETTER_COLLIDERS } from "./campus-props";
+import { CAFE_COLLIDERS, KunCafe } from "./campus-cafe";
+import { RemotePlayers } from "./campus-remote-players";
+import { playBoing } from "./campus-audio";
+import { miiHeight } from "./campus-mii";
 import { campusRuntime } from "./campus-runtime";
 import type { SkyPreset } from "./campus-sky";
 import { CampusWorld, palmColliders, useVegetation } from "./campus-world";
@@ -198,6 +202,7 @@ export function CampusScene({
   onKrucnNear,
   stats,
   interiorChapters,
+  myEmote,
   reduceMotion,
   playerRef,
   onZoneChange,
@@ -218,6 +223,8 @@ export function CampusScene({
   onKrucnNear: (near: boolean) => void;
   stats: Stats;
   interiorChapters: Chapter[] | null;
+  /** Emote propio (emoji o frase) que se muestra sobre el personaje. */
+  myEmote: { index: number; at: number } | null;
   reduceMotion: boolean;
   playerRef: React.RefObject<THREE.Group | null>;
   onZoneChange: (id: string | null) => void;
@@ -226,7 +233,7 @@ export function CampusScene({
 }) {
   const vegetation = useVegetation();
   const colliders: Collider[] = useMemo(
-    () => [...ZONES.map((z) => ({ x: z.x, z: z.z, r: z.r })), ...palmColliders(vegetation.palms), ...LETTER_COLLIDERS, ...FLORIDA_COLLIDERS],
+    () => [...ZONES.map((z) => ({ x: z.x, z: z.z, r: z.r })), ...palmColliders(vegetation.palms), ...LETTER_COLLIDERS, ...FLORIDA_COLLIDERS, ...CAFE_COLLIDERS],
     [vegetation],
   );
   const narrow = typeof window !== "undefined" && window.innerWidth < 700;
@@ -274,6 +281,8 @@ export function CampusScene({
         sky={sky}
       />
       <KunLetters onBump={onBump} />
+      <KunShield />
+      <KunCafe locale={locale} />
       <BeachBalls colliders={colliders} onBump={onBump} />
       <CampusPlayer
         groupRef={playerRef}
@@ -283,10 +292,13 @@ export function CampusScene({
         visible={lineupGender === null}
         colliders={colliders}
         onLand={onBump}
+        onBounce={playBoing}
       />
       {lineupGender !== null && <CampusLineup selected={lineupGender} />}
       <CampusAnimals playing={phase === "playing"} pet={lineupGender !== null ? "dog" : avatar.pet} />
       <Krucn talking={krucnTalking} onNearChange={onKrucnNear} />
+      <GuideBeacon />
+      <RemotePlayers enabled={phase === "playing"} locale={locale} myEmote={myEmote} myHeight={miiHeight(avatar)} />
       </group>
       {interiorZone && <CampusInterior zone={interiorZone} sky={sky} stats={stats} chapters={interiorChapters} />}
 

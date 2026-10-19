@@ -8,15 +8,19 @@ import type { SkyPreset } from "./campus-sky";
 import type { Collider } from "./campus-zones";
 
 // Detalles que hacen al campus inconfundiblemente de Florida, EE. UU.:
-// banderas de EE. UU. y de Florida, letrero de bienvenida, torres salvavidas
+// banderas de EE. UU., de KUN y de Florida, letrero de bienvenida, torres salvavidas
 // pastel de Miami Beach, flamencos, naranjos y faroles que se encienden de noche.
 
 // ---------------------------------------------------------------- ubicaciones
 
+// Hilera institucional: EE. UU., KUN al centro (más alta) y Florida.
 const FLAGS = [
-  { x: -3.2, z: 12.5, kind: "us" as const },
-  { x: 3.2, z: 12.5, kind: "fl" as const },
+  { x: -5, z: 12.5, kind: "us" as const },
+  { x: 0, z: 12.5, kind: "kun" as const },
+  { x: 5, z: 12.5, kind: "fl" as const },
 ];
+
+type FlagKind = (typeof FLAGS)[number]["kind"];
 
 const SIGN = { x: 8.5, z: 34, rot: -0.35 };
 
@@ -107,6 +111,56 @@ function usFlagTexture() {
   });
 }
 
+/**
+ * Bandera azul de KUN, en la paleta del modelo 2: el escudo del logo y el nombre
+ * en blanco (el logo original es azul y se perdería sobre el fondo azul).
+ */
+function kunFlagTexture() {
+  const W = 512;
+  const H = 300;
+  const NAVY = "#03318C";
+  const RED = "#C8102E";
+  const font = (weight: number, size: number) => `${weight} ${size}px Georgia, "Times New Roman", serif`;
+  const tex = canvasTexture(W, H, (ctx) => {
+    ctx.fillStyle = NAVY;
+    ctx.fillRect(0, 0, W, H);
+    // Franjas blanca y roja abajo, como la línea del logo.
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, H - 34, W, 8);
+    ctx.fillStyle = RED;
+    ctx.fillRect(0, H - 26, W, 26);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.textBaseline = "alphabetic";
+    ctx.font = font(900, 104);
+    ctx.fillText("KUN", 196, 128);
+    ctx.font = font(800, 31);
+    ctx.fillText("UNIVERSITY", 198, 172);
+    const uw = ctx.measureText("UNIVERSITY ").width;
+    ctx.fillStyle = "#FF5A6A";
+    ctx.font = font(900, 40);
+    ctx.fillText("AI", 198 + uw, 174);
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.font = font(700, 18);
+    ctx.letterSpacing = "9px";
+    ctx.fillText("FLORIDA", 236, 214);
+    ctx.letterSpacing = "0px";
+  });
+  if (!tex) return null;
+  // El escudo se recorta del logo (su borde blanco se ve bien sobre el azul).
+  const img = new Image();
+  img.onload = () => {
+    const ctx = (tex.image as HTMLCanvasElement).getContext("2d");
+    if (!ctx) return;
+    const shieldW = img.width * 0.31;
+    const h = 200;
+    const w = (shieldW / img.height) * h;
+    ctx.drawImage(img, 0, 0, shieldW, img.height, 30, 30, w, h);
+    tex.needsUpdate = true;
+  };
+  img.src = "/kun-logo-model2.png";
+  return tex;
+}
+
 function floridaFlagTexture() {
   return canvasTexture(380, 250, (ctx) => {
     ctx.fillStyle = "#FFFFFF";
@@ -190,12 +244,17 @@ function welcomeTexture() {
 
 // ---------------------------------------------------------------- piezas
 
-function WavingFlag({ x, z, kind }: { x: number; z: number; kind: "us" | "fl" }) {
+function WavingFlag({ x, z, kind }: { x: number; z: number; kind: FlagKind }) {
   const cloth = useRef<THREE.Mesh>(null);
-  const texture = useMemo(() => (typeof document === "undefined" ? null : kind === "us" ? usFlagTexture() : floridaFlagTexture()), [kind]);
+  const texture = useMemo(
+    () => (typeof document === "undefined" ? null : kind === "us" ? usFlagTexture() : kind === "kun" ? kunFlagTexture() : floridaFlagTexture()),
+    [kind],
+  );
   useEffect(() => () => texture?.dispose(), [texture]);
-  const W = 3.4;
-  const H = kind === "us" ? 1.8 : 2.2;
+  const W = kind === "kun" ? 4.2 : 3.4;
+  const H = kind === "us" ? 1.8 : kind === "kun" ? 2.46 : 2.2;
+  // El asta de KUN es más alta: es la bandera de la casa.
+  const pole = kind === "kun" ? 10.6 : 9.2;
 
   // Ondea como tela: la onda crece hacia el borde libre.
   useFrame((state) => {
@@ -214,15 +273,15 @@ function WavingFlag({ x, z, kind }: { x: number; z: number; kind: "us" | "fl" })
 
   return (
     <group position={[x, 0.2, z]}>
-      <mesh position={[0, 4.6, 0]} castShadow>
-        <cylinderGeometry args={[0.08, 0.11, 9.2, 8]} />
+      <mesh position={[0, pole / 2, 0]} castShadow>
+        <cylinderGeometry args={[0.08, 0.11, pole, 8]} />
         <meshStandardMaterial color="#E9E6EF" metalness={0.6} roughness={0.3} />
       </mesh>
-      <mesh position={[0, 9.3, 0]}>
+      <mesh position={[0, pole + 0.1, 0]}>
         <sphereGeometry args={[0.18, 10, 8]} />
         <meshStandardMaterial color="#F2C14E" metalness={0.7} roughness={0.25} />
       </mesh>
-      <mesh ref={cloth} position={[W / 2 + 0.08, 9.1 - H / 2, 0]} castShadow>
+      <mesh ref={cloth} position={[W / 2 + 0.08, pole - 0.1 - H / 2, 0]} castShadow>
         <planeGeometry args={[W, H, 20, 8]} />
         <meshStandardMaterial map={texture} side={THREE.DoubleSide} roughness={0.8} />
       </mesh>

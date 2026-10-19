@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import {
   allCertifications,
+  catalogText,
   catalog,
+  findCatalogProgram,
   findCatalogSchool,
   groupCourses,
   isByLevel,
   periodLabel,
+  schoolLabel,
   totalCredits,
   type CatalogProgram,
   type CatalogSchool,
@@ -83,18 +86,25 @@ type View = { school: CatalogSchool | null; program: CatalogProgram | null };
 export function CampusCatalog({
   open,
   initialSchool,
+  initialProgram,
   onClose,
   onSignup,
 }: {
   open: boolean;
   /** Nombre de la escuela con la que abre (API o JSON). Si falta, abre en la lista de escuelas. */
   initialSchool?: string;
+  /** Programa con el que abre, directo en sus materias (p. ej. cuando lo pide Krucn). */
+  initialProgram?: string;
   onClose: () => void;
   onSignup?: (program: string) => void;
 }) {
   const t = usePick(COPY);
   const { locale } = useLocale();
-  const [view, setView] = useState<View>(() => ({ school: initialSchool ? (findCatalogSchool(initialSchool) ?? null) : null, program: null }));
+  const [view, setView] = useState<View>(() => {
+    const found = initialProgram ? findCatalogProgram(initialProgram) : undefined;
+    if (found) return found;
+    return { school: initialSchool ? (findCatalogSchool(initialSchool) ?? null) : null, program: null };
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -129,7 +139,7 @@ export function CampusCatalog({
               {catalog.institucion} · {t.title}
             </div>
             <h2 id="catalog-title" className="m-0 mt-1.5 truncate font-(family-name:--font-gabarito) text-[26px] leading-tight font-black max-md:text-xl" style={{ color: school ? accent : undefined }}>
-              {program ? program.programa : school ? school.escuela : t.schools}
+              {program ? catalogText(program.programa, locale) : school ? schoolLabel(school, locale) : t.schools}
             </h2>
             <div className="mt-2 flex flex-wrap gap-3">
               {school && (
@@ -139,7 +149,7 @@ export function CampusCatalog({
               )}
               {program && school && (
                 <button type="button" onClick={() => setView({ school, program: null })} className={`${MONO} cursor-pointer text-[11px] text-white/60 hover:text-white`}>
-                  {t.backSchool(school.escuela)}
+                  {t.backSchool(schoolLabel(school, locale))}
                 </button>
               )}
             </div>
@@ -167,6 +177,7 @@ export function CampusCatalog({
 // ---------------------------------------------------------------- 1. escuelas
 
 function SchoolsView({ onPick }: { onPick: (s: CatalogSchool) => void }) {
+  const { locale } = useLocale();
   const t = usePick(COPY);
   const certs = allCertifications();
   return (
@@ -183,14 +194,14 @@ function SchoolsView({ onPick }: { onPick: (s: CatalogSchool) => void }) {
               className={`${CARD} group flex cursor-pointer flex-col gap-3 overflow-hidden p-5 text-left transition hover:-translate-y-0.5 hover:border-white/35`}
             >
               <span aria-hidden className="h-1.5 w-14 rounded-full" style={{ background: color }} />
-              <span className="font-(family-name:--font-gabarito) text-[22px] leading-tight font-black">{s.escuela}</span>
+              <span className="font-(family-name:--font-gabarito) text-[22px] leading-tight font-black">{schoolLabel(s, locale)}</span>
               <span className={`${MONO} text-[11px] text-white/55`}>
                 {t.programs(s.programas.length)} · {t.continuing}: {s.educacion_continua.length}
               </span>
               <span className="flex flex-col gap-1">
                 {s.programas.map((p) => (
                   <span key={p.programa} className="truncate text-[13px] text-white/75">
-                    · {p.programa}
+                    · {catalogText(p.programa, locale)}
                   </span>
                 ))}
               </span>
@@ -210,6 +221,7 @@ function SchoolsView({ onPick }: { onPick: (s: CatalogSchool) => void }) {
 // ---------------------------------------------------------------- 2. programas de una escuela
 
 function SchoolView({ school, accent, onPick }: { school: CatalogSchool; accent: string; onPick: (p: CatalogProgram) => void }) {
+  const { locale } = useLocale();
   const t = usePick(COPY);
   return (
     <div className="flex flex-col gap-8">
@@ -224,11 +236,11 @@ function SchoolView({ school, accent, onPick }: { school: CatalogSchool; accent:
               className={`${CARD} grid cursor-pointer grid-cols-[1fr_auto] items-center gap-4 p-5 text-left transition hover:border-white/35 max-md:grid-cols-1`}
             >
               <span className="min-w-0">
-                <span className="block font-(family-name:--font-gabarito) text-[19px] leading-snug font-extrabold">{p.programa}</span>
+                <span className="block font-(family-name:--font-gabarito) text-[19px] leading-snug font-extrabold">{catalogText(p.programa, locale)}</span>
                 <span className="mt-2 grid grid-cols-3 gap-3 text-[13px] max-sm:grid-cols-1">
-                  <Fact label={t.credential} value={p.credencial} />
-                  <Fact label={t.credits} value={p.creditos} />
-                  <Fact label={t.modality} value={p.modalidad} />
+                  <Fact label={t.credential} value={catalogText(p.credencial, locale)} />
+                  <Fact label={t.credits} value={catalogText(p.creditos, locale)} />
+                  <Fact label={t.modality} value={catalogText(p.modalidad, locale)} />
                 </span>
               </span>
               <span className="flex flex-col items-end gap-1 max-md:items-start">
@@ -274,13 +286,13 @@ function ProgramView({
     <div className="flex flex-col gap-5">
       <div className="grid grid-cols-3 gap-3 max-sm:grid-cols-1">
         <div className={`${CARD} p-4`}>
-          <Fact label={t.credential} value={program.credencial} />
+          <Fact label={t.credential} value={catalogText(program.credencial, locale)} />
         </div>
         <div className={`${CARD} p-4`}>
-          <Fact label={t.credits} value={program.creditos} />
+          <Fact label={t.credits} value={catalogText(program.creditos, locale)} />
         </div>
         <div className={`${CARD} p-4`}>
-          <Fact label={t.modality} value={program.modalidad} />
+          <Fact label={t.modality} value={catalogText(program.modalidad, locale)} />
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -342,6 +354,7 @@ function ContinuingSection({
   emptyText?: string;
 }) {
   const t = usePick(COPY);
+  const { locale } = useLocale();
   return (
     <section>
       <h3 className={`${MONO} m-0 mb-3 text-[12px] text-white/55`}>{title}</h3>
@@ -353,7 +366,7 @@ function ContinuingSection({
             <div key={`${c.escuela ?? ""}-${c.certificado}`} className={`${CARD} flex items-center justify-between gap-3 p-4`}>
               <span className="min-w-0">
                 <span className="block text-[14.5px] leading-snug font-bold">{c.certificado}</span>
-                {showSchool && c.escuela && <span className="mt-0.5 block text-[12px] text-white/55">{c.escuela}</span>}
+                {showSchool && c.escuela && <span className="mt-0.5 block text-[12px] text-white/55">{schoolLabel(c.escuela, locale)}</span>}
               </span>
               <span className={`${MONO} shrink-0 rounded-full border border-white/20 px-3 py-1 text-[11px]`}>{t.hours(c.horas)}</span>
             </div>

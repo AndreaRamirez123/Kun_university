@@ -5,6 +5,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4100/api";
 
 export type KrucnTurn = { role: "user" | "assistant"; content: string };
 
+/** Acciones que Krucn pide al campus (ver api/src/krucn/krucn.tools.ts). */
+export type KrucnAction =
+  | { type: "guide"; place: string }
+  | { type: "catalog"; school?: string; program?: string }
+  | { type: "signup"; program: string };
+
 let statusPromise: Promise<boolean> | null = null;
 
 /** ¿Está el agente encendido? Se consulta una vez por visita. */
@@ -16,10 +22,11 @@ export function krucnAgentAvailable() {
   return statusPromise;
 }
 
-/** Envía la conversación, entrega el texto con onText y devuelve el stop_reason. */
+/** Envía la conversación; entrega el texto (onText) y las acciones (onAction); devuelve el stop_reason. */
 export async function askKrucn(
   body: { messages: KrucnTurn[]; locale: "es" | "en"; playerName?: string; nearestPlace?: string },
   onText: (chunk: string) => void,
+  onAction: (action: KrucnAction) => void,
   signal: AbortSignal,
 ) {
   const res = await fetch(`${API_URL}/krucn/chat`, {
@@ -42,9 +49,10 @@ export async function askKrucn(
     for (const event of events) {
       const line = event.trim();
       if (!line.startsWith("data:")) continue;
-      const data = JSON.parse(line.slice(5)) as { text?: string; error?: boolean; stop?: string };
+      const data = JSON.parse(line.slice(5)) as { text?: string; action?: KrucnAction; error?: boolean; stop?: string };
       if (data.error) throw new Error("krucn stream error");
       if (data.text) onText(data.text);
+      if (data.action) onAction(data.action);
       if (data.stop) stop = data.stop;
     }
   }

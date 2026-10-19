@@ -1,0 +1,26 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "campus": {
+      "players": {
+        ".read": true,
+        "$id": {
+          ".write": "$id.matches(/^[a-z0-9]{12,24}$/)",
+          ".validate": "!newData.exists() || newData.hasChildren(['x', 'z', 't'])",
+          "n": { ".validate": "newData.isString() && newData.val().length <= 16" },
+          "a": { ".validate": "newData.isString() && newData.val().length <= 800" },
+          "x": { ".validate": "newData.isNumber() && newData.val() > -60 && newData.val() < 60" },
+          "z": { ".validate": "newData.isNumber() && newData.val() > -60 && newData.val() < 60" },
+          "h": { ".validate": "newData.isNumber() && newData.val() > -20 && newData.val() < 20" },
+          "y": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 30" },
+          "s": { ".validate": "newData.isNumber() && newData.val() >= -1 && newData.val() < 100 && newData.val() % 1 === 0" },
+          "t": { ".validate": "newData.isNumber() && newData.val() <= now + 5000" },
+          "e": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 40 && newData.val() % 1 === 0" },
+          "et": { ".validate": "newData.isNumber() && newData.val() <= now + 5000" },
+          "$other": { ".validate": false }
+        }
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type * as THREE from "three";
 import { playBump, playChime, playFanfare, playLaunch, setCampusSound } from "./campus-audio";
 import { CampusFormModal } from "./campus-form-modal";
-import { CampusHud, CampusToast, CampusTouchControls } from "./campus-hud";
+import { CampusGuidePill, CampusHud, CampusToast, CampusTouchControls } from "./campus-hud";
 import { StudioRoom } from "./campus-admissions-ui";
 import { CampusCatalog } from "./campus-catalog";
 import { zoneChapters } from "./campus-zone-chapters";
@@ -19,10 +19,15 @@ import { campusRuntime, resetCampusInput } from "./campus-runtime";
 import type { CampusPhase } from "./campus-scene";
 import { skyLabel, useFloridaSky, type SkyMode } from "./campus-sky";
 import { DEFAULT_AVATAR, type Gender } from "./campus-avatar";
-import { PLAYER_START, ZONES, type Avatar } from "./campus-zones";
+import { findGuidePlace, PLAYER_START, ZONES, type Avatar } from "./campus-zones";
 import { hasWebGL } from "./has-webgl";
 import { NoWebGLFallback } from "./no-webgl-fallback";
 import { useLocale, usePick } from "@/i18n/locale-context";
+import type { KrucnAction } from "@/lib/krucn-agent";
+import { joinPresence, leavePresence, sendEmote } from "@/lib/campus-presence";
+import { serializeAvatar } from "./campus-social";
+import { CampusSocialPanel } from "./campus-social-panel";
+import { CampusSeatPrompt } from "./campus-seat-prompt";
 import type { Certification, School, Stats } from "@/lib/types";
 
 const CampusScene = dynamic(() => import("./campus-scene").then((m) => m.CampusScene), { ssr: false });
@@ -35,6 +40,8 @@ const COPY = {
     launch: "Despegue. Tu carrera también arranca aquí.",
     submitted: "Solicitud lista. En la versión final llegará a admisiones.",
     stayHint: "Sigues en el campus. Para salir usa «← Sitio clásico».",
+    following: "Sigue a Krucn y la luz sobre el edificio.",
+    arrived: (place: string) => `¡Llegaste a ${place}! Pulsa E o toca «Entrar».`,
     launchRocket: "Despegar el cohete",
     coursePlan: "Programas y materias →",
   },
@@ -45,12 +52,29 @@ const COPY = {
     launch: "Liftoff. Your career takes off here too.",
     submitted: "Request ready. In the final version it will reach admissions.",
     stayHint: "You're still on campus. To leave, use “← Classic site”.",
+    following: "Follow Krucn and the light above the building.",
+    arrived: (place: string) => `You made it to ${place}! Press E or tap “Enter”.`,
     launchRocket: "Launch the rocket",
     coursePlan: "Programs and courses →",
   },
 };
 
 const SKY_CYCLE: SkyMode[] = ["auto", "day", "sunset", "night"];
+
+const normName = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s*\(.*?\)\s*/g, " ")
+    .toLowerCase()
+    .trim();
+
+/** Nombre del programa en la API que corresponde al que nombró Krucn (o el mismo nombre). */
+function matchApiProgram(schools: School[], name: string) {
+  const n = normName(name);
+  const all = schools.flatMap((s) => s.programs.map((p) => p.name));
+  return all.find((p) => normName(p) === n) ?? all.find((p) => normName(p).includes(n) || n.includes(normName(p))) ?? name;
+}
 
 /** Hora actual en Miami, formateada para el HUD. */
 function useFloridaClock(locale: "es" | "en") {
@@ -104,7 +128,11 @@ export function CampusExperience(props: {
   const [soundOn, setSoundOn] = useState(false);
   const [form, setForm] = useState<{ open: boolean; program: string }>({ open: false, program: "" });
   // Catálogo académico (escuelas → programas → materias), leído de src/data.
-  const [catalogView, setCatalogView] = useState<{ open: boolean; school?: string }>({ open: false });
+  const [catalogView, setCatalogView] = useState<{ open: boolean; school?: string; program?: string }>({ open: false });
+  // Lugar al que Krucn está guiando (id de zona). La escena lo lee de campusRuntime.
+  const [guide, setGuide] = useState<string | null>(null);
+  // Último emote propio (lo ven todos sobre tu personaje).
+  const [myEmote, setMyEmote] = useState<{ index: number; at: number } | null>(null);
   const [toast, setToast] = useState({ message: "", visible: false });
   const [interiorId, setInteriorId] = useState<string | null>(null);
   // Creador en dos pasos: primero elegir personaje (con vista previa), luego personalizar.
@@ -136,11 +164,13 @@ export function CampusExperience(props: {
     resetCampusInput();
     campusRuntime.launchAt = 0;
     campusRuntime.zoom = 1;
+    campusRuntime.guide.zone = null;
     campusRuntime.player.x = PLAYER_START[0];
     campusRuntime.player.z = PLAYER_START[2];
     return () => {
       resetCampusInput();
       setCampusSound(false);
+      leavePresence();
       window.clearTimeout(toastTimer.current);
       portalTimers.current.forEach(clearTimeout);
     };
@@ -152,7 +182,60 @@ export function CampusExperience(props: {
     toastTimer.current = window.setTimeout(() => setToast((s) => ({ ...s, visible: false })), 3200);
   }, []);
 
-  const handleZoneChange = useCallback((id: string | null) => setActiveZoneId(id), []);
+  useEffect(() => {
+    campusRuntime.guide.zone = guide;
+  }, [guide]);
+
+  // Al llegar a la puerta del lugar al que guiaba Krucn, termina la guía.
+  const guideRef = useRef(guide);
+  useEffect(() => {
+    guideRef.current = guide;
+  }, [guide]);
+  const arriveAt = useCallback(
+    (id: string) => {
+      if (id !== guideRef.current) return;
+      guideRef.current = null;
+      setGuide(null);
+      const place = findGuidePlace(id);
+      if (place) showToast(t.arrived(place.label[locale]));
+    },
+    [showToast, t, locale],
+  );
+  const handleZoneChange = useCallback(
+    (id: string | null) => {
+      setActiveZoneId(id);
+      if (id) arriveAt(id);
+    },
+    [arriveAt],
+  );
+
+  const handleEmote = useCallback((index: number) => {
+    sendEmote(index);
+    setMyEmote({ index, at: Date.now() });
+  }, []);
+
+  // Lo que Krucn decide hacer al final de su respuesta.
+  const handleKrucnAction = useCallback(
+    (action: KrucnAction) => {
+      setTalking(false);
+      if (action.type === "guide") {
+        const zone = findGuidePlace(action.place);
+        if (!zone) return;
+        // Ya está en la puerta: no hace falta guiar.
+        if (activeZoneId === zone.id) {
+          showToast(t.arrived(zone.label[locale]));
+          return;
+        }
+        setGuide(zone.id);
+        showToast(t.following);
+      } else if (action.type === "catalog") {
+        setCatalogView({ open: true, school: action.school, program: action.program });
+      } else {
+        setForm({ open: true, program: matchApiProgram(schools, action.program) });
+      }
+    },
+    [schools, showToast, t, activeZoneId, locale],
+  );
 
   // Un lugar cuenta como visitado cuando entras a su aula, no solo al pasar cerca.
   function markVisited(id: string) {
@@ -189,6 +272,7 @@ export function CampusExperience(props: {
   }
 
   function enterZone(id: string) {
+    setGuide(null);
     runPortal(id, false, () => {
       resetCampusInput();
       setInteriorId(id);
@@ -304,6 +388,12 @@ export function CampusExperience(props: {
     setLeavingIntro(true);
     setPhase("playing");
     showToast(t.hello(name));
+    // Campus compartido: los demás te ven llegar (si la base en tiempo real está configurada).
+    void joinPresence(name, serializeAvatar({ ...avatar, name }), {
+      x: campusRuntime.player.x,
+      z: campusRuntime.player.z,
+      h: campusRuntime.player.heading,
+    });
     wrapperRef.current?.focus();
   }
 
@@ -359,6 +449,7 @@ export function CampusExperience(props: {
           onKrucnNear={setKrucnNear}
           stats={stats}
           interiorChapters={interiorChapters}
+          myEmote={myEmote}
           reduceMotion={reduceMotion}
           playerRef={playerRef}
           onZoneChange={handleZoneChange}
@@ -408,6 +499,7 @@ export function CampusExperience(props: {
         playerName={avatar.name.trim()}
         schools={schools}
         onClose={() => setTalking(false)}
+        onAction={handleKrucnAction}
       />
       {phase === "inside" && interiorZone && interiorChapters && (
         <StudioRoom
@@ -430,11 +522,18 @@ export function CampusExperience(props: {
         />
       )}
       <CampusTouchControls enabled={playing && !form.open && !talking && !catalogView.open} targetRef={wrapperRef} />
+      <CampusGuidePill zoneId={playing && portal.stage === "idle" ? guide : null} onCancel={() => setGuide(null)} onArrive={arriveAt} />
+      <CampusSocialPanel visible={playing && !talking && !form.open && !catalogView.open} onEmote={handleEmote} />
+      <CampusSeatPrompt
+        enabled={playing && portal.stage === "idle" && !talking && !form.open && !catalogView.open}
+        blocked={krucnNear || !!activeZoneId}
+      />
       <CampusToast message={toast.message} visible={toast.visible} />
       <CampusCatalog
-        key={catalogView.open ? (catalogView.school ?? "all") : "closed"}
+        key={catalogView.open ? `${catalogView.school ?? "all"}-${catalogView.program ?? ""}` : "closed"}
         open={catalogView.open}
         initialSchool={catalogView.school}
+        initialProgram={catalogView.program}
         onClose={() => setCatalogView({ open: false })}
         onSignup={(program) => {
           setCatalogView({ open: false });

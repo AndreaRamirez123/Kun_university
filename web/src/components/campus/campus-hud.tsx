@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import { ADMISSIONS_EMAIL, SOCIAL_LINKS, socialHref } from "@/lib/contact";
 import { SocialIcon } from "../social-icons";
+import { visiblePlayers } from "@/lib/campus-presence";
 import { campusRuntime } from "./campus-runtime";
 import type { SkyMode } from "./campus-sky";
-import { GRASS_RADIUS, ISLAND_RADIUS, ZONES } from "./campus-zones";
+import { CAFE, findGuidePlace, GRASS_RADIUS, ISLAND_RADIUS, ZONES, zoneDoor } from "./campus-zones";
 
 const COPY = {
   es: {
@@ -27,6 +28,8 @@ const COPY = {
     manual: "Vista previa",
     miami: "Miami",
     skyHint: "Cambiar el momento del día",
+    guiding: "Krucn te lleva a",
+    cancelGuide: "Cancelar",
   },
   en: {
     subtitle: "Virtual campus in Florida",
@@ -45,6 +48,8 @@ const COPY = {
     manual: "Preview",
     miami: "Miami",
     skyHint: "Change the time of day",
+    guiding: "Krucn is taking you to",
+    cancelGuide: "Cancel",
   },
 };
 
@@ -150,6 +155,52 @@ function Minimap({ visited, label, names }: { visited: Set<string>; label: strin
         }
         tag(namesRef.current[zn.id] ?? "", x, y + 23, done ? "#FFFFFF" : "rgba(235,230,242,0.8)");
       }
+      // Cafetería: punto de encuentro (no cuenta como lugar por visitar).
+      ctx.fillStyle = CAFE.color;
+      ctx.strokeStyle = "#FFF3E6";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(CAFE.x * s, CAFE.z * s, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.font = `18px ${family}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("☕", CAFE.x * s, CAFE.z * s + 1);
+      // Encima del punto: debajo chocaría con el nombre de Ingeniería.
+      tag(namesRef.current.cafe ?? "", CAFE.x * s, CAFE.z * s - 46, "rgba(235,230,242,0.8)");
+      // Las demás personas conectadas.
+      for (const other of visiblePlayers()) {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.strokeStyle = "#1E6B5C";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(other.x * s, other.z * s, 6.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+      // Ruta de Krucn: línea punteada del jugador a la puerta y anillo en el destino.
+      const gz = findGuidePlace(campusRuntime.guide.zone);
+      if (gz) {
+        const door = zoneDoor(gz);
+        const me = campusRuntime.player;
+        ctx.save();
+        ctx.setLineDash([10, 9]);
+        ctx.lineDashOffset = -now / 40;
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(me.x * s, me.z * s);
+        ctx.lineTo(door.x * s, door.z * s);
+        ctx.stroke();
+        ctx.restore();
+        ctx.strokeStyle = gz.color;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(gz.x * s, gz.z * s, 26 + pulse * 4, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       // Krucn, la mascota: punto verde con borde blanco.
       const k = campusRuntime.krucn;
       ctx.fillStyle = "#3FA34D";
@@ -251,7 +302,7 @@ export function CampusHud({
   const t = usePick(COPY);
   const hint = usePick(HINT);
   const { locale } = useLocale();
-  const names = useMemo(() => Object.fromEntries(ZONES.map((z) => [z.id, z.label[locale]])), [locale]);
+  const names = useMemo(() => ({ ...Object.fromEntries(ZONES.map((z) => [z.id, z.label[locale]])), cafe: CAFE.label[locale] }), [locale]);
   const base = `transition-opacity duration-700 ${visible ? "opacity-100" : "pointer-events-none opacity-0"}`;
 
   return (
@@ -472,6 +523,62 @@ export function CampusToast({ message, visible }: { message: string; visible: bo
       }`}
     >
       {message}
+    </div>
+  );
+}
+
+/** Aviso mientras Krucn guía: a dónde va, a cuántos metros y cómo cancelar. */
+export function CampusGuidePill({
+  zoneId,
+  onCancel,
+  onArrive,
+}: {
+  zoneId: string | null;
+  onCancel: () => void;
+  /** Al llegar a la puerta (sirve también para la cafetería, que no es una zona con sala). */
+  onArrive: (id: string) => void;
+}) {
+  const t = usePick(COPY);
+  const { locale } = useLocale();
+  const meters = useRef<HTMLSpanElement>(null);
+  const zone = findGuidePlace(zoneId);
+
+  useEffect(() => {
+    if (!zone) return;
+    let raf = 0;
+    const door = zoneDoor(zone);
+    const tick = () => {
+      const p = campusRuntime.player;
+      const d = Math.hypot(door.x - p.x, door.z - p.z);
+      if (meters.current) meters.current.textContent = `${Math.max(0, Math.round(d))} m`;
+      if (d < 2.5) {
+        onArrive(zone.id);
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [zone, onArrive]);
+
+  if (!zone) return null;
+  return (
+    <div
+      role="status"
+      className="reveal-animate absolute inset-x-0 top-[calc(16px+env(safe-area-inset-top,0px))] z-20 mx-auto flex w-fit max-w-[calc(100%-560px)] items-center gap-2.5 rounded-full border-2 bg-[#0E061E]/80 py-1.5 pr-1.5 pl-4 text-[13px] font-bold text-[#FFF3E6] backdrop-blur-md max-md:top-[calc(196px+env(safe-area-inset-top,0px))] max-md:right-auto max-md:left-3 max-md:mx-0 max-md:max-w-[calc(100%-24px)] max-md:text-[12px]"
+      style={{ borderColor: zone.color }}
+    >
+      <span aria-hidden className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full" style={{ background: zone.color }} />
+      <span className="min-w-0 truncate">
+        {t.guiding} {zone.label[locale]} · <span ref={meters} className="tabular-nums" />
+      </span>
+      <button
+        type="button"
+        onClick={onCancel}
+        className="shrink-0 cursor-pointer rounded-full bg-white/12 px-3 py-1 text-[12px] transition hover:bg-white/25"
+      >
+        {t.cancelGuide}
+      </button>
     </div>
   );
 }

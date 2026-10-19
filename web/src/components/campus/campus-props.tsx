@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { campusRuntime } from "./campus-runtime";
@@ -8,7 +8,7 @@ import { LETTERS_Z, WALK_RADIUS, type Collider } from "./campus-zones";
 
 // Objetos para jugar, al estilo del portafolio de Bruno Simon: pelotas de playa
 // que ruedan cuando las empujas y letras gigantes K·U·N que se tambalean al
-// chocarlas. Física simplificada a mano (sin motor) porque solo hay unas pocas
+// chocarlas (junto a ellas, el escudo del logo). Física simplificada a mano (sin motor) porque solo hay unas pocas
 // piezas y así no sumamos otra dependencia pesada.
 
 const PLAYER_RADIUS = 0.6;
@@ -190,11 +190,18 @@ const GLYPHS: Record<string, Bar[]> = {
     [0.9, 4.5, 0, 2, 0.5],
   ],
 };
+// Colores del logo de KUN: azul marino y rojo.
+const LOGO_NAVY = "#14306E";
+const LOGO_RED = "#C8102E";
+
 const LETTERS = [
-  { char: "K", x: -4.6, color: "#E8735A" },
-  { char: "U", x: 0, color: "#FFC85C" },
-  { char: "N", x: 4.6, color: "#7A4FD0" },
+  { char: "K", x: -4.6, color: LOGO_NAVY },
+  { char: "U", x: 0, color: LOGO_RED },
+  { char: "N", x: 4.6, color: LOGO_NAVY },
 ];
+
+/** El escudo de KUN, de pie junto a la K. */
+const SHIELD = { x: -9.4, z: LETTERS_Z + 0.4, rot: 0.28, w: 3.5, h: 4.1 };
 const LETTER_RADIUS = 1.5;
 const LETTER_COLLIDER_RADIUS = 1.4;
 
@@ -260,8 +267,84 @@ export function KunLetters({ onBump }: { onBump?: (strength: number) => void }) 
   );
 }
 
-/** Las letras bloquean al personaje como un edificio pequeño. */
-export const LETTER_COLLIDERS: Collider[] = LETTERS.map((l) => ({ x: l.x, z: LETTERS_Z, r: LETTER_COLLIDER_RADIUS }));
+/** Las letras y el escudo bloquean al personaje como un edificio pequeño. */
+export const LETTER_COLLIDERS: Collider[] = [
+  ...LETTERS.map((l) => ({ x: l.x, z: LETTERS_Z, r: LETTER_COLLIDER_RADIUS })),
+  { x: SHIELD.x, z: SHIELD.z, r: 1.7 },
+];
 
-/** Zonas de exclusión de las letras, para no sembrar arbustos encima. */
-export const LETTER_SPOTS = LETTERS.map((l) => ({ x: l.x, z: LETTERS_Z, r: LETTER_RADIUS + 1 }));
+/** Zonas de exclusión de las letras y el escudo, para no sembrar arbustos encima. */
+export const LETTER_SPOTS = [
+  ...LETTERS.map((l) => ({ x: l.x, z: LETTERS_Z, r: LETTER_RADIUS + 1 })),
+  { x: SHIELD.x, z: SHIELD.z, r: 3 },
+];
+
+/** Silueta del escudo: borde superior recto y punta abajo, como el del logo. */
+function shieldShape(w: number, h: number) {
+  const s = new THREE.Shape();
+  const hw = w / 2;
+  s.moveTo(-hw, h);
+  s.lineTo(hw, h);
+  s.lineTo(hw, h * 0.45);
+  s.quadraticCurveTo(hw * 0.95, h * 0.12, 0, 0);
+  s.quadraticCurveTo(-hw * 0.95, h * 0.12, -hw, h * 0.45);
+  s.closePath();
+  return s;
+}
+
+/** Frente del escudo: se recorta del logo del modelo 2 (public/kun-logo-model2.png). */
+function useShieldTexture() {
+  const tex = useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const canvas = document.createElement("canvas");
+    canvas.width = 448;
+    canvas.height = 513;
+    const t = new THREE.CanvasTexture(canvas);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 4;
+    const img = new Image();
+    img.onload = () => {
+      canvas.getContext("2d")?.drawImage(img, 0, 0, img.width * 0.31, img.height, 0, 0, canvas.width, canvas.height);
+      t.needsUpdate = true;
+    };
+    img.src = "/kun-logo-model2.png";
+    return t;
+  }, []);
+  useEffect(() => () => tex?.dispose(), [tex]);
+  return tex;
+}
+
+export function KunShield() {
+  const texture = useShieldTexture();
+  const geometry = useMemo(() => {
+    const g = new THREE.ExtrudeGeometry(shieldShape(SHIELD.w + 0.3, SHIELD.h + 0.3), {
+      depth: 0.5,
+      bevelEnabled: true,
+      bevelSize: 0.08,
+      bevelThickness: 0.08,
+      bevelSegments: 2,
+    });
+    g.translate(0, -0.15, -0.5);
+    return g;
+  }, []);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  const lift = 0.9;
+  return (
+    <group position={[SHIELD.x, 0.2, SHIELD.z]} rotation={[0, SHIELD.rot, 0]}>
+      {/* Pedestal */}
+      <mesh position={[0, 0.35, -0.25]} castShadow receiveShadow>
+        <boxGeometry args={[2.2, 0.7, 1.2]} />
+        <meshStandardMaterial color="#E9E6EF" roughness={0.6} />
+      </mesh>
+      <group position={[0, lift, 0]}>
+        <mesh geometry={geometry} castShadow receiveShadow>
+          <meshStandardMaterial color={LOGO_NAVY} roughness={0.45} metalness={0.2} />
+        </mesh>
+        <mesh position={[0, SHIELD.h / 2, 0.1]}>
+          <planeGeometry args={[SHIELD.w, SHIELD.h]} />
+          <meshStandardMaterial map={texture} transparent alphaTest={0.05} roughness={0.5} />
+        </mesh>
+      </group>
+    </group>
+  );
+}

@@ -1,0 +1,277 @@
+{
+  "instrucciones": "Preguntas frecuentes oficiales que responde Krucn. Escribe la respuesta en 'respuesta' y borra la palabra PENDIENTE. Lo que diga PENDIENTE, Krucn no lo inventa: remite a admisiones. 'claves' son palabras o frases (sin tildes, en minúscula) que Krucn busca en la pregunta para elegir esta respuesta. Las carreras, créditos, materias y certificados NO van aquí: salen del catálogo (KUN_catalogo_escuelas_programas_materias.json).",
+  "preguntas": [
+    {
+      "tema": "La universidad",
+      "pregunta": "¿Qué es KUN University AI?",
+      "claves": [
+        "que es kun",
+        "quienes son",
+        "que es la universidad",
+        "ia native",
+        "ia-native",
+        "what is kun"
+      ],
+      "respuesta": "Es una universidad IA-Native con sede en Florida, Estados Unidos. Su plan de estudios está rediseñado alrededor de la inteligencia artificial, y es 100% online: estudias desde cualquier país."
+    },
+    {
+      "tema": "La universidad",
+      "pregunta": "¿Está acreditada?",
+      "claves": [
+        "acredit",
+        "licenciad",
+        "sacscoc",
+        "florida cie",
+        "reconocid",
+        "accredit"
+      ],
+      "respuesta": "KUN está licenciada por la Florida Commission for Independent Education (Florida CIE). La acreditación institucional SACSCOC está en proceso."
+    },
+    {
+      "tema": "La universidad",
+      "pregunta": "¿Dónde queda la sede y cuál es la dirección?",
+      "claves": [
+        "direccion",
+        "sede",
+        "donde queda la universidad",
+        "oficina",
+        "address"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "La universidad",
+      "pregunta": "¿Los títulos son válidos en mi país?",
+      "claves": [
+        "mi pais",
+        "convalid",
+        "homolog",
+        "apostill",
+        "validez",
+        "colombia",
+        "mexico",
+        "peru",
+        "chile",
+        "argentina",
+        "ecuador"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Admisiones",
+      "pregunta": "¿Cuáles son los requisitos para entrar a un pregrado?",
+      "claves": [
+        "requisito",
+        "que necesito",
+        "documentos",
+        "bachiller",
+        "requirements"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Admisiones",
+      "pregunta": "¿Cuáles son los requisitos para entrar a una maestría?",
+      "claves": [
+        "requisitos maestria",
+        "requisitos para la maestria",
+        "requisitos de maestria",
+        "titulo profesional"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Admisiones",
+      "pregunta": "¿Cómo es el proceso de inscripción, paso a paso?",
+      "claves": [
+        "proceso",
+        "paso a paso",
+        "como me inscribo",
+        "como inscribirme",
+        "como aplico",
+        "admision",
+        "how do i apply"
+      ],
+      "respuesta": "1. Llenas el formulario de inscripción (aquí en el campus, en Admisiones o desde el Catálogo). 2. Un asesor de admisiones te escribe por correo para acompañarte en el resto del proceso."
+    },
+    {
+      "tema": "Admisiones",
+      "pregunta": "¿Cuándo empiezan las clases?",
+      "claves": [
+        "cuando empiez",
+        "cuando inici",
+        "fecha",
+        "inicio de clases",
+        "calendario",
+        "cierre de inscrip",
+        "start date",
+        "when does"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Admisiones",
+      "pregunta": "¿Necesito un examen de inglés? ¿En qué idioma son las clases?",
+      "claves": [
+        "ingles",
+        "idioma",
+        "toefl",
+        "ielts",
+        "espanol",
+        "english",
+        "language"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Costos y financiación",
+      "pregunta": "¿Cuánto cuesta cada programa?",
+      "claves": [
+        "cuanto cuesta",
+        "cuanto vale",
+        "costo",
+        "precio",
+        "valor",
+        "matricula",
+        "pagar",
+        "tuition",
+        "price",
+        "cost"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Costos y financiación",
+      "pregunta": "¿Hay becas o descuentos?",
+      "claves": [
+        "beca",
+        "descuento",
+        "ayuda economica",
+        "auxilio",
+        "scholarship"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Costos y financiación",
+      "pregunta": "¿Qué formas de pago y financiación hay?",
+      "claves": [
+        "forma de pago",
+        "formas de pago",
+        "financ",
+        "cuotas",
+        "credito educativo",
+        "tarjeta",
+        "payment"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Estudiar en KUN",
+      "pregunta": "¿Cómo son las clases?",
+      "claves": [
+        "como son las clases",
+        "son las clases",
+        "clases en vivo",
+        "en vivo",
+        "grabad",
+        "horario",
+        "presencial",
+        "clases virtuales",
+        "how are classes",
+        "live classes"
+      ],
+      "respuesta": "Todo es 100% online. Los detalles de clases en vivo, grabaciones y horarios: PENDIENTE"
+    },
+    {
+      "tema": "Estudiar en KUN",
+      "pregunta": "¿Cuántas horas a la semana debo dedicar?",
+      "claves": [
+        "horas a la semana",
+        "cuanto tiempo",
+        "dedicacion",
+        "cuantas horas",
+        "hours per week"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Estudiar en KUN",
+      "pregunta": "¿Puedo estudiar mientras trabajo?",
+      "claves": [
+        "mientras trabaj",
+        "trabajar y estudiar",
+        "estudiar y trabajar",
+        "si trabajo",
+        "work while"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Estudiar en KUN",
+      "pregunta": "¿Qué apoyo tengo como estudiante?",
+      "claves": [
+        "apoyo",
+        "tutor",
+        "acompanamiento",
+        "empleabilidad",
+        "bienestar estudiantil",
+        "support"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Estudiar en KUN",
+      "pregunta": "¿Necesito visa para estudiar?",
+      "claves": [
+        "visa",
+        "viajar",
+        "estados unidos",
+        "migracion"
+      ],
+      "respuesta": "Como es 100% online, no necesitas viajar a Estados Unidos para estudiar. Para casos específicos de visa: PENDIENTE"
+    },
+    {
+      "tema": "Contacto",
+      "pregunta": "¿Cómo contacto a admisiones?",
+      "claves": [
+        "contacto",
+        "contactar",
+        "correo",
+        "email",
+        "escribir",
+        "asesor",
+        "hablar con alguien",
+        "contact"
+      ],
+      "respuesta": "Escribe a admissions@kununiversityai.com o llena el formulario de inscripción y un asesor te contacta."
+    },
+    {
+      "tema": "Contacto",
+      "pregunta": "¿Hay WhatsApp o teléfono?",
+      "claves": [
+        "whatsapp",
+        "telefono",
+        "celular",
+        "llamar",
+        "numero",
+        "phone"
+      ],
+      "respuesta": "PENDIENTE"
+    },
+    {
+      "tema": "Contacto",
+      "pregunta": "¿Redes sociales?",
+      "claves": [
+        "redes",
+        "instagram",
+        "facebook",
+        "tiktok",
+        "linkedin",
+        "youtube",
+        "social"
+      ],
+      "respuesta": "PENDIENTE"
+    }
+  ]
+}

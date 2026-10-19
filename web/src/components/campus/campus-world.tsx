@@ -11,6 +11,7 @@ import { seeded } from "./campus-random";
 import type { SkyPreset } from "./campus-sky";
 import { CelestialBody, SkyDome, Stars } from "./campus-sky-dome";
 import { FLORIDA_SPOTS, FloridaDecor } from "./campus-florida";
+import { CAFE_SPOTS } from "./campus-cafe";
 import { GRASS_RADIUS, ISLAND_RADIUS, ZONES, type Collider, type ZoneDef } from "./campus-zones";
 import type { Locale } from "@/i18n/locale-context";
 
@@ -231,6 +232,7 @@ export function useVegetation() {
       ZONES.every((zn) => Math.hypot(x - zn.x, z - zn.z) > zn.r + margin) &&
       LETTER_SPOTS.every((l) => Math.hypot(x - l.x, z - l.z) > l.r + margin) &&
       FLORIDA_SPOTS.every((s) => Math.hypot(x - s.x, z - s.z) > s.r + margin * 0.5) &&
+      CAFE_SPOTS.every((s) => Math.hypot(x - s.x, z - s.z) > s.r + margin * 0.5) &&
       Math.hypot(x, z) > 12 &&
       // Deja libre el camino de llegada y el corredor por donde pasa la cámara.
       !(Math.abs(x) < 3 && z > 10) &&

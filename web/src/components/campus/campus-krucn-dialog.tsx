@@ -1,18 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, usePick, type Locale } from "@/i18n/locale-context";
-import { ADMISSIONS_EMAIL } from "@/lib/contact";
-import { askKrucn, krucnAgentAvailable, type KrucnTurn } from "@/lib/krucn-agent";
+import { askKrucn, krucnAgentAvailable, type KrucnAction, type KrucnTurn } from "@/lib/krucn-agent";
 import type { School } from "@/lib/types";
+import { krucnLocalReply, type BrainMemory } from "./campus-krucn-brain";
 import { campusRuntime } from "./campus-runtime";
-import { ZONES } from "./campus-zones";
+import { GUIDE_PLACES, ZONES } from "./campus-zones";
 
-// Conversación con Krucn, la mascota del campus. Tres preguntas rápidas con
-// respuesta fija ("¿Dónde estoy?" usa la posición real del jugador) y, cuando la
-// API tiene el agente encendido, preguntas libres respondidas por Claude.
+// Conversación con Krucn, la mascota del campus: guía, asesor y quien responde.
+// Siempre se le puede escribir: sin IA responde con su "cerebro" local
+// (campus-krucn-brain: catálogo + preguntas frecuentes, gratis y en el navegador).
+// Si la API tiene IA encendida, responde la IA y el cerebro local queda de respaldo.
 
-type QuestionId = "where" | "what" | "why";
+type QuestionId = "go" | "study" | "advise" | "where";
 
 const COPY = {
   es: {
@@ -20,9 +21,14 @@ const COPY = {
     talk: "Hablar",
     hint: "Pulsa E",
     close: "Cerrar",
-    greeting: (name: string) =>
-      `¡Hola${name ? `, ${name}` : ""}! Soy Krucn, el cocodrilo oficial de KUN University AI. ¿En qué te ayudo?`,
-    questions: { where: "¿Dónde estoy?", what: "¿Qué es este lugar?", why: "¿Por qué eres un cocodrilo?" } as Record<QuestionId, string>,
+    greeting: (name: string) => `¡Hola${name ? `, ${name}` : ""}! Soy Krucn, el cocodrilo oficial de KUN University AI. ¿En qué te ayudo?`,
+    questions: { go: "Llévame a un lugar", study: "¿Qué puedo estudiar?", advise: "Ayúdame a elegir carrera", where: "¿Dónde estoy?" } as Record<
+      QuestionId,
+      string
+    >,
+    welcomeBack: (name: string) => `¡Hola de nuevo${name ? `, ${name}` : ""}! ¿Seguimos? Pregúntame lo que quieras o pídeme que te lleve a algún lugar.`,
+    pickPlace: "¿A dónde quieres ir? Elige un lugar y te acompaño hasta la puerta.",
+    follow: (place: string) => `¡Sígueme! Te llevo a ${place}. Camina detrás de mí y busca la luz sobre el edificio.`,
     whereNear: (place: string, dir: string) =>
       `Estás en el campus virtual de KUN University AI, en Florida. Ahora mismo tienes cerca ${place}, hacia ${dir}. Acércate a la puerta y pulsa E para entrar a su aula.`,
     whereOpen: (place: string, dir: string) =>
@@ -30,11 +36,10 @@ const COPY = {
     what: "Es el campus virtual de KUN University AI, la universidad IA-Native con sede en Florida. Aquí recorres las cuatro escuelas, el Currículo vivo, Admisiones y la plataforma de certificaciones. Y todo es 100% online: estudias desde cualquier lugar del mundo.",
     why: "¡Porque soy de Florida! El sur de Florida es el único lugar del mundo donde viven juntos cocodrilos y caimanes. Así que me puse la camiseta de KUN, el birrete, y ahora mi trabajo es que nadie se pierda en el campus. Tranquilo: tengo muchos dientes, pero solo los uso para sonreír.",
     dirs: ["el norte", "el noreste", "el este", "el sureste", "el sur", "el suroeste", "el oeste", "el noroeste"],
-    places: { cur: "el Currículo vivo", adm: "el edificio de Admisiones", cont: "la plataforma de lanzamiento de certificaciones" } as Record<string, string>,
-    placeholder: "Pregúntale lo que quieras: programas, materias, certificados…",
+    places: { cur: "el Currículo vivo", adm: "el edificio de Admisiones", cont: "la plataforma de lanzamiento de certificaciones", cafe: "la cafetería KUN Café" } as Record<string, string>,
+    placeholder: "Escríbele a Krucn: carreras, materias, becas, llévame a…",
     send: "Preguntar",
     thinking: "Krucn está pensando",
-    offline: `¡Uy! Ahora mismo no puedo contestar eso. Escribe a ${ADMISSIONS_EMAIL} y el equipo de admisiones te ayuda, o abre el Catálogo académico.`,
   },
   en: {
     role: "Campus mascot",
@@ -42,7 +47,10 @@ const COPY = {
     hint: "Press E",
     close: "Close",
     greeting: (name: string) => `Hi${name ? `, ${name}` : ""}! I'm Krucn, KUN University AI's official crocodile. How can I help?`,
-    questions: { where: "Where am I?", what: "What is this place?", why: "Why are you a crocodile?" } as Record<QuestionId, string>,
+    questions: { go: "Take me somewhere", study: "What can I study?", advise: "Help me choose a program", where: "Where am I?" } as Record<QuestionId, string>,
+    welcomeBack: (name: string) => `Hi again${name ? `, ${name}` : ""}! Shall we continue? Ask me anything or tell me where to take you.`,
+    pickPlace: "Where do you want to go? Pick a place and I'll walk you to the door.",
+    follow: (place: string) => `Follow me! I'm taking you to ${place}. Walk behind me and look for the light above the building.`,
     whereNear: (place: string, dir: string) =>
       `You're on KUN University AI's virtual campus, in Florida. Right now ${place} is close by, to the ${dir}. Walk up to the door and press E to enter its classroom.`,
     whereOpen: (place: string, dir: string) =>
@@ -50,11 +58,10 @@ const COPY = {
     what: "It's the virtual campus of KUN University AI, the AI-Native university based in Florida. Here you can visit the four schools, the Living curriculum, Admissions and the certifications launch pad. And it's all 100% online: you study from anywhere in the world.",
     why: "Because I'm from Florida! South Florida is the only place in the world where crocodiles and alligators live side by side. So I put on the KUN jersey and the grad cap, and now my job is making sure nobody gets lost on campus. Don't worry: I have lots of teeth, but I only use them to smile.",
     dirs: ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"],
-    places: { cur: "the Living curriculum", adm: "the Admissions building", cont: "the certifications launch pad" } as Record<string, string>,
-    placeholder: "Ask me anything: programs, courses, certificates…",
+    places: { cur: "the Living curriculum", adm: "the Admissions building", cont: "the certifications launch pad", cafe: "the KUN Café" } as Record<string, string>,
+    placeholder: "Ask Krucn: programs, courses, scholarships, take me to…",
     send: "Ask",
     thinking: "Krucn is thinking",
-    offline: `Oops! I can't answer that right now. Write to ${ADMISSIONS_EMAIL} and the admissions team will help, or open the Academic catalog.`,
   },
 };
 
@@ -155,16 +162,28 @@ function useTypewriter(text: string) {
   return { visible: text.slice(0, shown), done: shown >= text.length };
 }
 
+// La charla sobrevive a cerrar el diálogo: al volver, Krucn recuerda lo hablado.
+let savedHistory: KrucnTurn[] = [];
+let savedMemory: BrainMemory = {};
+// Respuesta del agente en camino. Hay un solo diálogo de Krucn a la vez.
+let liveRequest: AbortController | null = null;
+
+/** Tras terminar de hablar, Krucn ejecuta lo que prometió (guiar, abrir el catálogo…). */
+const ACTION_DELAY_MS = 1400;
+
 export function KrucnDialog({
   open,
   playerName,
   schools,
   onClose,
+  onAction,
 }: {
   open: boolean;
   playerName: string;
   schools: School[];
   onClose: () => void;
+  /** Guiar, abrir el catálogo o la inscripción. El campus cierra el diálogo al ejecutarla. */
+  onAction: (action: KrucnAction) => void;
 }) {
   const t = usePick(COPY);
   const { locale } = useLocale();
@@ -175,13 +194,23 @@ export function KrucnDialog({
     text: "",
     live: false,
   });
-  const [history, setHistory] = useState<KrucnTurn[]>([]);
+  const [history, setHistory] = useState<KrucnTurn[]>(() => savedHistory);
+  // Programa del que se habló, para entender "muéstrame sus materias" o "llévame a su escuela".
+  const [memory, setMemory] = useState<BrainMemory>(() => savedMemory);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [agentOn, setAgentOn] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
-  const message = answer.text || t.greeting(playerName);
+  const [picking, setPicking] = useState(false);
+  const [pending, setPending] = useState<KrucnAction | null>(null);
+  const greeting = history.length ? t.welcomeBack(playerName) : t.greeting(playerName);
+  const message = answer.text || greeting;
   const { visible, done } = useTypewriter(open && !answer.live ? message : "");
+  const typing = answer.live ? busy : !done;
+
+  useEffect(() => {
+    savedHistory = history;
+    savedMemory = memory;
+  }, [history, memory]);
 
   useEffect(() => {
     let alive = true;
@@ -193,29 +222,82 @@ export function KrucnDialog({
 
   // Al cerrar el diálogo se corta la respuesta que esté en camino.
   useEffect(() => {
-    if (!open) abortRef.current?.abort();
+    if (!open) liveRequest?.abort();
   }, [open]);
-  useEffect(() => () => abortRef.current?.abort(), []);
+  useEffect(() => () => liveRequest?.abort(), []);
+
+  // La acción espera a que Krucn termine la frase, para que alcance a leerse.
+  useEffect(() => {
+    if (!pending || typing || !open) return;
+    const id = window.setTimeout(() => {
+      setPending(null);
+      onAction(pending);
+    }, ACTION_DELAY_MS);
+    return () => window.clearTimeout(id);
+  }, [pending, typing, open, onAction]);
 
   if (!open) return null;
 
-  function ask(q: QuestionId) {
-    abortRef.current?.abort();
+  /** Corta la respuesta del agente que esté en camino. */
+  function stopLive() {
+    liveRequest?.abort();
     setBusy(false);
-    const text = q === "where" ? whereAnswer(schools, locale) : q === "what" ? t.what : t.why;
-    setAnswer({ q, asked: t.questions[q], text, live: false });
-    setHistory((h) => [...h, { role: "user", content: t.questions[q] }, { role: "assistant", content: text }]);
+  }
+
+  function say(q: QuestionId | null, asked: string, text: string) {
+    stopLive();
+    setAnswer({ q, asked, text, live: false });
+    setHistory((h) => [...h, { role: "user", content: asked }, { role: "assistant", content: text }]);
+  }
+
+  function ask(q: QuestionId) {
+    if (q === "go") {
+      stopLive();
+      setPicking(true);
+      setAnswer({ q, asked: t.questions.go, text: t.pickPlace, live: false });
+      return;
+    }
+    if (q === "where") {
+      setPicking(false);
+      say(q, t.questions.where, whereAnswer(schools, locale));
+      return;
+    }
+    void askFree(t.questions[q]);
+  }
+
+  /** Respuesta del cerebro local (sin IA). */
+  function replyLocally(q: string, messages: KrucnTurn[]) {
+    const r = krucnLocalReply(q, locale, memory, (id) => placeName(id, schools, locale));
+    const text = r.canned === "where" ? whereAnswer(schools, locale) : r.canned === "what" ? t.what : r.canned === "why" ? t.why : r.text;
+    if (r.program) setMemory({ program: r.program });
+    setPicking(!!r.picker);
+    setBusy(false);
+    setAnswer({ q: null, asked: q, text, live: false });
+    setHistory([...messages, { role: "assistant", content: text }]);
+    if (r.action) setPending(r.action);
+  }
+
+  function guideTo(id: string) {
+    setPicking(false);
+    say("go", t.questions.go, t.follow(placeName(id, schools, locale)));
+    setPending({ type: "guide", place: id });
   }
 
   async function askFree(question: string) {
     const q = question.trim();
     if (!q || busy) return;
-    abortRef.current?.abort();
+    liveRequest?.abort();
     const controller = new AbortController();
-    abortRef.current = controller;
+    liveRequest = controller;
     const messages: KrucnTurn[] = [...history, { role: "user", content: q }];
     const near = nearest(schools, locale);
     setDraft("");
+    setPicking(false);
+    setPending(null);
+    if (!agentOn) {
+      replyLocally(q, messages);
+      return;
+    }
     setBusy(true);
     setAnswer({ q: null, asked: q, text: "", live: true });
 
@@ -227,13 +309,16 @@ export function KrucnDialog({
           text += chunk;
           setAnswer((a) => ({ ...a, text }));
         },
+        (action) => setPending(action),
         controller.signal,
       );
       if (!text.trim() || stop === "refusal") throw new Error("empty");
     } catch {
       if (controller.signal.aborted) return;
-      text = t.offline;
-      setAnswer((a) => ({ ...a, text }));
+      // La IA falló: responde el cerebro local.
+      setPending(null);
+      replyLocally(q, messages);
+      return;
     }
     if (controller.signal.aborted) return;
     setBusy(false);
@@ -241,7 +326,8 @@ export function KrucnDialog({
   }
 
   const shown = answer.live ? answer.text : visible;
-  const typing = answer.live ? busy : !done;
+  const chip =
+    "cursor-pointer rounded-full border-2 px-4 py-2 text-[14px] font-bold transition hover:-translate-y-0.5 max-md:px-3 max-md:py-1.5 max-md:text-[12.5px]";
 
   return (
     <div
@@ -286,44 +372,54 @@ export function KrucnDialog({
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-2 max-md:mt-2 max-md:gap-1.5">
-          {(Object.keys(t.questions) as QuestionId[]).map((q) => (
-            <button
-              key={q}
-              type="button"
-              onClick={() => ask(q)}
-              className={`cursor-pointer rounded-full border-2 px-4 py-2 text-[14px] font-bold transition hover:-translate-y-0.5 max-md:px-3 max-md:py-1.5 max-md:text-[12.5px] ${
-                answer.q === q ? "border-[#3FA34D] bg-[#3FA34D] text-white" : "border-white/25 text-[#FFF3E6] hover:border-[#7FD68A]"
-              }`}
-            >
-              {t.questions[q]}
-            </button>
-          ))}
+          {picking &&
+            GUIDE_PLACES.map((z) => (
+              <button
+                key={z.id}
+                type="button"
+                onClick={() => guideTo(z.id)}
+                className={`${chip} flex items-center gap-2 border-white/25 text-[#FFF3E6] hover:border-[#7FD68A]`}
+              >
+                <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: z.color }} />
+                {z.label[locale]}
+              </button>
+            ))}
+          {!picking &&
+            (Object.keys(t.questions) as QuestionId[]).map((q) => (
+              <button
+                key={q}
+                type="button"
+                onClick={() => ask(q)}
+                className={`${chip} ${answer.q === q ? "border-[#3FA34D] bg-[#3FA34D] text-white" : "border-white/25 text-[#FFF3E6] hover:border-[#7FD68A]"}`}
+              >
+                {q === "go" && "📍 "}
+                {t.questions[q]}
+              </button>
+            ))}
         </div>
-        {agentOn && (
-          <form
-            className="mt-3 flex gap-2 max-md:mt-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void askFree(draft);
-            }}
+        <form
+          className="mt-3 flex gap-2 max-md:mt-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void askFree(draft);
+          }}
+        >
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            maxLength={500}
+            placeholder={t.placeholder}
+            aria-label={t.placeholder}
+            className="min-w-0 flex-1 rounded-2xl border-2 border-white/15 bg-white/6 px-4 py-2.5 text-[15px] text-[#FFF3E6] outline-none placeholder:text-white/40 focus:border-[#7FD68A] max-md:py-2 max-md:text-base"
+          />
+          <button
+            type="submit"
+            disabled={busy || !draft.trim()}
+            className="shrink-0 cursor-pointer rounded-2xl bg-[#3FA34D] px-5 py-2.5 text-[14px] font-bold text-white transition enabled:hover:-translate-y-0.5 disabled:cursor-default disabled:opacity-45"
           >
-            <input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              maxLength={500}
-              placeholder={t.placeholder}
-              aria-label={t.placeholder}
-              className="min-w-0 flex-1 rounded-2xl border-2 border-white/15 bg-white/6 px-4 py-2.5 text-[15px] text-[#FFF3E6] outline-none placeholder:text-white/40 focus:border-[#7FD68A] max-md:py-2 max-md:text-base"
-            />
-            <button
-              type="submit"
-              disabled={busy || !draft.trim()}
-              className="shrink-0 cursor-pointer rounded-2xl bg-[#3FA34D] px-5 py-2.5 text-[14px] font-bold text-white transition enabled:hover:-translate-y-0.5 disabled:cursor-default disabled:opacity-45"
-            >
-              {t.send}
-            </button>
-          </form>
-        )}
+            {t.send}
+          </button>
+        </form>
       </div>
     </div>
   );

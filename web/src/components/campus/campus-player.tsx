@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { MiiAvatar, miiHeight } from "./campus-mii";
 import { CampusLabel } from "./campus-label";
+import { CAFE_SEATS, CAFE_TRAMPOLINES } from "./campus-cafe";
 import { campusRuntime } from "./campus-runtime";
 import { GRASS_RADIUS, PLAYER_START, WALK_RADIUS, type Avatar, type Collider } from "./campus-zones";
 
@@ -14,6 +15,10 @@ const TURN_SMOOTHING = 12;
 const PLAYER_RADIUS = 0.6;
 const GRAVITY = 32;
 const JUMP_SPEED = 11;
+/** Saltar debajo de una sombrilla de la cafetería lanza hasta su lona. */
+const TRAMPOLINE_LAUNCH = 19.5;
+/** Rebote al caer sobre la lona de una sombrilla. */
+const TRAMPOLINE_BOUNCE = 15;
 const DUST_COUNT = 24;
 
 const MOVE_KEYS = new Set(["KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"]);
@@ -31,6 +36,7 @@ export function CampusPlayer({
   visible = true,
   colliders,
   onLand,
+  onBounce,
 }: {
   groupRef: React.RefObject<THREE.Group | null>;
   avatar: Avatar;
@@ -40,6 +46,8 @@ export function CampusPlayer({
   visible?: boolean;
   colliders: Collider[];
   onLand?: (strength: number) => void;
+  /** Rebote en una sombrilla-trampolín. */
+  onBounce?: () => void;
 }) {
   const body = useRef<THREE.Group>(null);
   const legL = useRef<THREE.Group>(null);
@@ -49,7 +57,18 @@ export function CampusPlayer({
   const head = useRef<THREE.Group>(null);
   const dust = useRef<THREE.InstancedMesh>(null);
 
-  const motion = useRef({ walk: 0, vy: 0, y: 0, grounded: true, squash: 0, squashV: 0, dustTimer: 0, dustIndex: 0 });
+  const motion = useRef({
+    walk: 0,
+    vy: 0,
+    y: 0,
+    grounded: true,
+    squash: 0,
+    squashV: 0,
+    dustTimer: 0,
+    dustIndex: 0,
+    /** Al lanzarse o rebotar en una sombrilla, punto de la lona hacia el que se acomoda en el aire. */
+    aim: null as { x: number; z: number } | null,
+  });
   // Estado de simulación mutable: vive en refs, no en estado de React.
   const dustState = useRef(
     Array.from({ length: DUST_COUNT }, () => ({ x: 0, y: -10, z: 0, vx: 0, vy: 0, vz: 0, life: 0 })),
@@ -120,17 +139,34 @@ export function CampusPlayer({
       const running = k.ShiftLeft || k.ShiftRight || (campusRuntime.stick.active && len > 0.95);
       speed = running ? RUN_SPEED : WALK_SPEED;
 
+      const sitting = CAFE_SEATS[campusRuntime.seat];
+      if (sitting && (len > 0.08 || campusRuntime.jumpQueued)) {
+        // Se levanta y queda de pie junto al taburete.
+        campusRuntime.seat = -1;
+        campusRuntime.jumpQueued = false;
+        g.position.x = sitting.standX;
+        g.position.z = sitting.standZ;
+        len = 0;
+      }
+
       if (campusRuntime.jumpQueued) {
         campusRuntime.jumpQueued = false;
         if (m.grounded) {
-          m.vy = JUMP_SPEED;
+          // Debajo de una sombrilla, el salto es un lanzamiento hasta la lona.
+          // (La mesa no deja pararse justo debajo: basta con estar junto a ella.)
+          const under = m.y < 0.5 ? CAFE_TRAMPOLINES.find((u) => Math.hypot(g.position.x - u.x, g.position.z - u.z) < u.r + 0.4) : undefined;
+          m.vy = under ? TRAMPOLINE_LAUNCH : JUMP_SPEED;
+          if (under) m.aim = { x: under.x + (g.position.x - under.x) * 0.25, z: under.z + (g.position.z - under.z) * 0.25 };
           m.grounded = false;
-          m.squashV = 6;
+          m.squashV = under ? 9 : 6;
+          if (under) onBounce?.();
         }
       }
     } else {
       campusRuntime.jumpQueued = false;
     }
+    const seat = CAFE_SEATS[campusRuntime.seat];
+    if (seat) len = 0;
 
     let vx = 0;
     let vz = 0;
@@ -142,6 +178,7 @@ export function CampusPlayer({
       let nx = g.position.x + vx * delta;
       let nz = g.position.z + vz * delta;
       for (const c of colliders) {
+        if (c.h !== undefined && m.y > c.h) continue;
         const dx = nx - c.x;
         const dz = nz - c.z;
         const dist = Math.hypot(dx, dz);
@@ -191,9 +228,33 @@ export function CampusPlayer({
 
     // Salto con gravedad y squash & stretch al aterrizar.
     if (!m.grounded) {
+      const prevY = m.y;
       m.vy -= GRAVITY * delta;
       m.y += m.vy * delta;
+      if (m.vy < 0) {
+        for (const u of CAFE_TRAMPOLINES) {
+          const d = Math.hypot(g.position.x - u.x, g.position.z - u.z);
+          if (d > u.r) continue;
+          const top = u.top(d);
+          if (prevY >= top - 0.05 && m.y < top) {
+            m.y = top;
+            m.vy = TRAMPOLINE_BOUNCE;
+            m.aim = { x: u.x + (g.position.x - u.x) * 0.4, z: u.z + (g.position.z - u.z) * 0.4 };
+            m.squashV = -10;
+            spawnDust(g.position.x, g.position.z, 4);
+            onBounce?.();
+            break;
+          }
+        }
+      }
+      // Sin teclas, se acomoda sobre la lona para seguir rebotando.
+      if (m.aim && len < 0.08) {
+        const k = Math.min(1, delta * 3.5);
+        g.position.x += (m.aim.x - g.position.x) * k;
+        g.position.z += (m.aim.z - g.position.z) * k;
+      }
       if (m.y <= 0) {
+        m.aim = null;
         const impact = Math.min(1, Math.abs(m.vy) / JUMP_SPEED);
         m.y = 0;
         m.vy = 0;
@@ -207,10 +268,32 @@ export function CampusPlayer({
     m.squashV *= Math.exp(-10 * delta);
     m.squash += m.squashV * delta;
 
+    // Si cae sobre una mesa (sin tocar la sombrilla), queda a un lado, no dentro.
+    for (const c of seat ? [] : colliders) {
+      if (c.h === undefined || m.y > c.h) continue;
+      const dx = g.position.x - c.x;
+      const dz = g.position.z - c.z;
+      const dist = Math.hypot(dx, dz);
+      const min = c.r + PLAYER_RADIUS;
+      if (dist < min && dist > 0.0001) {
+        g.position.x = c.x + (dx / dist) * min;
+        g.position.z = c.z + (dz / dist) * min;
+      }
+    }
     const ground = Math.hypot(g.position.x, g.position.z) < GRASS_RADIUS ? 0.2 : 0.05;
     const walkAmount = Math.min(1, len * 2);
     const bob = m.grounded ? Math.abs(Math.sin(m.walk)) * 0.08 * walkAmount : 0;
     g.position.y = ground + m.y + bob;
+    campusRuntime.player.y = m.y;
+    if (seat) {
+      g.position.set(seat.x, seat.y + 0.08 - (0.22 + 0.72 * avatar.height), seat.z);
+      let diff = seat.face - g.rotation.y;
+      diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+      g.rotation.y += diff * Math.min(1, delta * 10);
+      campusRuntime.player.x = seat.x;
+      campusRuntime.player.z = seat.z;
+      campusRuntime.player.heading = g.rotation.y;
+    }
 
     if (body.current) {
       const s = 1 + m.squash;
@@ -222,15 +305,16 @@ export function CampusPlayer({
     // Balanceo de piernas y brazos, saludo en la pantalla de inicio y pose en el aire.
     const swing = m.grounded ? Math.sin(m.walk) * 0.7 * walkAmount : 0;
     const air = m.grounded ? 0 : -0.6;
-    if (legL.current) legL.current.rotation.x = swing + air * 0.5;
-    if (legR.current) legR.current.rotation.x = -swing - air * 0.3;
+    // Sentado: piernas hacia adelante y brazos sobre la mesa.
+    if (legL.current) legL.current.rotation.x = seat ? -1.45 : swing + air * 0.5;
+    if (legR.current) legR.current.rotation.x = seat ? -1.45 : -swing - air * 0.3;
     if (armL.current) {
-      armL.current.rotation.x = -swing * 0.8 + air;
+      armL.current.rotation.x = seat ? -0.9 : -swing * 0.8 + air;
       armL.current.rotation.z = m.grounded ? -0.08 : -0.5;
     }
     if (armR.current) {
       const wave = !playing ? Math.sin(t * 6) * 0.35 : 0;
-      armR.current.rotation.x = !playing ? 0 : swing * 0.8 + air;
+      armR.current.rotation.x = !playing ? 0 : seat ? -0.9 : swing * 0.8 + air;
       armR.current.rotation.z = !playing ? 2.5 + wave : m.grounded ? 0.08 : 0.5;
     }
     // La cabeza acompaña: se inclina un poco al saludar y oscila al caminar.

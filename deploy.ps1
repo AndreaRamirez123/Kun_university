@@ -16,11 +16,11 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Project = "desarrollo-investigaciones"
+$Project = "kun-university2026"
 $Region = "us-east1"
 $Service = "kun-api"
 $Secret = "krucn-anthropic-key"
-$Site = "kun-university"
+$Site = "kununiversityai"
 $Frontend = "https://$Site.web.app,https://$Site.firebaseapp.com"
 
 $env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")

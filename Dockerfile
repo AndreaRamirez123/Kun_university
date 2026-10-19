@@ -19,7 +19,7 @@ COPY api/package.json api/
 COPY web/package.json web/
 RUN npm ci --workspace=api --include-workspace-root=false --omit=dev && npm cache clean --force
 COPY --from=build /app/api/dist api/dist
-COPY web/src/data/KUN_catalogo_escuelas_programas_materias.json api/data/
+COPY web/src/data/KUN_catalogo_escuelas_programas_materias.json web/src/data/KUN_preguntas_frecuentes.json api/data/
 WORKDIR /app/api
 USER node
 CMD ["node", "dist/main.js"]

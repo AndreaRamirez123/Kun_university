@@ -53,7 +53,11 @@ export class KrucnController {
     res.on('close', () => abort.abort());
 
     try {
-      const stop = await this.krucn.reply(dto, (text) => send({ text }), abort.signal);
+      const stop = await this.krucn.reply(
+        dto,
+        { onText: (text) => send({ text }), onAction: (action) => send({ action }) },
+        abort.signal,
+      );
       send({ done: true, stop });
     } catch (error) {
       if (!abort.signal.aborted) send({ error: true });

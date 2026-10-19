@@ -98,6 +98,36 @@ export const ZONES: ZoneDef[] = [
 /** Distancia extra al radio del edificio a partir de la cual se abre su panel. */
 export const ZONE_ENTRY_MARGIN = 4.5;
 
+/** Lugar al que Krucn puede guiar: las zonas con sala y la cafetería. */
+export type GuidePlace = Pick<ZoneDef, "id" | "color" | "x" | "z" | "r" | "label">;
+
+/**
+ * Cafetería "KUN Café": punto de encuentro donde se ve y saluda a otros
+ * visitantes. No tiene sala interior ni cuenta entre los lugares por visitar.
+ */
+export const CAFE: GuidePlace & { deck: number } = {
+  id: "cafe",
+  color: "#B8743A",
+  x: -21,
+  z: -27,
+  r: 6.5,
+  deck: 11.25,
+  label: { es: "Cafetería", en: "Café" },
+};
+
+export const GUIDE_PLACES: GuidePlace[] = [...ZONES, CAFE];
+
+export const findGuidePlace = (id: string | null | undefined) => (id ? GUIDE_PLACES.find((p) => p.id === id) : undefined);
+
+/** Punto frente a la puerta de un lugar, del lado de la plaza: ahí lleva Krucn al guiar. */
+export function zoneDoor(zone: Pick<ZoneDef, "x" | "z" | "r">): { x: number; z: number } {
+  const d = Math.hypot(zone.x, zone.z);
+  // El lugar del centro (Currículo vivo) se aborda desde el sur, por donde se llega.
+  const [ux, uz] = d < 1 ? [0, 1] : [-zone.x / d, -zone.z / d];
+  const off = zone.r + 2.5;
+  return { x: zone.x + ux * off, z: zone.z + uz * off };
+}
+
 export const ISLAND_RADIUS = 50;
 export const GRASS_RADIUS = 42;
 /** El jugador no puede salir de la arena. */
@@ -107,7 +137,8 @@ export const PLAYER_START: [number, number, number] = [0, 0.2, 31];
 
 export type { Accessory, Avatar } from "./campus-avatar";
 
-export type Collider = { x: number; z: number; r: number };
+/** Obstáculo circular; con `h`, solo bloquea por debajo de esa altura (se puede saltar por encima). */
+export type Collider = { x: number; z: number; r: number; h?: number };
 
 /** Fila de las letras K·U·N frente al punto de partida (empujables, al estilo Bruno Simon). */
 export const LETTERS_Z = 19;
