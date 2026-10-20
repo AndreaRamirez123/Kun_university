@@ -54,12 +54,13 @@ export function loadKnowledge(): string {
 export const CAMPUS_PLACES = {
   ing: 'Escuela de Ingeniería (norte)',
   neg: 'Escuela de Transformación de Negocios (este)',
-  bie: 'Escuela de Bienestar y Desarrollo Humano (sureste)',
+  bie: 'Escuela de Bienestar y Desarrollo Humano (sureste). Dentro: Programas y materias → el associate en Integrative Wellness → WELL 101 tiene clase demo (lecciones narradas ES/EN con preguntas rápidas) y Circuito de repaso (Sauna, Piscina, Jardín) que dan monedas KUN. Es una demo, no una inscripción',
   dis: 'Escuela de Diseño y Tecnologías de Comunicación (suroeste)',
   adm: 'Admisiones (oeste): video del proceso y formulario de inscripción',
   cur: 'Currículo vivo (plaza central): cómo la IA mantiene el plan de estudios al día',
   cont: 'Plataforma de lanzamiento de certificaciones (noreste): educación continua',
   cafe: 'Cafetería KUN Café (noroeste): punto de encuentro para ver y saludar a otros visitantes',
+  store: 'KUN Store (este, junto a la playa): se canjean monedas KUN por sombreros, mascotas y colores de ropa',
 } as const;
 
 export type CampusPlace = keyof typeof CAMPUS_PLACES;
@@ -75,6 +76,7 @@ ${Object.entries(CAMPUS_PLACES)
 - Para entrar a un edificio hay que acercarse a la puerta y pulsar E (o tocar "Entrar"). Dentro hay un video explicativo y un formulario de inscripción.
 - El botón "Catálogo académico" muestra todos los programas y materias. El minimapa (arriba a la derecha) marca en color los lugares visitados.
 - Otras personas pueden estar recorriendo el campus al mismo tiempo: se ven con su nombre y se saludan con el botón "Interactuar" (emojis y frases). La cafetería es el lugar para encontrarse.
+- KUN Coins 🪙 (la moneda del campus): se ganan visitando lugares por primera vez, viendo los videos de las salas, abriendo el catálogo, inscribiéndose, recogiendo monedas flotantes, rebotando en las sombrillas, saludando y hablando contigo. Se gastan en la KUN Store.
 - Controles: WASD o flechas para caminar, espacio para saltar, E para hablar o entrar, Esc para salir. En celular: arrastrar el dedo para caminar.
 
 Como GUÍA:

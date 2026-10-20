@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePick } from "@/i18n/locale-context";
 import {
   HAIR_COLORS,
@@ -8,10 +8,15 @@ import {
   OPTIONS,
   OUTFIT_COLORS,
   SKIN_TONES,
+  hairStylesFor,
   withGender,
+  type Accessory,
   type Avatar,
+  type Pet,
 } from "./campus-avatar";
+import { SHOP_ITEMS, useWallet } from "./campus-wallet";
 import { CampusCamera } from "./campus-camera";
+import { campusRuntime } from "./campus-runtime";
 import { analyzePhoto } from "./campus-photo";
 import type { Gender } from "./campus-avatar";
 
@@ -44,6 +49,10 @@ const COPY = {
     facialHair: "Vello facial",
     glasses: "Lentes",
     hairStyle: "Peinado",
+    spinLeft: "Girar a la izquierda",
+    spinRight: "Girar a la derecha",
+    spinBack: "🔄 Ver espalda",
+    spinHint: "o arrastra el personaje",
     hairColor: "Color de pelo",
     top: "Prenda",
     outfit: "Color de la ropa",
@@ -82,6 +91,10 @@ const COPY = {
     facialHair: "Facial hair",
     glasses: "Glasses",
     hairStyle: "Hairstyle",
+    spinLeft: "Turn left",
+    spinRight: "Turn right",
+    spinBack: "🔄 See back",
+    spinHint: "or drag the character",
     hairColor: "Hair color",
     top: "Top",
     outfit: "Outfit color",
@@ -200,7 +213,7 @@ function randomAvatar(a: Avatar): Avatar {
   return {
     ...withGender(a, gender),
     skin: pick(SKIN_TONES),
-    hairStyle: pick(gender === "male" ? (["short", "buzz", "curly", "afro", "bald"] as const) : OPTIONS.hairStyle),
+    hairStyle: pick(hairStylesFor(gender)),
     hairColor: pick(HAIR_COLORS),
     eyes: pick(OPTIONS.eyes),
     brows: pick(OPTIONS.brows),
@@ -263,6 +276,11 @@ export function CampusIntro({
 }) {
   const t = usePick(COPY);
   const L = usePick(OPTION_LABELS);
+  // Lo comprado en la KUN Store aparece junto a las opciones gratis.
+  const { owned } = useWallet();
+  const ownedAccessories = SHOP_ITEMS.filter((i) => i.kind === "accessory" && owned.includes(i.id)).map((i) => i.value);
+  const ownedPets = SHOP_ITEMS.filter((i) => i.kind === "pet" && owned.includes(i.id)).map((i) => i.value);
+  const ownedOutfits = SHOP_ITEMS.filter((i) => i.kind === "outfit" && owned.includes(i.id)).map((i) => i.value);
   const [tab, setTab] = useState(0);
   const [nameError, setNameError] = useState(false);
   const [photo, setPhoto] = useState<{ status: "idle" | "busy" | "done" | "error"; preview?: string }>({ status: "idle" });
@@ -276,6 +294,13 @@ export function CampusIntro({
     transitionDelay: shown && !reduceMotion ? `${delay}ms` : "0ms",
   });
   const set = (patch: Partial<Avatar>) => onChange({ ...a, ...patch });
+
+  // Girar el personaje para verlo por todos lados (botones o arrastrando sobre él).
+  const drag = useRef<{ x: number; spin: number } | null>(null);
+  const spinTo = (v: number) => {
+    campusRuntime.previewSpin = v;
+  };
+  useEffect(() => () => spinTo(0), []);
 
   async function onPhoto(file: File | undefined) {
     if (!file) return;
@@ -295,7 +320,19 @@ export function CampusIntro({
       className={`absolute inset-0 z-20 flex items-stretch justify-start px-6 py-5 max-md:items-end max-md:px-3 max-md:pt-3 max-md:pb-[calc(12px+env(safe-area-inset-bottom,0px))] ${
         shown ? "" : "pointer-events-none"
       }`}
+      onPointerDown={(e) => {
+        if (e.target !== e.currentTarget) return;
+        drag.current = { x: e.clientX, spin: campusRuntime.previewSpin };
+        e.currentTarget.setPointerCapture(e.pointerId);
+      }}
+      onPointerMove={(e) => {
+        if (drag.current) spinTo(drag.current.spin + (e.clientX - drag.current.x) * 0.012);
+      }}
+      onPointerUp={() => (drag.current = null)}
+      onPointerCancel={() => (drag.current = null)}
       style={{
+        cursor: "grab",
+        touchAction: "pan-y",
         background: "linear-gradient(90deg, rgba(29,12,60,0.82) 0%, rgba(29,12,60,0.35) 42%, rgba(29,12,60,0) 68%)",
         opacity: visible && !leaving ? 1 : 0,
         transition: "opacity 700ms ease",
@@ -472,7 +509,7 @@ export function CampusIntro({
             {tab === 2 && (
               <>
                 <Group label={t.hairStyle}>
-                  <Pills options={OPTIONS.hairStyle} labels={L.hairStyle} value={a.hairStyle} onPick={(hairStyle) => set({ hairStyle })} />
+                  <Pills options={hairStylesFor(a.gender)} labels={L.hairStyle} value={a.hairStyle} onPick={(hairStyle) => set({ hairStyle })} />
                 </Group>
                 <Group label={t.hairColor}>
                   <Swatches colors={HAIR_COLORS} value={a.hairColor} label={t.color} extraLabel={t.fromPhoto} onPick={(hairColor) => set({ hairColor })} />
@@ -485,10 +522,10 @@ export function CampusIntro({
                   <Pills options={OPTIONS.top} labels={L.top} value={a.top} onPick={(top) => set({ top })} />
                 </Group>
                 <Group label={t.outfit}>
-                  <Swatches colors={OUTFIT_COLORS} value={a.outfit} label={t.color} extraLabel={t.fromPhoto} onPick={(outfit) => set({ outfit })} />
+                  <Swatches colors={[...OUTFIT_COLORS, ...ownedOutfits]} value={a.outfit} label={t.color} extraLabel={t.fromPhoto} onPick={(outfit) => set({ outfit })} />
                 </Group>
                 <Group label={t.accessory}>
-                  <Pills options={OPTIONS.accessory} labels={L.accessory} value={a.accessory} onPick={(accessory) => set({ accessory })} />
+                  <Pills options={[...OPTIONS.accessory, ...(ownedAccessories as Accessory[])]} labels={L.accessory} value={a.accessory} onPick={(accessory) => set({ accessory })} />
                 </Group>
               </>
             )}
@@ -496,7 +533,7 @@ export function CampusIntro({
               <Group label={t.pet}>
                 {/* Tarjetas grandes: la mascota se ve al instante junto a tu personaje */}
                 <div role="radiogroup" aria-label={t.pet} className="grid grid-cols-2 gap-2">
-                  {OPTIONS.pet.map((pet) => {
+                  {[...OPTIONS.pet, ...(ownedPets as Pet[])].map((pet) => {
                     const on = a.pet === pet;
                     const [icon, ...rest] = L.pet[pet].split(" ");
                     const label = pet === "none" ? L.pet[pet] : rest.join(" ");
@@ -549,6 +586,25 @@ export function CampusIntro({
           </div>
         </div>
       </form>
+      <div
+        style={fade(500)}
+        className={`${FADE} absolute right-[16%] bottom-8 flex items-center gap-1.5 rounded-full border border-white/25 bg-[#1D0C3C]/70 p-1.5 text-[#FFF3E6] backdrop-blur-md max-md:top-3 max-md:right-3 max-md:bottom-auto`}
+      >
+        <button type="button" onClick={() => spinTo(campusRuntime.previewSpin - Math.PI / 4)} aria-label={t.spinLeft} className="h-10 w-10 cursor-pointer rounded-full text-xl hover:bg-white/15">
+          ↺
+        </button>
+        <button
+          type="button"
+          onClick={() => spinTo(Math.abs(Math.cos(campusRuntime.previewSpin) - 1) < 0.1 ? Math.PI : 0)}
+          className="h-10 cursor-pointer rounded-full bg-white px-4 text-[13px] font-bold text-[#24123F]"
+        >
+          {t.spinBack}
+        </button>
+        <button type="button" onClick={() => spinTo(campusRuntime.previewSpin + Math.PI / 4)} aria-label={t.spinRight} className="h-10 w-10 cursor-pointer rounded-full text-xl hover:bg-white/15">
+          ↻
+        </button>
+        <span className="pr-2 text-[11px] text-white/60 max-lg:hidden">{t.spinHint}</span>
+      </div>
       <CampusCamera
         open={cameraOpen}
         onClose={() => setCameraOpen(false)}

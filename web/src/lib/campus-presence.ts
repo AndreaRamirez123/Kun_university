@@ -3,10 +3,12 @@
 // publica su posición, su avatar y sus emotes en /campus/players/{id}; todos
 // escuchan esa lista en tiempo real. Reglas de validación: database.rules.json.
 //
-// Se activa con NEXT_PUBLIC_CAMPUS_DB_URL (p. ej. https://kun-campus-default-rtdb.firebaseio.com).
-// Sin esa variable el campus funciona igual, solo que sin ver a otras personas.
+// Base del proyecto Firebase de KUN (kun-university2026). La dirección no es secreta:
+// la protegen las reglas de database.rules.json. NEXT_PUBLIC_CAMPUS_DB_URL la cambia
+// (vacía = campus sin multijugador).
 
-export const PRESENCE_URL = (process.env.NEXT_PUBLIC_CAMPUS_DB_URL ?? "").replace(/\/+$/, "");
+const DEFAULT_DB = "https://kun-university2026-default-rtdb.firebaseio.com";
+export const PRESENCE_URL = (process.env.NEXT_PUBLIC_CAMPUS_DB_URL ?? DEFAULT_DB).replace(/\/+$/, "");
 export const presenceEnabled = PRESENCE_URL.length > 0;
 
 const PATH = "campus/players";

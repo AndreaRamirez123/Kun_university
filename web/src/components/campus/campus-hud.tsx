@@ -8,13 +8,14 @@ import { SocialIcon } from "../social-icons";
 import { visiblePlayers } from "@/lib/campus-presence";
 import { campusRuntime } from "./campus-runtime";
 import type { SkyMode } from "./campus-sky";
-import { CAFE, findGuidePlace, GRASS_RADIUS, ISLAND_RADIUS, ZONES, zoneDoor } from "./campus-zones";
+import { CAFE, findGuidePlace, GRASS_RADIUS, ISLAND_RADIUS, STORE, ZONES, zoneDoor } from "./campus-zones";
 
 const COPY = {
   es: {
     subtitle: "Campus virtual en Florida",
     classicSite: "← Sitio clásico",
     catalog: "Catálogo académico",
+    editAvatar: "Mi personaje",
     follow: "Síguenos",
     visited: (n: number, total: number) => `Visitaste ${n} de ${total} lugares`,
     soundOn: "Sonido activado",
@@ -35,6 +36,7 @@ const COPY = {
     subtitle: "Virtual campus in Florida",
     classicSite: "← Classic site",
     catalog: "Academic catalog",
+    editAvatar: "My character",
     follow: "Follow us",
     visited: (n: number, total: number) => `You visited ${n} of ${total} places`,
     soundOn: "Sound on",
@@ -169,6 +171,19 @@ function Minimap({ visited, label, names }: { visited: Set<string>; label: strin
       ctx.fillText("☕", CAFE.x * s, CAFE.z * s + 1);
       // Encima del punto: debajo chocaría con el nombre de Ingeniería.
       tag(namesRef.current.cafe ?? "", CAFE.x * s, CAFE.z * s - 46, "rgba(235,230,242,0.8)");
+      // KUN Store.
+      ctx.fillStyle = STORE.color;
+      ctx.strokeStyle = "#FFF3E6";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(STORE.x * s, STORE.z * s, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.font = `16px ${family}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("🛍️", STORE.x * s, STORE.z * s + 1);
+      tag(namesRef.current.store ?? "", STORE.x * s, STORE.z * s + 18, "rgba(235,230,242,0.8)");
       // Las demás personas conectadas.
       for (const other of visiblePlayers()) {
         ctx.fillStyle = "#FFFFFF";
@@ -288,6 +303,7 @@ export function CampusHud({
   floridaTime,
   onCycleSky,
   onOpenCatalog,
+  onEditAvatar,
 }: {
   visible: boolean;
   visited: Set<string>;
@@ -298,11 +314,12 @@ export function CampusHud({
   floridaTime: string;
   onCycleSky: () => void;
   onOpenCatalog: () => void;
+  onEditAvatar: () => void;
 }) {
   const t = usePick(COPY);
   const hint = usePick(HINT);
   const { locale } = useLocale();
-  const names = useMemo(() => ({ ...Object.fromEntries(ZONES.map((z) => [z.id, z.label[locale]])), cafe: CAFE.label[locale] }), [locale]);
+  const names = useMemo(() => ({ ...Object.fromEntries(ZONES.map((z) => [z.id, z.label[locale]])), cafe: CAFE.label[locale], store: STORE.label[locale] }), [locale]);
   const base = `transition-opacity duration-700 ${visible ? "opacity-100" : "pointer-events-none opacity-0"}`;
 
   return (
@@ -324,6 +341,13 @@ export function CampusHud({
           className="mt-2 flex cursor-pointer items-center gap-2 rounded-full bg-[#FFC85C] px-4 py-2 text-[13px] font-bold text-[#24123F] shadow-[0_10px_24px_-10px_rgba(255,200,92,0.9)] transition hover:-translate-y-0.5 max-md:mt-1.5 max-md:gap-1.5 max-md:px-3 max-md:py-1.5 max-md:text-xs"
         >
           <span aria-hidden>📚</span> {t.catalog}
+        </button>
+        <button
+          type="button"
+          onClick={onEditAvatar}
+          className="mt-2 flex cursor-pointer items-center gap-2 rounded-full bg-[#1D0C3C]/60 px-4 py-2 text-[13px] font-bold backdrop-blur-md transition hover:bg-[#1D0C3C]/85 max-md:mt-1.5 max-md:px-3 max-md:py-1.5 max-md:text-xs"
+        >
+          <span aria-hidden>✏️</span> {t.editAvatar}
         </button>
       </div>
 
@@ -565,7 +589,7 @@ export function CampusGuidePill({
   return (
     <div
       role="status"
-      className="reveal-animate absolute inset-x-0 top-[calc(16px+env(safe-area-inset-top,0px))] z-20 mx-auto flex w-fit max-w-[calc(100%-560px)] items-center gap-2.5 rounded-full border-2 bg-[#0E061E]/80 py-1.5 pr-1.5 pl-4 text-[13px] font-bold text-[#FFF3E6] backdrop-blur-md max-md:top-[calc(196px+env(safe-area-inset-top,0px))] max-md:right-auto max-md:left-3 max-md:mx-0 max-md:max-w-[calc(100%-24px)] max-md:text-[12px]"
+      className="reveal-animate absolute inset-x-0 top-[calc(16px+env(safe-area-inset-top,0px))] z-20 mx-auto flex w-fit max-w-[calc(100%-560px)] items-center gap-2.5 rounded-full border-2 bg-[#0E061E]/80 py-1.5 pr-1.5 pl-4 text-[13px] font-bold text-[#FFF3E6] backdrop-blur-md max-md:top-[calc(268px+env(safe-area-inset-top,0px))] max-md:right-auto max-md:left-3 max-md:mx-0 max-md:max-w-[calc(100%-24px)] max-md:text-[12px]"
       style={{ borderColor: zone.color }}
     >
       <span aria-hidden className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full" style={{ background: zone.color }} />

@@ -24,10 +24,16 @@ import { hasWebGL } from "./has-webgl";
 import { NoWebGLFallback } from "./no-webgl-fallback";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import type { KrucnAction } from "@/lib/krucn-agent";
-import { joinPresence, leavePresence, sendEmote } from "@/lib/campus-presence";
+import { joinPresence, leavePresence, sendEmote, updateProfile } from "@/lib/campus-presence";
 import { serializeAvatar } from "./campus-social";
 import { CampusSocialPanel } from "./campus-social-panel";
 import { CampusSeatPrompt } from "./campus-seat-prompt";
+import { CampusCoinsHud, CampusShop, CampusStorePrompt } from "./campus-shop";
+import { CampusPetPanel } from "./campus-pet";
+import { CampusDemoCourse } from "./campus-demo-class";
+import { schoolHasDemo } from "./campus-demo";
+import { earn } from "./campus-wallet";
+import { playCoin } from "./campus-audio";
 import type { Certification, School, Stats } from "@/lib/types";
 
 const CampusScene = dynamic(() => import("./campus-scene").then((m) => m.CampusScene), { ssr: false });
@@ -44,6 +50,7 @@ const COPY = {
     arrived: (place: string) => `¡Llegaste a ${place}! Pulsa E o toca «Entrar».`,
     launchRocket: "Despegar el cohete",
     coursePlan: "Programas y materias →",
+    coursePlanDemo: "Programas y clases demo →",
   },
   en: {
     defaultName: "Student",
@@ -56,6 +63,7 @@ const COPY = {
     arrived: (place: string) => `You made it to ${place}! Press E or tap “Enter”.`,
     launchRocket: "Launch the rocket",
     coursePlan: "Programs and courses →",
+    coursePlanDemo: "Programs and demo classes →",
   },
 };
 
@@ -131,12 +139,20 @@ export function CampusExperience(props: {
   const [catalogView, setCatalogView] = useState<{ open: boolean; school?: string; program?: string }>({ open: false });
   // Lugar al que Krucn está guiando (id de zona). La escena lo lee de campusRuntime.
   const [guide, setGuide] = useState<string | null>(null);
+  // Tienda de recompensas (KUN Store).
+  const [shopOpen, setShopOpen] = useState(false);
+  // Materia con demo abierta (código, p. ej. "WELL 101"): clases y circuito de repaso.
+  const [demoCourse, setDemoCourse] = useState<string | null>(null);
+  // Ventanas a pantalla completa (tienda o demo): pausan el campus.
+  const modal = shopOpen || demoCourse !== null;
   // Último emote propio (lo ven todos sobre tu personaje).
   const [myEmote, setMyEmote] = useState<{ index: number; at: number } | null>(null);
   const [toast, setToast] = useState({ message: "", visible: false });
   const [interiorId, setInteriorId] = useState<string | null>(null);
   // Creador en dos pasos: primero elegir personaje (con vista previa), luego personalizar.
   const [introStep, setIntroStep] = useState<"choose" | "edit">("choose");
+  // Volvió al editor desde el campus (no repetir el saludo de bienvenida).
+  const returning = useRef(false);
   const [chosen, setChosen] = useState<Gender>("female");
   // Krucn, la mascota: si está cerca y si se está conversando con él.
   const [krucnNear, setKrucnNear] = useState(false);
@@ -210,6 +226,7 @@ export function CampusExperience(props: {
   );
 
   const handleEmote = useCallback((index: number) => {
+    earn("emote");
     sendEmote(index);
     setMyEmote({ index, at: Date.now() });
   }, []);
@@ -244,7 +261,9 @@ export function CampusExperience(props: {
     next.add(id);
     visitedRef.current = next;
     setVisited(next);
+    earn("visit", id);
     if (next.size === ZONES.length) {
+      earn("allVisited");
       playFanfare();
       showToast(t.allVisited);
     } else {
@@ -292,14 +311,17 @@ export function CampusExperience(props: {
   }
 
   function startTalk() {
+    earn("krucn");
     resetCampusInput();
     setTalk((n) => n + 1);
     setTalking(true);
   }
 
+  const closeDemo = useCallback(() => setDemoCourse(null), []);
+
   // En celular los botones flotantes del sitio (idioma, modelos) tapan los paneles:
   // se esconden mientras hay lobby, sala, Krucn, catálogo o formulario abiertos.
-  const overlayOpen = phase !== "playing" || talking || form.open || catalogView.open;
+  const overlayOpen = phase !== "playing" || talking || form.open || catalogView.open || modal;
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.campusOverlay = overlayOpen ? "on" : "off";
@@ -316,7 +338,9 @@ export function CampusExperience(props: {
   const closeTop = useRef(() => {});
   useEffect(() => {
     closeTop.current = () => {
-      if (form.open) setForm((f) => ({ ...f, open: false }));
+      if (demoCourse) setDemoCourse(null);
+      else if (shopOpen) setShopOpen(false);
+      else if (form.open) setForm((f) => ({ ...f, open: false }));
       else if (catalogView.open) setCatalogView({ open: false });
       else if (talking) setTalking(false);
       else if (phase === "inside") {
@@ -350,9 +374,9 @@ export function CampusExperience(props: {
   }, []);
 
   // Teclado: E / Enter para hablar con Krucn o entrar al edificio cercano, Esc para cerrar.
-  const live = useRef({ phase, activeZoneId, formOpen: form.open || catalogView.open, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk });
+  const live = useRef({ phase, activeZoneId, formOpen: form.open || catalogView.open || modal, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk });
   useEffect(() => {
-    live.current = { phase, activeZoneId, formOpen: form.open || catalogView.open, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk };
+    live.current = { phase, activeZoneId, formOpen: form.open || catalogView.open || modal, krucnNear, talking, enter: enterZone, exit: () => exitZone(), talk: startTalk };
   });
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -380,6 +404,26 @@ export function CampusExperience(props: {
   }, []);
 
   const handleSceneReady = useCallback(() => setSceneReady(true), []);
+
+  const handleCoin = useCallback(() => {
+    playCoin();
+    earn("coin");
+  }, []);
+
+  // Ver el video de una sala (quedarse 30 s) y abrir el catálogo también dan monedas.
+  useEffect(() => {
+    if (phase !== "inside" || !interiorId) return;
+    const id = window.setTimeout(() => earn("learn", interiorId), 30_000);
+    return () => window.clearTimeout(id);
+  }, [phase, interiorId]);
+  useEffect(() => {
+    if (catalogView.open) earn("catalog");
+  }, [catalogView.open]);
+
+  // Si cambia el personaje en la tienda, los demás lo ven con lo nuevo.
+  useEffect(() => {
+    if (phase === "playing" || phase === "inside") updateProfile(avatar.name.trim(), serializeAvatar(avatar));
+  }, [avatar, phase]);
   const handleLoaderDone = useCallback(() => setPhase((p) => (p === "loading" ? "intro" : p)), []);
 
   function start() {
@@ -387,7 +431,9 @@ export function CampusExperience(props: {
     setAvatar((a) => ({ ...a, name }));
     setLeavingIntro(true);
     setPhase("playing");
-    showToast(t.hello(name));
+    if (!returning.current) showToast(t.hello(name));
+    returning.current = false;
+    earn("welcome");
     // Campus compartido: los demás te ven llegar (si la base en tiempo real está configurada).
     void joinPresence(name, serializeAvatar({ ...avatar, name }), {
       x: campusRuntime.player.x,
@@ -450,6 +496,7 @@ export function CampusExperience(props: {
           stats={stats}
           interiorChapters={interiorChapters}
           myEmote={myEmote}
+          onCoin={handleCoin}
           reduceMotion={reduceMotion}
           playerRef={playerRef}
           onZoneChange={handleZoneChange}
@@ -486,6 +533,15 @@ export function CampusExperience(props: {
         floridaTime={floridaTime}
         onCycleSky={() => setSkyMode((m) => SKY_CYCLE[(SKY_CYCLE.indexOf(m) + 1) % SKY_CYCLE.length])}
         onOpenCatalog={() => setCatalogView({ open: true })}
+        onEditAvatar={() => {
+          // Vuelve al editor del lobby (paso "personalizar") sin perder el progreso.
+          resetCampusInput();
+          campusRuntime.seat = -1;
+          returning.current = true;
+          setLeavingIntro(false);
+          setIntroStep("edit");
+          setPhase("intro");
+        }}
       />
       <CampusZonePrompt
         zone={playing && portal.stage === "idle" && !krucnNear && !talking ? activeZone : null}
@@ -514,18 +570,30 @@ export function CampusExperience(props: {
             interiorZone.kind === "certifications"
               ? { label: t.launchRocket, onClick: () => exitZone(launch) }
               : interiorSchool
-                ? { label: t.coursePlan, onClick: () => setCatalogView({ open: true, school: interiorSchool.name.es }) }
+                ? { label: schoolHasDemo(interiorSchool.name.es) ? t.coursePlanDemo : t.coursePlan, onClick: () => setCatalogView({ open: true, school: interiorSchool.name.es }) }
                 : undefined
           }
           onExit={() => exitZone()}
           schoolName={interiorSchool?.name.es}
         />
       )}
-      <CampusTouchControls enabled={playing && !form.open && !talking && !catalogView.open} targetRef={wrapperRef} />
+      <CampusTouchControls enabled={playing && !form.open && !talking && !catalogView.open && !modal} targetRef={wrapperRef} />
       <CampusGuidePill zoneId={playing && portal.stage === "idle" ? guide : null} onCancel={() => setGuide(null)} onArrive={arriveAt} />
-      <CampusSocialPanel visible={playing && !talking && !form.open && !catalogView.open} onEmote={handleEmote} />
+      <CampusSocialPanel visible={playing && !talking && !form.open && !catalogView.open && !modal} onEmote={handleEmote} />
+      <CampusPetPanel visible={playing && !talking && !form.open && !catalogView.open && !modal} pet={avatar.pet} />
+      <CampusCoinsHud visible={playing && !talking && !form.open && !catalogView.open && !modal} onOpen={() => setShopOpen(true)} />
+      <CampusStorePrompt
+        enabled={playing && portal.stage === "idle" && !talking && !form.open && !catalogView.open && !modal}
+        blocked={krucnNear || !!activeZoneId}
+        onOpen={() => setShopOpen(true)} />
+      <CampusShop
+        open={shopOpen}
+        avatar={avatar}
+        onEquip={(patch) => setAvatar((a) => ({ ...a, ...patch }))}
+        onClose={() => setShopOpen(false)}
+      />
       <CampusSeatPrompt
-        enabled={playing && portal.stage === "idle" && !talking && !form.open && !catalogView.open}
+        enabled={playing && portal.stage === "idle" && !talking && !form.open && !catalogView.open && !modal}
         blocked={krucnNear || !!activeZoneId}
       />
       <CampusToast message={toast.message} visible={toast.visible} />
@@ -535,11 +603,13 @@ export function CampusExperience(props: {
         initialSchool={catalogView.school}
         initialProgram={catalogView.program}
         onClose={() => setCatalogView({ open: false })}
+        onDemo={setDemoCourse}
         onSignup={(program) => {
           setCatalogView({ open: false });
           setForm({ open: true, program });
         }}
       />
+      {demoCourse && <CampusDemoCourse code={demoCourse} stats={stats} onClose={closeDemo} />}
       <CampusFormModal
         open={form.open}
         schools={schools}
@@ -548,6 +618,7 @@ export function CampusExperience(props: {
         onClose={() => setForm((f) => ({ ...f, open: false }))}
         onSubmitted={() => {
           setForm((f) => ({ ...f, open: false }));
+          earn("signup");
           showToast(t.submitted);
         }}
       />

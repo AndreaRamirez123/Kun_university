@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useCallback, useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Bloom, EffectComposer, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
 import { BlendFunction, ToneMappingMode } from "postprocessing";
@@ -15,6 +15,8 @@ import { CampusInterior, INTERIOR_ORIGIN } from "./campus-interior";
 import { CampusPlayer } from "./campus-player";
 import { BeachBalls, KunLetters, KunShield, LETTER_COLLIDERS } from "./campus-props";
 import { CAFE_COLLIDERS, KunCafe } from "./campus-cafe";
+import { CampusCoins, KunStore, STORE_COLLIDERS } from "./campus-store";
+import { earn } from "./campus-wallet";
 import { RemotePlayers } from "./campus-remote-players";
 import { playBoing } from "./campus-audio";
 import { miiHeight } from "./campus-mii";
@@ -203,6 +205,7 @@ export function CampusScene({
   stats,
   interiorChapters,
   myEmote,
+  onCoin,
   reduceMotion,
   playerRef,
   onZoneChange,
@@ -225,6 +228,8 @@ export function CampusScene({
   interiorChapters: Chapter[] | null;
   /** Emote propio (emoji o frase) que se muestra sobre el personaje. */
   myEmote: { index: number; at: number } | null;
+  /** Recogió una moneda flotante. */
+  onCoin: () => void;
   reduceMotion: boolean;
   playerRef: React.RefObject<THREE.Group | null>;
   onZoneChange: (id: string | null) => void;
@@ -232,8 +237,20 @@ export function CampusScene({
   onBump: (strength: number) => void;
 }) {
   const vegetation = useVegetation();
+  // Jugar también da monedas (con límite diario, ver campus-wallet).
+  const playAndEarn = useCallback(
+    (strength: number) => {
+      onBump(strength);
+      earn("play");
+    },
+    [onBump],
+  );
+  const bounceAndEarn = useCallback(() => {
+    playBoing();
+    earn("bounce");
+  }, []);
   const colliders: Collider[] = useMemo(
-    () => [...ZONES.map((z) => ({ x: z.x, z: z.z, r: z.r })), ...palmColliders(vegetation.palms), ...LETTER_COLLIDERS, ...FLORIDA_COLLIDERS, ...CAFE_COLLIDERS],
+    () => [...ZONES.map((z) => ({ x: z.x, z: z.z, r: z.r })), ...palmColliders(vegetation.palms), ...LETTER_COLLIDERS, ...FLORIDA_COLLIDERS, ...CAFE_COLLIDERS, ...STORE_COLLIDERS],
     [vegetation],
   );
   const narrow = typeof window !== "undefined" && window.innerWidth < 700;
@@ -280,10 +297,12 @@ export function CampusScene({
         showLabels={phase === "playing"}
         sky={sky}
       />
-      <KunLetters onBump={onBump} />
+      <KunLetters onBump={playAndEarn} />
       <KunShield />
       <KunCafe locale={locale} />
-      <BeachBalls colliders={colliders} onBump={onBump} />
+      <KunStore locale={locale} />
+      <CampusCoins enabled={phase === "playing"} onCollect={onCoin} />
+      <BeachBalls colliders={colliders} onBump={playAndEarn} />
       <CampusPlayer
         groupRef={playerRef}
         avatar={avatar}
@@ -292,7 +311,7 @@ export function CampusScene({
         visible={lineupGender === null}
         colliders={colliders}
         onLand={onBump}
-        onBounce={playBoing}
+        onBounce={bounceAndEarn}
       />
       {lineupGender !== null && <CampusLineup selected={lineupGender} />}
       <CampusAnimals playing={phase === "playing"} pet={lineupGender !== null ? "dog" : avatar.pet} />

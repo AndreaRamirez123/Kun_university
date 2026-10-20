@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { MiiAvatar, miiHeight } from "./campus-mii";
 import { CampusLabel } from "./campus-label";
 import { CAFE_SEATS, CAFE_TRAMPOLINES } from "./campus-cafe";
+import { BEACH_TRAMPOLINES } from "./campus-florida";
 import { campusRuntime } from "./campus-runtime";
 import { GRASS_RADIUS, PLAYER_START, WALK_RADIUS, type Avatar, type Collider } from "./campus-zones";
 
@@ -19,6 +20,7 @@ const JUMP_SPEED = 11;
 const TRAMPOLINE_LAUNCH = 19.5;
 /** Rebote al caer sobre la lona de una sombrilla. */
 const TRAMPOLINE_BOUNCE = 15;
+const TRAMPOLINES = [...CAFE_TRAMPOLINES, ...BEACH_TRAMPOLINES];
 const DUST_COUNT = 24;
 
 const MOVE_KEYS = new Set(["KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"]);
@@ -154,7 +156,7 @@ export function CampusPlayer({
         if (m.grounded) {
           // Debajo de una sombrilla, el salto es un lanzamiento hasta la lona.
           // (La mesa no deja pararse justo debajo: basta con estar junto a ella.)
-          const under = m.y < 0.5 ? CAFE_TRAMPOLINES.find((u) => Math.hypot(g.position.x - u.x, g.position.z - u.z) < u.r + 0.4) : undefined;
+          const under = m.y < 0.5 ? TRAMPOLINES.find((u) => Math.hypot(g.position.x - u.x, g.position.z - u.z) < u.r + 0.4) : undefined;
           m.vy = under ? TRAMPOLINE_LAUNCH : JUMP_SPEED;
           if (under) m.aim = { x: under.x + (g.position.x - under.x) * 0.25, z: under.z + (g.position.z - under.z) * 0.25 };
           m.grounded = false;
@@ -214,10 +216,11 @@ export function CampusPlayer({
     } else {
       m.walk *= 0.85;
       if (!playing) {
-        // En la pantalla de inicio el personaje mira a la cámara.
-        let diff = 0 - g.rotation.y;
+        // En la pantalla de inicio el personaje mira a la cámara, o hacia donde
+        // lo gire la persona en el editor (para verlo de espaldas).
+        let diff = campusRuntime.previewSpin - g.rotation.y;
         diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-        g.rotation.y += diff * Math.min(1, delta * 3);
+        g.rotation.y += diff * Math.min(1, delta * 7);
       }
     }
     campusRuntime.player.x = g.position.x;
@@ -232,7 +235,7 @@ export function CampusPlayer({
       m.vy -= GRAVITY * delta;
       m.y += m.vy * delta;
       if (m.vy < 0) {
-        for (const u of CAFE_TRAMPOLINES) {
+        for (const u of TRAMPOLINES) {
           const d = Math.hypot(g.position.x - u.x, g.position.z - u.z);
           if (d > u.r) continue;
           const top = u.top(d);

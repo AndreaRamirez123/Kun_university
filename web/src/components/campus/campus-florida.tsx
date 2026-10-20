@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { labelFontFamily, useFontsReady } from "./campus-label";
 import type { SkyPreset } from "./campus-sky";
+import type { Trampoline } from "./campus-cafe";
 import type { Collider } from "./campus-zones";
 
 // Detalles que hacen al campus inconfundiblemente de Florida, EE. UU.:
@@ -53,6 +54,23 @@ const LAMPS = [13.5, 21.5, 27].flatMap((z) => [
 ]);
 
 /** Colisiones de la decoración, para el jugador y las pelotas. */
+/** Sombrilla de playa junto a cada torre salvavidas (coordenadas locales de la torre). */
+const BEACH_UMBRELLA = { lx: 3.2, lz: 1.2, r: 1.5, rim: 2.08, tip: 2.62 };
+
+/** Las sombrillas de playa también son trampolines (ver CAFE_TRAMPOLINES). */
+export const BEACH_TRAMPOLINES: Trampoline[] = LIFEGUARDS.map(({ x, z, a }) => {
+  const rot = Math.atan2(Math.cos(a), Math.sin(a));
+  const c = Math.cos(rot);
+  const s = Math.sin(rot);
+  const u = BEACH_UMBRELLA;
+  return {
+    x: x + u.lx * c + u.lz * s,
+    z: z - u.lx * s + u.lz * c,
+    r: u.r,
+    top: (d: number) => u.rim + (u.tip - u.rim) * Math.max(0, 1 - d / u.r),
+  };
+});
+
 export const FLORIDA_COLLIDERS: Collider[] = [
   ...FLAGS.map((f) => ({ x: f.x, z: f.z, r: 0.35 })),
   { x: SIGN.x, z: SIGN.z, r: 2.4 },

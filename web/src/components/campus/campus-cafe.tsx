@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { campusRuntime } from "./campus-runtime";
 import type { Locale } from "@/i18n/locale-context";
 import { CampusLabel, labelFontFamily, useFontsReady } from "./campus-label";
 import { CAFE, type Collider } from "./campus-zones";
@@ -153,7 +155,7 @@ function Std({ color, rough = 0.6, metal = 0 }: { color: string; rough?: number;
   return <meshStandardMaterial color={color} roughness={rough} metalness={metal} />;
 }
 
-function Table({ x, z, umbrella }: { x: number; z: number; umbrella: string }) {
+function Table({ x, z, umbrella, canopyRef }: { x: number; z: number; umbrella: string; canopyRef: (m: THREE.MeshStandardMaterial | null) => void }) {
   return (
     <group position={[x, 0, z]}>
       <mesh position={[0, 1.0, 0]} castShadow receiveShadow>
@@ -171,7 +173,7 @@ function Table({ x, z, umbrella }: { x: number; z: number; umbrella: string }) {
       </mesh>
       <mesh position={[0, 3.0, 0]} castShadow>
         <coneGeometry args={[1.55, 0.7, 10]} />
-        <meshStandardMaterial color={umbrella} roughness={0.7} flatShading />
+        <meshStandardMaterial ref={canopyRef} color={umbrella} roughness={0.7} flatShading transparent />
       </mesh>
       {/* Taburetes */}
       {STOOL_ANGLES.map((a) => (
@@ -208,6 +210,23 @@ function StringLights({ from, to }: { from: [number, number, number]; to: [numbe
 
 export function KunCafe({ locale }: { locale: Locale }) {
   const { awning, sign } = useCafeTextures();
+  // Si el personaje queda debajo o detrás de una sombrilla, esta se vuelve
+  // transparente para que no lo tape (la cámara mira desde el sur).
+  const canopies = useRef<Array<THREE.MeshStandardMaterial | null>>([]);
+  useFrame((_, delta) => {
+    const p = campusRuntime.player;
+    CAFE_TRAMPOLINES.forEach((u, i) => {
+      const m = canopies.current[i];
+      if (!m) return;
+      const dx = p.x - u.x;
+      const dz = p.z - u.z;
+      // Debajo, o un poco al norte (la sombrilla queda entre la cámara y el personaje).
+      const hidden = p.y < u.top(0) - 0.4 && Math.hypot(dx, dz + 1.2) < u.r + 1.4;
+      const target = hidden ? 0.22 : 1;
+      m.opacity += (target - m.opacity) * Math.min(1, delta * 8);
+      m.depthWrite = m.opacity > 0.95;
+    });
+  });
   const [kx, kz] = KIOSK;
   return (
     <group position={[CAFE.x, 0.2, CAFE.z]} rotation={[0, ROT, 0]}>
@@ -269,7 +288,15 @@ export function KunCafe({ locale }: { locale: Locale }) {
         </group>
 
         {TABLES.map(([x, z], i) => (
-          <Table key={i} x={x} z={z} umbrella={i % 2 ? NAVY : RED} />
+          <Table
+            key={i}
+            x={x}
+            z={z}
+            umbrella={i % 2 ? NAVY : RED}
+            canopyRef={(m) => {
+              canopies.current[i] = m;
+            }}
+          />
         ))}
 
         {/* Postes y guirnaldas de luces */}

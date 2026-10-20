@@ -16,6 +16,7 @@ import {
   type CatalogProgram,
   type CatalogSchool,
 } from "@/lib/catalog";
+import { findDemo, useDemoProgress } from "./campus-demo";
 import { ZONES } from "./campus-zones";
 
 // Catálogo académico dentro del campus: escuelas → programas → materias por
@@ -44,6 +45,12 @@ const COPY = {
     noContinuing: "Esta escuela aún no tiene certificaciones de educación continua.",
     signup: "Inscribirme en este programa",
     byLevel: "Agrupado por nivel",
+    demos: "Clases demo",
+    demosHint: "Mira una clase real de este programa, con preguntas rápidas y su juego de repaso. Es una vista previa: no es una inscripción.",
+    demoBadge: "🎬 Clase demo",
+    demoCount: (n: number) => `🎬 ${n} ${n === 1 ? "clase demo" : "clases demo"}`,
+    watch: "Ver clase →",
+    seen: (d: number, n: number) => `${d}/${n} lecciones`,
     bySemester: "Agrupado por semestre",
   },
   en: {
@@ -68,6 +75,12 @@ const COPY = {
     noContinuing: "This school has no continuing education certificates yet.",
     signup: "Sign up for this program",
     byLevel: "Grouped by level",
+    demos: "Demo classes",
+    demosHint: "Watch a real class from this program, with quick questions and its review game. It is a preview, not an enrollment.",
+    demoBadge: "🎬 Demo class",
+    demoCount: (n: number) => `🎬 ${n} ${n === 1 ? "demo class" : "demo classes"}`,
+    watch: "Watch class →",
+    seen: (d: number, n: number) => `${d}/${n} lessons`,
     bySemester: "Grouped by semester",
   },
 };
@@ -89,6 +102,7 @@ export function CampusCatalog({
   initialProgram,
   onClose,
   onSignup,
+  onDemo,
 }: {
   open: boolean;
   /** Nombre de la escuela con la que abre (API o JSON). Si falta, abre en la lista de escuelas. */
@@ -97,6 +111,8 @@ export function CampusCatalog({
   initialProgram?: string;
   onClose: () => void;
   onSignup?: (program: string) => void;
+  /** Abre la clase demo de una materia (por su código). */
+  onDemo?: (course: string) => void;
 }) {
   const t = usePick(COPY);
   const { locale } = useLocale();
@@ -167,7 +183,7 @@ export function CampusCatalog({
         <div key={`${school?.escuela ?? "all"}-${program?.programa ?? ""}`} className="reveal-animate min-h-0 flex-1 overflow-y-auto overscroll-contain px-7 py-6 max-md:px-4">
           {!school && <SchoolsView onPick={(s) => setView({ school: s, program: null })} />}
           {school && !program && <SchoolView school={school} accent={accent} onPick={(p) => setView({ school, program: p })} />}
-          {school && program && <ProgramView program={program} accent={accent} locale={locale} onSignup={onSignup} />}
+          {school && program && <ProgramView program={program} accent={accent} locale={locale} onSignup={onSignup} onDemo={onDemo} />}
         </div>
       </div>
     </div>
@@ -245,6 +261,11 @@ function SchoolView({ school, accent, onPick }: { school: CatalogSchool; accent:
               </span>
               <span className="flex flex-col items-end gap-1 max-md:items-start">
                 <span className={`${MONO} text-[11px] text-white/50`}>{t.courses(p.materias.length)}</span>
+                {programDemos(p).length > 0 && (
+                  <span className="rounded-full px-2.5 py-0.5 text-[11.5px] font-bold text-[#06131A]" style={{ background: accent }}>
+                    {t.demoCount(programDemos(p).length)}
+                  </span>
+                )}
                 <span className="text-[14px] font-bold whitespace-nowrap" style={{ color: accent }}>
                   {t.seeCourses}
                 </span>
@@ -274,14 +295,18 @@ function ProgramView({
   accent,
   locale,
   onSignup,
+  onDemo,
 }: {
   program: CatalogProgram;
   accent: string;
   locale: "es" | "en";
   onSignup?: (program: string) => void;
+  onDemo?: (course: string) => void;
 }) {
   const t = usePick(COPY);
   const groups = groupCourses(program);
+  const demos = onDemo ? programDemos(program) : [];
+  const progress = useDemoProgress();
   return (
     <div className="flex flex-col gap-5">
       <div className="grid grid-cols-3 gap-3 max-sm:grid-cols-1">
@@ -295,6 +320,41 @@ function ProgramView({
           <Fact label={t.modality} value={catalogText(program.modalidad, locale)} />
         </div>
       </div>
+      {demos.length > 0 && onDemo && (
+        <section className="rounded-2xl border p-4" style={{ borderColor: `${accent}66`, background: `linear-gradient(120deg, ${accent}22, transparent 70%)` }}>
+          <h3 className={`${MONO} m-0 text-[12px] font-bold`} style={{ color: accent }}>
+            {t.demos}
+          </h3>
+          <p className="m-0 mt-1 text-[12.5px] text-white/65">{t.demosHint}</p>
+          <div className="mt-3 grid grid-cols-2 gap-3 max-md:grid-cols-1">
+            {demos.map((d) => {
+              const seen = progress.done[d.code]?.length ?? 0;
+              return (
+                <button
+                  key={d.code}
+                  type="button"
+                  onClick={() => onDemo(d.code)}
+                  className="group flex cursor-pointer items-center gap-4 rounded-2xl border border-white/15 bg-[#06131A]/70 p-3 text-left transition hover:-translate-y-0.5 hover:border-white/40"
+                >
+                  <span aria-hidden className="grid h-16 w-24 shrink-0 place-items-center rounded-xl text-2xl text-[#06131A]" style={{ background: accent }}>
+                    ▶
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-mono text-[11px] text-white/50">{d.code}</span>
+                    <span className="block text-[15px] leading-snug font-bold">{d.name[locale]}</span>
+                    <span className="mt-1 block text-[11.5px] text-white/55">
+                      {t.seen(seen, d.class.length)} · ES / EN · ♨️
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-[13px] font-bold max-sm:hidden" style={{ color: accent }}>
+                    {t.watch}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span className={`${MONO} text-[11px] text-white/55`}>
           {isByLevel(program) ? t.byLevel : t.bySemester} · {t.courses(program.materias.length)} · {t.programTotal(totalCredits(program))}
@@ -322,7 +382,19 @@ function ProgramView({
               {g.courses.map((c) => (
                 <li key={`${c.codigo}-${c.materia}`} className="grid grid-cols-[5.5rem_1fr_auto] items-baseline gap-2 text-[13px] leading-snug">
                   <span className="font-mono text-[11.5px] text-white/50">{c.codigo}</span>
-                  <span className="text-white/90">{c.materia}</span>
+                  <span className="text-white/90">
+                    {c.materia}
+                    {onDemo && findDemo(c.codigo) && (
+                      <button
+                        type="button"
+                        onClick={() => onDemo(c.codigo)}
+                        className="ml-2 cursor-pointer rounded-full px-2 py-0.5 align-middle text-[10.5px] font-bold text-[#06131A]"
+                        style={{ background: accent }}
+                      >
+                        {t.demoBadge}
+                      </button>
+                    )}
+                  </span>
                   <span className="font-mono text-[12px] text-white/60">{c.creditos}</span>
                 </li>
               ))}
@@ -338,6 +410,11 @@ function ProgramView({
       </div>
     </div>
   );
+}
+
+/** Demos de materias que tiene un programa. */
+function programDemos(program: CatalogProgram) {
+  return program.materias.map((m) => findDemo(m.codigo)).filter((d) => d !== undefined);
 }
 
 // ---------------------------------------------------------------- 4. educación continua

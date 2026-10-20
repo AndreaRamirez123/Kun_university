@@ -225,70 +225,227 @@ function Cap({ radius, theta, tilt, color, y = 0, z = 0 }: { radius: number; the
   );
 }
 
+// Peinados al estilo Roblox: un "casco" de pelo cubre coronilla, lados y nuca
+// (así de espaldas nunca se ve calvo) y cada estilo suma su volumen encima.
+// La cara mira a +z (phi = π/2 en la esfera); FACE deja libre la cara y las orejas.
+const FACE = 0.8;
+/** Alrededor de la cabeza, sin la cara. */
+const AROUND: [number, number] = [Math.PI / 2 + FACE, Math.PI * 2 - FACE * 2];
+/** Solo la parte de atrás (sin tapar las orejas). */
+const BACK: [number, number] = [Math.PI + 0.32, Math.PI - 0.64];
+/** Solo el frente (flequillo). */
+const FRONT: [number, number] = [Math.PI / 2 - 0.95, 1.9];
+
+function Shell({ r, phi = [0, Math.PI * 2], theta, color, scale }: { r: number; phi?: [number, number]; theta: [number, number]; color: string; scale?: [number, number, number] }) {
+  return (
+    <mesh castShadow scale={scale}>
+      <sphereGeometry args={[r, 40, 24, phi[0], phi[1], theta[0], theta[1]]} />
+      <meshStandardMaterial color={color} roughness={0.85} side={THREE.DoubleSide} />
+    </mesh>
+  );
+}
+
+function Blob({ p, r, c, s }: { p: [number, number, number]; r: number; c: string; s?: [number, number, number] }) {
+  return (
+    <mesh position={p} scale={s} castShadow>
+      <sphereGeometry args={[r, 14, 10]} />
+      <Std color={c} rough={0.9} />
+    </mesh>
+  );
+}
+
+/** Base de todos los peinados: coronilla y nuca cubiertas. */
+function Helmet({ c, r = 1.06, nape = 1.78 }: { c: string; r?: number; nape?: number }) {
+  return (
+    <>
+      <Shell r={R * r} theta={[0, 1.12]} color={c} />
+      <Shell r={R * (r - 0.005)} phi={BACK} theta={[1.0, nape - 1.0]} color={c} />
+    </>
+  );
+}
+
+/** Punto en la superficie de la cabeza (theta desde la coronilla, phi alrededor). */
+function onHead(theta: number, phi: number, r: number): [number, number, number] {
+  return [-r * Math.cos(phi) * Math.sin(theta), r * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta)];
+}
+
+/** Pelo largo de atrás: cae hasta los hombros. */
+function BackFall({ c, len = 0.95, wavy = false }: { c: string; len?: number; wavy?: boolean }) {
+  return (
+    <>
+      <mesh position={[0, -R * 0.62, -R * 0.5]} scale={[1.22, 1, 0.52]} castShadow>
+        <capsuleGeometry args={[0.5, len, 6, 18]} />
+        <Std color={c} rough={0.85} />
+      </mesh>
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[s * R * 0.9, -R * 0.55, R * 0.08]} rotation={[0.12, 0, s * 0.06]} castShadow>
+          <capsuleGeometry args={[0.15, len * 0.95, 6, 10]} />
+          <Std color={c} rough={0.85} />
+        </mesh>
+      ))}
+      {wavy &&
+        [-0.42, -0.14, 0.14, 0.42].map((x, i) => <Blob key={i} p={[x, -R * 0.62 - len * 0.62, -R * 0.42]} r={0.17} c={c} />)}
+      {wavy && [-1, 1].map((s) => <Blob key={s} p={[s * R * 0.92, -R * 0.55 - len * 0.55, R * 0.1]} r={0.15} c={c} />)}
+    </>
+  );
+}
+
 function Hair({ a }: { a: Avatar }) {
   const c = a.hairColor;
-  switch (a.hairStyle) {
+  const male = a.gender === "male";
+  // Un "corto" de mujer es un pixie, no un corte rapado.
+  const style = a.hairStyle === "short" && a.gender === "female" ? "pixie" : a.hairStyle;
+  switch (style) {
     case "bald":
       return null;
     case "buzz":
-      return <Cap radius={R * 1.025} theta={1.12} tilt={-0.42} color={c} />;
+      return <Helmet c={c} r={1.025} nape={1.72} />;
     case "short":
       return (
         <>
-          <Cap radius={R * 1.06} theta={1.2} tilt={-0.48} color={c} />
-          {/* Flequillo */}
-          <mesh position={[0.12, R * 0.62, R * 0.62]} rotation={[0.6, 0, -0.5]} scale={[1.4, 0.55, 0.7]} castShadow>
-            <sphereGeometry args={[0.22, 16, 10]} />
+          <Helmet c={c} r={1.05} />
+          {/* Volumen arriba y flequillo corto */}
+          <Blob p={[0, R * 0.72, -R * 0.05]} r={R * 0.9} c={c} s={[1, 0.42, 1]} />
+          <Blob p={[0.14, R * 0.66, R * 0.6]} r={0.22} c={c} s={[1.5, 0.5, 0.7]} />
+        </>
+      );
+    case "quiff":
+      return (
+        <>
+          <Helmet c={c} r={1.045} />
+          <mesh position={[0, R * 0.98, R * 0.32]} rotation={[-0.55, 0, 0]} scale={[1.15, 0.6, 0.95]} castShadow>
+            <sphereGeometry args={[0.32, 16, 12]} />
             <Std color={c} rough={0.85} />
           </mesh>
         </>
       );
-    case "curly":
+    case "spiky":
       return (
         <>
-          <Cap radius={R * 1.06} theta={1.18} tilt={-0.45} color={c} />
-          {Array.from({ length: 12 }, (_, i) => {
-            const a2 = (i / 12) * Math.PI * 2;
-            // Rizos alrededor de la línea del pelo, sin tapar la frente.
-            if (Math.sin(a2) > 0.55) return null;
+          <Helmet c={c} r={1.045} />
+          {[
+            [0, 0.2],
+            [0.55, 0.45],
+            [-0.55, 0.45],
+            [0.3, -0.3],
+            [-0.3, -0.3],
+            [0, 0.75],
+            [0, -0.75],
+          ].map(([x, z], i) => {
+            const p = onHead(0.35 + Math.hypot(x, z) * 0.45, Math.atan2(z, -x), R * 1.0);
             return (
-              <mesh key={i} position={[Math.cos(a2) * R * 0.98, R * 0.38, Math.sin(a2) * R * 0.98 - 0.05]} castShadow>
-                <sphereGeometry args={[0.2, 12, 10]} />
-                <Std color={c} rough={0.9} />
+              <mesh key={i} position={p} rotation={[z * 0.6, 0, -x * 0.6]} castShadow>
+                <coneGeometry args={[0.13, 0.42, 6]} />
+                <Std color={c} rough={0.85} />
               </mesh>
             );
           })}
-          <mesh position={[0, R * 1.0, 0]} castShadow>
-            <sphereGeometry args={[0.26, 12, 10]} />
-            <Std color={c} rough={0.9} />
+        </>
+      );
+    case "manbun":
+      return (
+        <>
+          <Helmet c={c} r={1.05} />
+          <Blob p={[0, R * 0.62, -R * 0.98]} r={0.22} c={c} />
+          <mesh position={[0, R * 0.62, -R * 0.84]} rotation={[0.3, 0, 0]}>
+            <torusGeometry args={[0.12, 0.04, 6, 14]} />
+            <Std color="#24123F" />
           </mesh>
+        </>
+      );
+    case "dreads":
+      return (
+        <>
+          <Helmet c={c} r={1.06} />
+          {Array.from({ length: 11 }, (_, i) => {
+            const phi = AROUND[0] + 0.2 + (i / 10) * (AROUND[1] - 0.4);
+            const [x, , z] = onHead(1.4, phi, R * 1.0);
+            return (
+              <mesh key={i} position={[x, -R * 0.28, z]} rotation={[z * 0.15, 0, -x * 0.15]} castShadow>
+                <capsuleGeometry args={[0.075, 0.62, 4, 8]} />
+                <Std color={c} rough={0.95} />
+              </mesh>
+            );
+          })}
+        </>
+      );
+    case "curly":
+      if (male)
+        return (
+          <>
+            <Helmet c={c} r={1.05} />
+            {Array.from({ length: 14 }, (_, i) => {
+              const ring = i < 6 ? 0.35 : 0.85;
+              const k = i < 6 ? i / 6 : (i - 6) / 8;
+              return <Blob key={i} p={onHead(ring, k * Math.PI * 2 + ring, R * 1.04)} r={0.19} c={c} />;
+            })}
+          </>
+        );
+      // Rizos largos: bucles por toda la cabeza hasta los hombros.
+      return (
+        <>
+          <Helmet c={c} r={1.08} nape={2.0} />
+          {Array.from({ length: 34 }, (_, i) => {
+            const row = Math.floor(i / 9);
+            const k = (i % 9) / 8;
+            const theta = 0.45 + row * 0.5;
+            const span = row === 0 ? [0, Math.PI * 2] : AROUND;
+            const p = onHead(Math.min(theta, 2.1), span[0] + k * span[1], R * 1.08);
+            if (row === 3) p[1] -= 0.25;
+            return <Blob key={i} p={p} r={0.21} c={c} />;
+          })}
         </>
       );
     case "long":
       return (
         <>
-          <Cap radius={R * 1.07} theta={1.28} tilt={-0.4} color={c} />
-          <mesh position={[0, -R * 0.55, -R * 0.42]} scale={[1.15, 1, 0.55]} castShadow>
-            <capsuleGeometry args={[0.5, 0.7, 6, 16]} />
+          <Helmet c={c} r={1.07} />
+          <Shell r={R * 1.075} phi={AROUND} theta={[0.9, 1.25]} color={c} />
+          <BackFall c={c} />
+        </>
+      );
+    case "wavy":
+      return (
+        <>
+          <Helmet c={c} r={1.08} />
+          <Shell r={R * 1.09} phi={AROUND} theta={[0.9, 1.25]} color={c} scale={[1.04, 1, 1.02]} />
+          <BackFall c={c} wavy />
+        </>
+      );
+    case "bob":
+      return (
+        <>
+          <Helmet c={c} r={1.1} />
+          {/* Melena a la altura de la mandíbula y flequillo */}
+          <Shell r={R * 1.12} phi={AROUND} theta={[0.85, 1.25]} color={c} scale={[1.05, 1, 1.02]} />
+          <Shell r={R * 1.1} phi={FRONT} theta={[0.3, 0.8]} color={c} />
+        </>
+      );
+    case "pixie":
+      return (
+        <>
+          <Helmet c={c} r={1.07} nape={1.95} />
+          {/* Corto femenino: tapa las orejas, nuca larga y flequillo de lado */}
+          <Shell r={R * 1.08} phi={AROUND} theta={[0.9, 0.78]} color={c} />
+          <mesh position={[0.12, R * 0.6, R * 0.66]} rotation={[0.55, 0, -0.6]} scale={[2.0, 0.6, 0.8]} castShadow>
+            <sphereGeometry args={[0.22, 16, 10]} />
             <Std color={c} rough={0.85} />
           </mesh>
+          <Blob p={[0, R * 0.78, -R * 0.15]} r={R * 0.85} c={c} s={[1, 0.38, 1]} />
           {[-1, 1].map((s) => (
-            <mesh key={s} position={[s * R * 0.88, -R * 0.42, R * 0.12]} rotation={[0.1, 0, s * 0.08]} castShadow>
-              <capsuleGeometry args={[0.15, 0.62, 6, 10]} />
-              <Std color={c} rough={0.85} />
-            </mesh>
+            <Blob key={s} p={[s * R * 0.9, R * 0.05, R * 0.18]} r={0.11} c={c} s={[0.7, 1.6, 0.9]} />
           ))}
         </>
       );
     case "ponytail":
       return (
         <>
-          <Cap radius={R * 1.06} theta={1.2} tilt={-0.45} color={c} />
-          <mesh position={[0, R * 0.05, -R * 1.15]} rotation={[0.55, 0, 0]} castShadow>
-            <capsuleGeometry args={[0.17, 0.62, 6, 10]} />
+          <Helmet c={c} r={1.06} />
+          <mesh position={[0, R * 0.05, -R * 1.18]} rotation={[0.3, 0, 0]} castShadow>
+            <capsuleGeometry args={[0.18, 0.9, 6, 12]} />
             <Std color={c} rough={0.85} />
           </mesh>
-          <mesh position={[0, R * 0.32, -R * 0.98]} rotation={[0.55, 0, 0]}>
+          <mesh position={[0, R * 0.58, -R * 0.98]} rotation={[0.9, 0, 0]}>
             <torusGeometry args={[0.13, 0.05, 6, 16]} />
             <Std color="#FFC85C" />
           </mesh>
@@ -297,17 +454,44 @@ function Hair({ a }: { a: Avatar }) {
     case "bun":
       return (
         <>
-          <Cap radius={R * 1.05} theta={1.18} tilt={-0.45} color={c} />
-          <mesh position={[0, R * 1.02, -R * 0.38]} castShadow>
-            <sphereGeometry args={[0.3, 16, 12]} />
-            <Std color={c} rough={0.85} />
+          <Helmet c={c} r={1.06} />
+          <Blob p={[0, R * 1.02, -R * 0.36]} r={0.32} c={c} />
+          <mesh position={[0, R * 0.86, -R * 0.3]} rotation={[-0.3, 0, 0]}>
+            <torusGeometry args={[0.2, 0.05, 6, 18]} />
+            <Std color="#FFC85C" />
           </mesh>
+        </>
+      );
+    case "braids":
+      return (
+        <>
+          <Helmet c={c} r={1.07} />
+          {[-1, 1].map((s) => (
+            <group key={s}>
+              {Array.from({ length: 6 }, (_, i) => (
+                <Blob key={i} p={[s * (R * 0.82 + i * 0.012), -R * 0.15 - i * 0.2, R * 0.05 + i * 0.05]} r={0.13 - i * 0.008} c={c} s={[1, 1.15, 1]} />
+              ))}
+              <mesh position={[s * (R * 0.82 + 0.08), -R * 0.15 - 6 * 0.2 + 0.05, R * 0.05 + 0.3]}>
+                <sphereGeometry args={[0.07, 8, 6]} />
+                <Std color="#E8735A" />
+              </mesh>
+            </group>
+          ))}
+        </>
+      );
+    case "puffs":
+      return (
+        <>
+          <Helmet c={c} r={1.06} />
+          {[-1, 1].map((s) => (
+            <Blob key={s} p={[s * R * 0.66, R * 0.86, -R * 0.12]} r={0.34} c={c} />
+          ))}
         </>
       );
     case "afro":
       return (
         <>
-          <Cap radius={R * 1.07} theta={1.2} tilt={-0.45} color={c} />
+          <Helmet c={c} r={1.07} />
           {/* Volumen del afro: esfera grande hacia arriba y atrás, sin tapar la cara */}
           <mesh position={[0, R * 0.5, -R * 0.42]} castShadow>
             <sphereGeometry args={[R * 1.3, 24, 18]} />
@@ -350,10 +534,13 @@ function GlassesMesh({ kind }: { kind: Avatar["glasses"] }) {
   );
 }
 
+/** Peinados con volumen: los sombreros crecen y suben para no hundirse en el pelo. */
+const BIG_HAIR: Avatar["hairStyle"][] = ["afro", "curly", "puffs", "spiky", "quiff", "bun"];
+
 function HeadAccessory({ a }: { a: Avatar }) {
   if (a.accessory === "cap") {
     // Con peinados voluminosos la gorra crece y sube para no hundirse en el pelo.
-    const big = a.hairStyle === "afro" || a.hairStyle === "curly";
+    const big = BIG_HAIR.includes(a.hairStyle);
     return (
       <group position={[0, big ? R * 0.32 : 0, big ? -R * 0.08 : 0]} scale={big ? 1.25 : 1}>
         <Cap radius={R * 1.1} theta={1.12} tilt={-0.12} color={a.outfit} />
@@ -365,6 +552,72 @@ function HeadAccessory({ a }: { a: Avatar }) {
           <circleGeometry args={[0.13, 20]} />
           <Std color="#FFC85C" emissive="#FF9A3C" />
         </mesh>
+      </group>
+    );
+  }
+  if (a.accessory === "gradcap") {
+    // Birrete de graduación de KUN (como el de Krucn).
+    const big = BIG_HAIR.includes(a.hairStyle);
+    return (
+      <group position={[0, big ? R * 0.3 : 0, 0]} scale={big ? 1.2 : 1}>
+        <Cap radius={R * 1.08} theta={0.95} tilt={-0.05} color="#14306E" />
+        <mesh position={[0, R * 1.0, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
+          <boxGeometry args={[R * 1.75, 0.07, R * 1.75]} />
+          <Std color="#14306E" rough={0.5} />
+        </mesh>
+        <mesh position={[0, R * 1.05, 0]}>
+          <cylinderGeometry args={[0.07, 0.07, 0.06, 12]} />
+          <Std color="#FFC85C" emissive="#C98A1E" />
+        </mesh>
+        <mesh position={[R * 0.7, R * 0.72, R * 0.35]}>
+          <cylinderGeometry args={[0.035, 0.035, 0.5, 6]} />
+          <Std color="#FFC85C" emissive="#C98A1E" />
+        </mesh>
+      </group>
+    );
+  }
+  if (a.accessory === "sunhat") {
+    // Sombrero de paja de ala ancha, con cinta roja.
+    return (
+      <group position={[0, R * 0.62, 0]} rotation={[-0.08, 0, 0]}>
+        <mesh castShadow>
+          <cylinderGeometry args={[R * 1.75, R * 1.85, 0.06, 32]} />
+          <Std color="#E8C77A" rough={0.9} />
+        </mesh>
+        <mesh position={[0, R * 0.32, 0]} castShadow>
+          <cylinderGeometry args={[R * 0.78, R * 0.9, R * 0.62, 24]} />
+          <Std color="#E8C77A" rough={0.9} />
+        </mesh>
+        <mesh position={[0, R * 0.1, 0]}>
+          <cylinderGeometry args={[R * 0.91, R * 0.92, R * 0.18, 24]} />
+          <Std color="#C8102E" />
+        </mesh>
+      </group>
+    );
+  }
+  if (a.accessory === "crown") {
+    // Corona dorada con picos y gemas.
+    return (
+      <group position={[0, R * 0.86, 0]}>
+        <mesh castShadow>
+          <cylinderGeometry args={[R * 0.62, R * 0.58, R * 0.34, 20, 1, true]} />
+          <meshStandardMaterial color="#F2C14E" metalness={0.8} roughness={0.25} side={THREE.DoubleSide} />
+        </mesh>
+        {Array.from({ length: 6 }, (_, i) => {
+          const ang = (i / 6) * Math.PI * 2;
+          return (
+            <group key={i}>
+              <mesh position={[Math.sin(ang) * R * 0.6, R * 0.3, Math.cos(ang) * R * 0.6]}>
+                <coneGeometry args={[0.09, 0.24, 4]} />
+                <meshStandardMaterial color="#F2C14E" metalness={0.8} roughness={0.25} />
+              </mesh>
+              <mesh position={[Math.sin(ang) * R * 0.63, 0, Math.cos(ang) * R * 0.63]}>
+                <sphereGeometry args={[0.045, 8, 6]} />
+                <Std color={i % 2 ? "#C8102E" : "#3D6FD9"} emissive={i % 2 ? "#7A0A1C" : "#1E3A7A"} />
+              </mesh>
+            </group>
+          );
+        })}
       </group>
     );
   }

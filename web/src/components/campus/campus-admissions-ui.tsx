@@ -46,7 +46,7 @@ function ExplainerCanvas({ chapters, stats }: { chapters: Chapter[]; stats: Stat
       role="img"
       aria-label={chapters[0]?.title}
       className="aspect-video w-full rounded-[20px] border"
-      style={{ borderColor: `${glow}66`, boxShadow: `0 0 90px -12px ${glow}AA` }}
+      style={{ borderColor: `${glow}44` }}
     />
   );
 }
@@ -264,7 +264,7 @@ export function StudioRoom({
               controls
               autoPlay
               playsInline
-              className="aspect-video w-full rounded-[20px] border border-white/15 bg-black shadow-[0_0_80px_-10px_rgba(201,160,255,0.55)]"
+              className="aspect-video w-full rounded-[20px] border border-white/15 bg-black shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)]"
             />
           ) : (
             <ExplainerCanvas chapters={chapters} stats={stats} />
@@ -322,7 +322,7 @@ export function StudioRoom({
 
       {/* Abajo al centro: subtítulos y controles */}
       {mode === "video" && current && (
-        <div className="pointer-events-auto absolute bottom-[calc(28px+env(safe-area-inset-bottom,0px))] left-1/2 w-[min(640px,calc(100%-32px))] -translate-x-1/2 max-md:static max-md:order-6 max-md:w-full max-md:translate-x-0">
+        <div className="pointer-events-auto absolute bottom-[calc(28px+env(safe-area-inset-bottom,0px))] left-1/2 w-[min(640px,calc(100%-32px))] -translate-x-1/2 md:max-2xl:right-8 md:max-2xl:left-auto md:max-2xl:w-[min(560px,calc(100%-560px))] md:max-2xl:translate-x-0 max-md:static max-md:order-6 max-md:w-full max-md:translate-x-0">
           <div className={`${GLASS} rounded-2xl px-5 py-3 max-md:px-3.5 max-md:py-2.5`}>
             <p className="m-0 text-center text-[15px] leading-snug max-md:text-[13px]" aria-live="polite">
               {current.voice}

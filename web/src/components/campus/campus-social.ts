@@ -1,5 +1,5 @@
 import type { Locale } from "@/i18n/locale-context";
-import { DEFAULT_AVATAR, OPTIONS, type Avatar } from "./campus-avatar";
+import { DEFAULT_AVATAR, OPTIONS, PREMIUM_OPTIONS, type Avatar } from "./campus-avatar";
 
 // Interacción entre visitantes: solo emojis y frases de una lista cerrada, así
 // nadie puede escribir groserías ni datos personales y no hace falta moderar.
@@ -59,7 +59,8 @@ export function parseAvatar(json: string | undefined, name: string): Avatar {
   }
   const pick = <K extends keyof typeof OPTIONS>(key: K): Avatar[K] => {
     const v = raw[key];
-    return ((OPTIONS[key] as readonly unknown[]).includes(v) ? v : DEFAULT_AVATAR[key]) as Avatar[K];
+    const allowed = [...(OPTIONS[key] as readonly unknown[]), ...((PREMIUM_OPTIONS as Record<string, readonly unknown[]>)[key] ?? [])];
+    return (allowed.includes(v) ? v : DEFAULT_AVATAR[key]) as Avatar[K];
   };
   const color = (key: "skin" | "hairColor" | "outfit") => (typeof raw[key] === "string" && HEX.test(raw[key] as string) ? (raw[key] as string) : DEFAULT_AVATAR[key]);
   const num = (key: "height" | "build", min: number, max: number) => {
@@ -69,7 +70,7 @@ export function parseAvatar(json: string | undefined, name: string): Avatar {
   return {
     name: name.slice(0, 16),
     gender: pick("gender"),
-    pet: "none",
+    pet: pick("pet"),
     skin: color("skin"),
     hairStyle: pick("hairStyle"),
     hairColor: color("hairColor"),

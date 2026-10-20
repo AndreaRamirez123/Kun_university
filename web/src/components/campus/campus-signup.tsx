@@ -1,5 +1,6 @@
 "use client";
 
+import { earn } from "./campus-wallet";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import { catalog, catalogText, findCatalogSchool, schoolLabel, type CatalogProgram } from "@/lib/catalog";
@@ -149,7 +150,7 @@ export function SignupPanel({
 
         {/* Izquierda: la carrera y qué pasa después */}
         <aside
-          className="relative flex flex-col gap-5 overflow-hidden p-8 text-[#FFF3E6] max-md:p-5 max-md:pr-16 max-md:pb-0"
+          className="relative flex flex-col gap-5 overflow-x-hidden overflow-y-auto p-8 text-[#FFF3E6] [@media(max-height:820px)]:gap-3.5 [@media(max-height:820px)]:p-6 max-md:p-5 max-md:pr-16 max-md:pb-0"
           style={{ background: `linear-gradient(160deg, ${accent}55 0%, ${accent}18 45%, transparent 100%)` }}
         >
           <span aria-hidden className="absolute -top-24 -left-24 h-72 w-72 rounded-full opacity-40 blur-3xl" style={{ background: accent }} />
@@ -230,6 +231,7 @@ export function SignupPanel({
               onSubmit={(e) => {
                 e.preventDefault();
                 setDone(true);
+                earn("signup");
               }}
             >
               <label className={LABEL}>

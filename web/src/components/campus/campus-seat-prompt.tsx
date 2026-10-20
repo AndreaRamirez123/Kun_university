@@ -5,6 +5,7 @@ import { usePick } from "@/i18n/locale-context";
 import { visiblePlayers } from "@/lib/campus-presence";
 import { CAFE_SEATS } from "./campus-cafe";
 import { campusRuntime, resetCampusInput } from "./campus-runtime";
+import { earn } from "./campus-wallet";
 
 // Sentarse en los taburetes de la cafetería: al acercarse a uno libre aparece
 // el botón (o la tecla E). Para levantarse basta con caminar o saltar.
@@ -68,6 +69,7 @@ export function CampusSeatPrompt({ enabled, blocked }: { enabled: boolean; /** K
       resetCampusInput();
       campusRuntime.seat = s.near;
       setSeated(true);
+      earn("sit");
     }
   }
 

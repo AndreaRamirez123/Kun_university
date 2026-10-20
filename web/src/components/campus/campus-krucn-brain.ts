@@ -136,12 +136,13 @@ const INTERESTS: Record<string, string[]> = {
 const PLACE_WORDS: Record<string, string[]> = {
   ing: ["ingenieria", "engineering"],
   neg: ["negocios", "transformacion de negocios", "business"],
-  bie: ["bienestar", "desarrollo humano", "wellness"],
+  bie: ["bienestar", "desarrollo humano", "wellness", "well 101", "well101", "clase demo", "clases demo", "demo class", "sauna", "spa", "circuito de repaso", "juego de repaso"],
   dis: ["diseno", "tecnologias de comunicacion", "design"],
   adm: ["admision", "admissions", "inscripciones"],
   cur: ["curriculo", "curriculum"],
   cont: ["certificacion", "educacion continua", "cohete", "plataforma", "lanzamiento", "certification", "rocket"],
   cafe: ["cafeteria", "cafe", "comer", "tomar algo", "conocer gente", "otras personas", "otros estudiantes", "coffee", "meet people"],
+  store: ["tienda", "store", "shop", "comprar", "monedas", "coins", "ropa nueva", "accesorios"],
 };
 
 const INTENT = {

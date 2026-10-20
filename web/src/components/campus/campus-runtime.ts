@@ -22,6 +22,8 @@ export const campusRuntime = {
   guide: { zone: null as string | null },
   /** Taburete de la cafetería donde está sentado el jugador (índice de CAFE_SEATS) o -1. */
   seat: -1,
+  /** Giro (radianes) del personaje en el editor, para verlo por detrás. */
+  previewSpin: 0,
 };
 
 export function resetCampusInput() {

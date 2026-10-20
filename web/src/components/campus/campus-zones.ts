@@ -99,7 +99,10 @@ export const ZONES: ZoneDef[] = [
 export const ZONE_ENTRY_MARGIN = 4.5;
 
 /** Lugar al que Krucn puede guiar: las zonas con sala y la cafetería. */
-export type GuidePlace = Pick<ZoneDef, "id" | "color" | "x" | "z" | "r" | "label">;
+export type GuidePlace = Pick<ZoneDef, "id" | "color" | "x" | "z" | "r" | "label"> & {
+  /** Punto de la entrada, si no mira hacia la plaza (p. ej. la tienda mira a la cámara). */
+  door?: { x: number; z: number };
+};
 
 /**
  * Cafetería "KUN Café": punto de encuentro donde se ve y saluda a otros
@@ -115,12 +118,25 @@ export const CAFE: GuidePlace & { deck: number } = {
   label: { es: "Cafetería", en: "Café" },
 };
 
-export const GUIDE_PLACES: GuidePlace[] = [...ZONES, CAFE];
+/** Tienda "KUN Store": se canjean monedas por ropa, accesorios y mascotas. */
+export const STORE: GuidePlace = {
+  id: "store",
+  color: "#F2C14E",
+  x: 29,
+  z: 8,
+  r: 5,
+  // La fachada mira al sur (hacia la cámara), así que la entrada queda de ese lado.
+  door: { x: 29, z: 14 },
+  label: { es: "KUN Store", en: "KUN Store" },
+};
+
+export const GUIDE_PLACES: GuidePlace[] = [...ZONES, CAFE, STORE];
 
 export const findGuidePlace = (id: string | null | undefined) => (id ? GUIDE_PLACES.find((p) => p.id === id) : undefined);
 
 /** Punto frente a la puerta de un lugar, del lado de la plaza: ahí lleva Krucn al guiar. */
-export function zoneDoor(zone: Pick<ZoneDef, "x" | "z" | "r">): { x: number; z: number } {
+export function zoneDoor(zone: Pick<ZoneDef, "x" | "z" | "r"> & { door?: { x: number; z: number } }): { x: number; z: number } {
+  if (zone.door) return zone.door;
   const d = Math.hypot(zone.x, zone.z);
   // El lugar del centro (Currículo vivo) se aborda desde el sur, por donde se llega.
   const [ux, uz] = d < 1 ? [0, 1] : [-zone.x / d, -zone.z / d];

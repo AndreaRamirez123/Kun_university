@@ -1,0 +1,924 @@
+{
+  "instrucciones": "Demo de una materia en el campus: clase demo (lecciones narradas con preguntas rápidas en 'check') + Circuito de repaso (3 estaciones). Se abre desde el catálogo: escuela → programa → materia. Para otra materia, copia este archivo con su contenido y regístralo en src/components/campus/campus-demo.ts. Fuente: 'Materia AI-Native WELL 101' (15 oct 2026) y WELL101_Juego_de_Repaso.html.",
+  "code": "WELL 101",
+  "name": {
+    "es": "Foundations of Integrative Wellness & Spa",
+    "en": "Foundations of Integrative Wellness & Spa"
+  },
+  "program": {
+    "es": "Integrative Wellness and Human Performance · associate de 60 créditos",
+    "en": "Integrative Wellness and Human Performance · 60-credit associate"
+  },
+  "zone": "bie",
+  "disclaimer": {
+    "es": "Clase demo con fines de exploración. No es una inscripción ni habilita para práctica clínica. Las normas citadas son de Florida y de la FTC de EE. UU.; verifica su versión vigente.",
+    "en": "Demo class for exploration only. It is not an enrollment and does not qualify for clinical practice. Cited rules are from Florida and the U.S. FTC; check their current version."
+  },
+  "class": [
+    {
+      "id": "welcome",
+      "graphic": "logo",
+      "extra": [
+        "W"
+      ],
+      "menu": {
+        "es": "Bienvenida",
+        "en": "Welcome"
+      },
+      "title": {
+        "es": "WELL 101",
+        "en": "WELL 101"
+      },
+      "voice": {
+        "es": "Bienvenida a la clase demo de WELL 101, Foundations of Integrative Wellness and Spa. Es la primera materia del associate en Integrative Wellness and Human Performance, un programa que no se enfoca en tratar la enfermedad, sino en optimizar la vida humana. En los próximos minutos vas a recorrer de qué trata la materia, qué vas a aprender, cómo se organiza el semestre y cómo se evalúa. Entre clase y clase te haremos preguntas rápidas, y al final te espera el Circuito de repaso de esta materia.",
+        "en": "Welcome to the WELL 101 demo class, Foundations of Integrative Wellness and Spa. It is the first course of the associate in Integrative Wellness and Human Performance, a program that does not focus on treating disease but on optimizing human life. Over the next few minutes you will see what the course is about, what you will learn, how the semester is organized and how it is assessed. Between lessons we'll ask you quick questions, and at the end this course's Review circuit is waiting for you."
+      }
+    },
+    {
+      "id": "objective",
+      "graphic": "seals",
+      "extra": {
+        "es": [
+          "Negocio",
+          "Bienestar"
+        ],
+        "en": [
+          "Business",
+          "Wellness"
+        ]
+      },
+      "menu": {
+        "es": "De qué trata",
+        "en": "What it covers"
+      },
+      "title": {
+        "es": "El bienestar como empresa",
+        "en": "Wellness as a business"
+      },
+      "voice": {
+        "es": "El objetivo de la materia es darte una comprensión fundamental de los principios, los modelos de negocio y las estrategias operativas de la industria global del bienestar integrativo y del spa. Vas a analizar paradigmas multidimensionales del bienestar, evaluar marcos modernos de gestión de spas y sintetizar principios financieros, regulatorios y de diseño de servicios. La meta es que puedas proponer empresas de salud integrativa y spa no clínicas, sostenibles y responsables.",
+        "en": "The goal of the course is to give you a foundational understanding of the principles, business models and operational strategies of the global integrative wellness and spa industry. You will analyze multidimensional wellness paradigms, evaluate modern spa management frameworks and synthesize financial, regulatory and service design principles. The aim is that you can propose sustainable and responsible non-clinical integrative health and spa businesses."
+      },
+      "check": {
+        "q": {
+          "es": "¿Qué tipo de empresas aprenderás a proponer?",
+          "en": "What kind of businesses will you learn to propose?"
+        },
+        "o": [
+          {
+            "es": "Clínicas médicas",
+            "en": "Medical clinics"
+          },
+          {
+            "es": "Spa y salud integrativa no clínicas",
+            "en": "Non-clinical spa and integrative health"
+          },
+          {
+            "es": "Farmacias",
+            "en": "Pharmacies"
+          },
+          {
+            "es": "Gimnasios de alto rendimiento",
+            "en": "High-performance gyms"
+          }
+        ],
+        "a": 1,
+        "f": {
+          "es": "La materia apunta a empresas no clínicas, sostenibles y responsables.",
+          "en": "The course aims at non-clinical, sustainable and responsible businesses."
+        }
+      }
+    },
+    {
+      "id": "outcomes",
+      "graphic": "steps",
+      "extra": {
+        "es": [
+          "Analizar",
+          "Evaluar",
+          "Formular"
+        ],
+        "en": [
+          "Analyze",
+          "Evaluate",
+          "Formulate"
+        ]
+      },
+      "menu": {
+        "es": "Qué aprenderás",
+        "en": "What you'll learn"
+      },
+      "title": {
+        "es": "Tres resultados de aprendizaje",
+        "en": "Three learning outcomes"
+      },
+      "voice": {
+        "es": "La materia tiene tres resultados de aprendizaje. Uno: analizar los paradigmas fundamentales de la salud integrativa, como el modelo bio-psico-socio-espiritual, y su aplicación en empresas de spa. Dos: evaluar la gestión operativa, financiera y de instalaciones para mejorar la experiencia del cliente y la prestación del servicio. Tres: formular propuestas de programas de bienestar basadas en evidencia, que cumplan la normativa y sean éticas.",
+        "en": "The course has three learning outcomes. One: analyze the foundational paradigms of integrative health, such as the bio-psycho-social-spiritual model, and how they apply to spa businesses. Two: evaluate operational, financial and facility management to improve guest experience and service delivery. Three: formulate evidence-based wellness program proposals that are compliant and ethical."
+      },
+      "check": {
+        "q": {
+          "es": "¿Cuántos resultados de aprendizaje tiene la materia?",
+          "en": "How many learning outcomes does the course have?"
+        },
+        "o": [
+          {
+            "es": "Dos",
+            "en": "Two"
+          },
+          {
+            "es": "Tres",
+            "en": "Three"
+          },
+          {
+            "es": "Cinco",
+            "en": "Five"
+          },
+          {
+            "es": "Ocho",
+            "en": "Eight"
+          }
+        ],
+        "a": 1,
+        "f": {
+          "es": "Son tres: paradigmas, gestión operativa y propuestas basadas en evidencia.",
+          "en": "Three: paradigms, operations management and evidence-based proposals."
+        }
+      }
+    },
+    {
+      "id": "weeks",
+      "graphic": "career",
+      "menu": {
+        "es": "Las 16 semanas",
+        "en": "The 16 weeks"
+      },
+      "title": {
+        "es": "Un semestre, tres bloques",
+        "en": "One semester, three blocks"
+      },
+      "career": {
+        "kicker": {
+          "es": "16 semanas · sesiones en vivo martes y jueves",
+          "en": "16 weeks · live sessions Tuesday and Thursday"
+        },
+        "credential": {
+          "es": "WELL 101",
+          "en": "WELL 101"
+        },
+        "credits": {
+          "es": "3 créditos",
+          "en": "3 credits"
+        },
+        "modality": {
+          "es": "En línea · hora del Este",
+          "en": "Online · Eastern Time"
+        },
+        "coursesLabel": {
+          "es": "Algunos temas",
+          "en": "Some topics"
+        },
+        "courses": [
+          {
+            "code": "S1",
+            "name": {
+              "es": "Modelos multidimensionales del bienestar",
+              "en": "Multidimensional models of wellness"
+            }
+          },
+          {
+            "code": "S3",
+            "name": {
+              "es": "Hidroterapia y cultura termal",
+              "en": "Hydrotherapy and thermal culture"
+            }
+          },
+          {
+            "code": "S7",
+            "name": {
+              "es": "Métricas financieras del spa y RevPAS",
+              "en": "Spa financial metrics and RevPAS"
+            }
+          },
+          {
+            "code": "S9",
+            "name": {
+              "es": "Experiencia del cliente y CRM",
+              "en": "Guest experience and CRM"
+            }
+          },
+          {
+            "code": "S14",
+            "name": {
+              "es": "Eco-spas y certificaciones verdes",
+              "en": "Eco-spas and green certifications"
+            }
+          },
+          {
+            "code": "S16",
+            "name": {
+              "es": "Proyecto integrador",
+              "en": "Capstone project"
+            }
+          }
+        ],
+        "footer": {
+          "es": "Semanas 1–6: fundamentos · 7–10: operación y negocio · 11–16: salud, normativa y proyecto",
+          "en": "Weeks 1–6: foundations · 7–10: operations and business · 11–16: health, regulation and project"
+        }
+      },
+      "voice": {
+        "es": "El semestre dura dieciséis semanas, con sesiones en vivo los martes y los jueves. Las primeras semanas construyen los fundamentos: historia del bienestar, tipologías del spa, hidroterapia, diseño de instalaciones y procedimientos operativos. Luego viene la operación y el negocio: métricas financieras como el RevPAS, gestión del talento, experiencia del cliente y mercadeo. Y el cierre conecta con la salud y la normativa: nutrición, terapias mente-cuerpo, medical spa, sostenibilidad y riesgo legal, hasta el proyecto integrador.",
+        "en": "The semester lasts sixteen weeks, with live sessions on Tuesdays and Thursdays. The first weeks build the foundations: wellness history, spa typologies, hydrotherapy, facility design and standard operating procedures. Then come operations and business: financial metrics such as RevPAS, talent management, guest experience and marketing. The final block connects with health and regulation: nutrition, mind-body therapies, medical spa governance, sustainability and legal risk, up to the capstone project."
+      },
+      "check": {
+        "q": {
+          "es": "¿Cuántas semanas dura el semestre?",
+          "en": "How many weeks does the semester last?"
+        },
+        "o": [
+          {
+            "es": "8",
+            "en": "8"
+          },
+          {
+            "es": "12",
+            "en": "12"
+          },
+          {
+            "es": "16",
+            "en": "16"
+          },
+          {
+            "es": "20",
+            "en": "20"
+          }
+        ],
+        "a": 2,
+        "f": {
+          "es": "Dieciséis semanas, con sesiones en vivo martes y jueves.",
+          "en": "Sixteen weeks, with live sessions on Tuesdays and Thursdays."
+        }
+      }
+    },
+    {
+      "id": "hours",
+      "graphic": "badge",
+      "badge": {
+        "top": "CIE",
+        "value": 144,
+        "unit": {
+          "es": "horas: 48 con docente + 96 independientes",
+          "en": "hours: 48 with instructor + 96 independent"
+        }
+      },
+      "menu": {
+        "es": "Horas",
+        "en": "Hours"
+      },
+      "title": {
+        "es": "144 horas de aprendizaje",
+        "en": "144 hours of learning"
+      },
+      "voice": {
+        "es": "WELL 101 tiene tres créditos y ciento cuarenta y cuatro horas en total: cuarenta y ocho con el docente, en las sesiones en vivo, y noventa y seis de trabajo independiente. Eso son unas nueve horas por semana, más o menos una hora y cuarenta y ocho minutos al día. Así se cumple el mínimo que exige la Comisión de Educación Independiente de Florida. Un detalle importante del modelo AI-Native: conversar con la IA no cuenta como hora con el docente.",
+        "en": "WELL 101 has three credits and one hundred forty-four hours in total: forty-eight with the instructor, in live sessions, and ninety-six of independent work. That is about nine hours per week, roughly one hour and forty-eight minutes a day. This meets the minimum required by Florida's Commission for Independent Education. One key detail of the AI-Native model: talking to the AI does not count as instructor hours."
+      },
+      "check": {
+        "q": {
+          "es": "¿Conversar con la IA cuenta como hora con el docente?",
+          "en": "Does chatting with AI count as instructor time?"
+        },
+        "o": [
+          {
+            "es": "Sí, siempre",
+            "en": "Yes, always"
+          },
+          {
+            "es": "No",
+            "en": "No"
+          },
+          {
+            "es": "Solo los martes",
+            "en": "Only on Tuesdays"
+          },
+          {
+            "es": "Solo en el proyecto final",
+            "en": "Only for the final project"
+          }
+        ],
+        "a": 1,
+        "f": {
+          "es": "En el modelo AI-Native, la IA no reemplaza las horas con el docente.",
+          "en": "In the AI-Native model, AI does not replace instructor hours."
+        }
+      }
+    },
+    {
+      "id": "assessment",
+      "graphic": "seals",
+      "extra": {
+        "es": [
+          "100 %",
+          "Rúbricas"
+        ],
+        "en": [
+          "100%",
+          "Rubrics"
+        ]
+      },
+      "menu": {
+        "es": "Evaluación",
+        "en": "Assessment"
+      },
+      "title": {
+        "es": "Cómo se evalúa",
+        "en": "How it's assessed"
+      },
+      "voice": {
+        "es": "La evaluación suma cien por ciento. Un veinte por ciento corresponde al primer resultado: foros, plano digital del espacio y quizzes. Un veinticinco por ciento al segundo: el ensayo de procedimientos operativos, el examen de mitad de periodo y el análisis financiero. Un treinta y cinco por ciento al tercero: revisión de literatura, informe de cumplimiento y borrador de empresa sostenible. Y el veinte por ciento final es el proyecto integrador: un plan de negocio con presentación grabada. El juego de repaso no se califica: es para practicar.",
+        "en": "Assessment adds up to one hundred percent. Twenty percent goes to the first outcome: forums, digital spatial layout and quizzes. Twenty-five percent to the second: the SOP paper, the midterm exam and the financial analysis. Thirty-five percent to the third: literature review, compliance report and a sustainable business draft. The final twenty percent is the capstone: a business plan with a recorded presentation. The review game is not graded: it is for practice."
+      },
+      "check": {
+        "q": {
+          "es": "¿Cuánto vale el proyecto integrador?",
+          "en": "How much is the capstone project worth?"
+        },
+        "o": [
+          {
+            "es": "10 %",
+            "en": "10%"
+          },
+          {
+            "es": "20 %",
+            "en": "20%"
+          },
+          {
+            "es": "35 %",
+            "en": "35%"
+          },
+          {
+            "es": "50 %",
+            "en": "50%"
+          }
+        ],
+        "a": 1,
+        "f": {
+          "es": "El 20 % final es el plan de negocio con presentación grabada.",
+          "en": "The final 20% is the business plan with a recorded presentation."
+        }
+      }
+    },
+    {
+      "id": "ai",
+      "graphic": "seals",
+      "extra": {
+        "es": [
+          "Ideas ✓",
+          "Quizzes ✗"
+        ],
+        "en": [
+          "Ideas ✓",
+          "Quizzes ✗"
+        ]
+      },
+      "menu": {
+        "es": "Uso de IA",
+        "en": "Use of AI"
+      },
+      "title": {
+        "es": "La IA, bien usada",
+        "en": "AI, used well"
+      },
+      "voice": {
+        "es": "En esta materia la inteligencia artificial es una aliada, con reglas claras. Puedes usarla para generar ideas de negocio, mejorar tu redacción o armar estructuras, por ejemplo el esquema del proyecto final o plantillas de procedimientos. No puedes usarla para responder quizzes, escribir tus reflexiones analíticas, generar los informes financieros ni reemplazar tu análisis crítico. Cuando la uses, incluyes una declaración con la herramienta y el propósito. La IA propone; las decisiones académicas las toma una persona.",
+        "en": "In this course, artificial intelligence is an ally with clear rules. You can use it to brainstorm business ideas, improve your writing or build structures, such as the capstone outline or SOP templates. You cannot use it to answer quizzes, write your analytical reflections, generate the financial reports or replace your critical analysis. When you use it, you include a statement with the tool and the purpose. AI proposes; academic decisions are made by a person."
+      },
+      "check": {
+        "q": {
+          "es": "¿Para qué SÍ puedes usar la IA en esta materia?",
+          "en": "What CAN you use AI for in this course?"
+        },
+        "o": [
+          {
+            "es": "Responder los quizzes",
+            "en": "Answering quizzes"
+          },
+          {
+            "es": "Generar ideas y mejorar tu redacción",
+            "en": "Brainstorming and improving your writing"
+          },
+          {
+            "es": "Escribir tus reflexiones",
+            "en": "Writing your reflections"
+          },
+          {
+            "es": "Hacer los informes financieros",
+            "en": "Producing the financial reports"
+          }
+        ],
+        "a": 1,
+        "f": {
+          "es": "La IA propone ideas y estructura; el análisis y las decisiones son tuyos.",
+          "en": "AI suggests ideas and structure; the analysis and decisions are yours."
+        }
+      }
+    },
+    {
+      "id": "circuit",
+      "graphic": "steps",
+      "extra": {
+        "es": [
+          "Sauna",
+          "Piscina",
+          "Jardín"
+        ],
+        "en": [
+          "Sauna",
+          "Pool",
+          "Garden"
+        ]
+      },
+      "menu": {
+        "es": "Circuito de repaso",
+        "en": "Review circuit"
+      },
+      "title": {
+        "es": "Ahora, a practicar",
+        "en": "Now, let's practice"
+      },
+      "voice": {
+        "es": "Para repasar, la materia tiene un circuito como el de un spa termal, con tres estaciones. En la Sauna respondes diez preguntas contra el reloj. En la Piscina emparejas ocho términos con su definición. Y en el Jardín clasificas servicios entre spa no clínico y consultorio médico. Al terminar cada estación levantas una torre de piedras: tres piedras significan que dominas el tema. Las estaciones están en la pestaña Circuito de repaso de esta materia. ¡Pruébalas y gana KUN Coins!",
+        "en": "To review, the course has a circuit like a thermal spa, with three stations. In the Sauna you answer ten questions against the clock. In the Pool you match eight terms with their definitions. And in the Garden you sort services into non-clinical spa or medical office. When you finish each station you build a stone tower: three stones mean you've mastered the topic. The stations are in this course's Review circuit tab. Try them and earn KUN Coins!"
+      }
+    }
+  ],
+  "quiz": [
+    {
+      "clo": 1,
+      "q": {
+        "es": "¿Quién propuso en 1976 el modelo de seis dimensiones del bienestar?",
+        "en": "Who proposed the six-dimension wellness model in 1976?"
+      },
+      "o": [
+        {
+          "es": "Bill Hettler (National Wellness Institute)",
+          "en": "Bill Hettler (National Wellness Institute)"
+        },
+        {
+          "es": "George Engel",
+          "en": "George Engel"
+        },
+        {
+          "es": "Abraham Maslow",
+          "en": "Abraham Maslow"
+        },
+        {
+          "es": "Sheryl Kimes",
+          "en": "Sheryl Kimes"
+        }
+      ],
+      "a": 0,
+      "f": {
+        "es": "Hettler, cofundador del NWI, describió las dimensiones física, emocional, social, intelectual, espiritual y ocupacional.",
+        "en": "Hettler, NWI co-founder, described the physical, emotional, social, intellectual, spiritual and occupational dimensions."
+      }
+    },
+    {
+      "clo": 1,
+      "q": {
+        "es": "El modelo biopsicosocial (1977) plantea que la salud depende de…",
+        "en": "The biopsychosocial model (1977) holds that health depends on…"
+      },
+      "o": [
+        {
+          "es": "Solo factores biológicos",
+          "en": "Biological factors only"
+        },
+        {
+          "es": "Factores biológicos, psicológicos y sociales",
+          "en": "Biological, psychological and social factors"
+        },
+        {
+          "es": "El tipo de spa",
+          "en": "The type of spa"
+        },
+        {
+          "es": "La genética exclusivamente",
+          "en": "Genetics exclusively"
+        }
+      ],
+      "a": 1,
+      "f": {
+        "es": "George Engel integró lo biológico, lo psicológico y lo social; es base del bienestar integrativo.",
+        "en": "George Engel integrated the biological, psychological and social; it underpins integrative wellness."
+      }
+    },
+    {
+      "clo": 1,
+      "q": {
+        "es": "El estudio de Laukkanen et al. (2015) sobre sauna y mortalidad muestra…",
+        "en": "Laukkanen et al. (2015) on sauna and mortality shows…"
+      },
+      "o": [
+        {
+          "es": "Que la sauna cura enfermedades del corazón",
+          "en": "That sauna cures heart disease"
+        },
+        {
+          "es": "Una asociación observacional, no una causa probada",
+          "en": "An observational association, not proven causation"
+        },
+        {
+          "es": "Que la sauna es peligrosa para todos",
+          "en": "That sauna is dangerous for everyone"
+        },
+        {
+          "es": "Nada relevante",
+          "en": "Nothing relevant"
+        }
+      ],
+      "a": 1,
+      "f": {
+        "es": "Es un estudio de cohorte: no permite afirmar causalidad. Por eso un spa no puede prometer que la sauna \"cura\".",
+        "en": "It is a cohort study: it cannot prove causation. So a spa cannot promise that sauna \"cures\"."
+      }
+    },
+    {
+      "clo": 2,
+      "q": {
+        "es": "En gestión de spas, RevPAS (o RevPATH) significa…",
+        "en": "In spa management, RevPAS (or RevPATH) means…"
+      },
+      "o": [
+        {
+          "es": "Ingreso por hora de tratamiento disponible",
+          "en": "Revenue per available treatment hour"
+        },
+        {
+          "es": "Reseñas positivas por semana",
+          "en": "Positive reviews per week"
+        },
+        {
+          "es": "Costo de nómina por terapeuta",
+          "en": "Payroll cost per therapist"
+        },
+        {
+          "es": "Número de clientes nuevos",
+          "en": "Number of new clients"
+        }
+      ],
+      "a": 0,
+      "f": {
+        "es": "Kimes y Singh (2009) proponen medir el ingreso por hora de tratamiento disponible para gestionar la capacidad.",
+        "en": "Kimes and Singh (2009) propose revenue per available treatment hour to manage capacity."
+      }
+    },
+    {
+      "clo": 2,
+      "q": {
+        "es": "Falta el registro diario de químicos del jacuzzi. ¿Qué haces?",
+        "en": "The daily hot-tub chemical log is missing. What do you do?"
+      },
+      "o": [
+        {
+          "es": "Rellenarlo con valores normales",
+          "en": "Back-fill it with normal values"
+        },
+        {
+          "es": "Esperar a la próxima inspección",
+          "en": "Wait for the next inspection"
+        },
+        {
+          "es": "Medir el agua, cerrar si está fuera de rango y documentar",
+          "en": "Test the water, close if out of range and document"
+        },
+        {
+          "es": "Agregar más cloro sin medir",
+          "en": "Add more chlorine without testing"
+        }
+      ],
+      "a": 2,
+      "f": {
+        "es": "La Regla 64E-9.004 exige registros diarios; falsificarlos es una falta grave.",
+        "en": "Rule 64E-9.004 requires daily logs; falsifying them is a serious violation."
+      }
+    },
+    {
+      "clo": 2,
+      "q": {
+        "es": "Los sábados se llenan y los martes están vacíos. La mejor estrategia es…",
+        "en": "Saturdays fill up and Tuesdays are empty. The best strategy is…"
+      },
+      "o": [
+        {
+          "es": "Subir todos los precios",
+          "en": "Raise all prices"
+        },
+        {
+          "es": "Precios por franja y paquetes en horas valle",
+          "en": "Time-band pricing and off-peak packages"
+        },
+        {
+          "es": "Cerrar los martes",
+          "en": "Close on Tuesdays"
+        },
+        {
+          "es": "No hacer nada",
+          "en": "Do nothing"
+        }
+      ],
+      "a": 1,
+      "f": {
+        "es": "La gestión del rendimiento distribuye la demanda en lugar de perderla.",
+        "en": "Yield management spreads demand instead of losing it."
+      }
+    },
+    {
+      "clo": 3,
+      "q": {
+        "es": "¿Qué ley de Florida regula la terapia de masaje?",
+        "en": "Which Florida law regulates massage therapy?"
+      },
+      "o": [
+        {
+          "es": "Capítulo 480 F.S.",
+          "en": "Chapter 480 F.S."
+        },
+        {
+          "es": "Capítulo 1005 F.S.",
+          "en": "Chapter 1005 F.S."
+        },
+        {
+          "es": "HIPAA",
+          "en": "HIPAA"
+        },
+        {
+          "es": "Ninguna",
+          "en": "None"
+        }
+      ],
+      "a": 0,
+      "f": {
+        "es": "El Capítulo 480 exige licencia para practicar masaje terapéutico en Florida.",
+        "en": "Chapter 480 requires a license to practice massage therapy in Florida."
+      }
+    },
+    {
+      "clo": 3,
+      "q": {
+        "es": "Un influenciador quiere decir que tu envoltura \"detox cura la ansiedad\". Esto es…",
+        "en": "An influencer wants to say your \"detox wrap cures anxiety\". This is…"
+      },
+      "o": [
+        {
+          "es": "Aceptable si es un influenciador famoso",
+          "en": "Fine if the influencer is famous"
+        },
+        {
+          "es": "Una afirmación de salud engañosa",
+          "en": "A misleading health claim"
+        },
+        {
+          "es": "Obligatorio para vender",
+          "en": "Required to sell"
+        },
+        {
+          "es": "Legal si se dice en redes",
+          "en": "Legal if said on social media"
+        }
+      ],
+      "a": 1,
+      "f": {
+        "es": "La FTC exige evidencia científica sólida (por lo general ensayos clínicos) para afirmaciones de salud, y declarar el patrocinio.",
+        "en": "The FTC requires solid scientific evidence (usually clinical trials) for health claims, and sponsorship disclosure."
+      }
+    },
+    {
+      "clo": 3,
+      "q": {
+        "es": "¿Puedes ofrecer una sesión gratis a cambio de borrar una reseña negativa?",
+        "en": "Can you offer a free session in exchange for deleting a negative review?"
+      },
+      "o": [
+        {
+          "es": "Sí, es buena atención al cliente",
+          "en": "Yes, it is good customer care"
+        },
+        {
+          "es": "Solo si el cliente acepta",
+          "en": "Only if the client agrees"
+        },
+        {
+          "es": "No: condicionar beneficios a reseñas está prohibido",
+          "en": "No: conditioning benefits on reviews is prohibited"
+        },
+        {
+          "es": "Sí, si la reseña es falsa",
+          "en": "Yes, if the review is false"
+        }
+      ],
+      "a": 2,
+      "f": {
+        "es": "La regla de la FTC sobre reseñas (16 CFR 465, 2024) prohíbe suprimir reseñas o condicionar incentivos a su contenido.",
+        "en": "The FTC reviews rule (16 CFR 465, 2024) bans review suppression and incentives conditioned on content."
+      }
+    },
+    {
+      "clo": 3,
+      "q": {
+        "es": "Anunciarse como \"eco spa\" sin haber hecho cambios se llama…",
+        "en": "Advertising as an \"eco spa\" without real changes is called…"
+      },
+      "o": [
+        {
+          "es": "Branding verde",
+          "en": "Green branding"
+        },
+        {
+          "es": "Greenwashing",
+          "en": "Greenwashing"
+        },
+        {
+          "es": "Certificación LEED",
+          "en": "LEED certification"
+        },
+        {
+          "es": "Sostenibilidad",
+          "en": "Sustainability"
+        }
+      ],
+      "a": 1,
+      "f": {
+        "es": "Una afirmación ambiental sin sustento también es publicidad engañosa.",
+        "en": "An unsupported environmental claim is also misleading advertising."
+      }
+    }
+  ],
+  "pairs": [
+    [
+      {
+        "es": "Hidroterapia",
+        "en": "Hydrotherapy"
+      },
+      {
+        "es": "Uso del agua a distintas temperaturas con fines de bienestar",
+        "en": "Use of water at different temperatures for wellbeing"
+      }
+    ],
+    [
+      {
+        "es": "RevPAS",
+        "en": "RevPAS"
+      },
+      {
+        "es": "Ingreso por hora de tratamiento disponible",
+        "en": "Revenue per available treatment hour"
+      }
+    ],
+    [
+      {
+        "es": "SOP",
+        "en": "SOP"
+      },
+      {
+        "es": "Procedimiento operativo estándar escrito",
+        "en": "Written standard operating procedure"
+      }
+    ],
+    [
+      {
+        "es": "Alcance de práctica",
+        "en": "Scope of practice"
+      },
+      {
+        "es": "Lo que un profesional puede hacer según su licencia",
+        "en": "What a professional may do under their license"
+      }
+    ],
+    [
+      {
+        "es": "Greenwashing",
+        "en": "Greenwashing"
+      },
+      {
+        "es": "Afirmación ambiental sin sustento",
+        "en": "Unsupported environmental claim"
+      }
+    ],
+    [
+      {
+        "es": "Recuperación del servicio",
+        "en": "Service recovery"
+      },
+      {
+        "es": "Corregir una mala experiencia y recuperar al cliente",
+        "en": "Fixing a bad experience and winning the client back"
+      }
+    ],
+    [
+      {
+        "es": "Consentimiento informado",
+        "en": "Informed consent"
+      },
+      {
+        "es": "El cliente acepta tras conocer beneficios y riesgos",
+        "en": "Client agrees after learning benefits and risks"
+      }
+    ],
+    [
+      {
+        "es": "Tamizaje de contraindicaciones",
+        "en": "Contraindication screening"
+      },
+      {
+        "es": "Preguntar por condiciones que impiden un servicio",
+        "en": "Asking about conditions that rule out a service"
+      }
+    ]
+  ],
+  "sort": {
+    "baskets": [
+      {
+        "es": "Spa no clínico",
+        "en": "Non-clinical spa"
+      },
+      {
+        "es": "Consultorio médico",
+        "en": "Medical office"
+      }
+    ],
+    "items": [
+      {
+        "t": {
+          "es": "Masaje relajante por terapeuta con licencia",
+          "en": "Relaxing massage by a licensed therapist"
+        },
+        "b": 0
+      },
+      {
+        "t": {
+          "es": "Circuito termal con tamizaje previo",
+          "en": "Thermal circuit with prior screening"
+        },
+        "b": 0
+      },
+      {
+        "t": {
+          "es": "Clase de meditación guiada",
+          "en": "Guided meditation class"
+        },
+        "b": 0
+      },
+      {
+        "t": {
+          "es": "Taller de hábitos de sueño",
+          "en": "Sleep habits workshop"
+        },
+        "b": 0
+      },
+      {
+        "t": {
+          "es": "Venta de productos con afirmaciones respaldadas",
+          "en": "Selling products with substantiated claims"
+        },
+        "b": 0
+      },
+      {
+        "t": {
+          "es": "Inyección de rellenos o toxina botulínica",
+          "en": "Filler or botulinum toxin injection"
+        },
+        "b": 1
+      },
+      {
+        "t": {
+          "es": "Sueros vitamínicos intravenosos",
+          "en": "IV vitamin drips"
+        },
+        "b": 1
+      },
+      {
+        "t": {
+          "es": "Diagnosticar una hernia discal",
+          "en": "Diagnosing a herniated disc"
+        },
+        "b": 1
+      },
+      {
+        "t": {
+          "es": "Prescribir suplementos para tratar una enfermedad",
+          "en": "Prescribing supplements to treat a disease"
+        },
+        "b": 1
+      },
+      {
+        "t": {
+          "es": "Depilación láser sin supervisión médica",
+          "en": "Laser hair removal without medical supervision"
+        },
+        "b": 1
+      }
+    ]
+  }
+}

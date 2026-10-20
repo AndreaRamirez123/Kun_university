@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { campusRuntime } from "./campus-runtime";
+import { PetFx, petAct, petActionAge, petHeading, petPos } from "./campus-pet";
 import type { Pet } from "./campus-avatar";
 import { PLAYER_START, WALK_RADIUS } from "./campus-zones";
 
@@ -190,35 +191,57 @@ function SeaTurtle({ from, to, speed }: (typeof TURTLES)[number]) {
 
 // ---------------------------------------------------------------- mascotas que te acompañan
 
-type Quadruped = "dog" | "cat";
+/** Perro, gato y las mascotas de la tienda: mini Krucn (cocodrilo) y pantera de Florida. */
+type Quadruped = "dog" | "cat" | "croc" | "panther";
+
+/** A quién sigue la mascota: por defecto el jugador; para otras personas, su personaje. */
+type Follow = { x: number; z: number; heading: number };
+
+/** Mascota que sigue a un personaje (la propia o la de otra persona del campus). */
+export function PetFollower({ pet, playing, follow }: { pet: Pet; playing: boolean; follow?: Follow }) {
+  if (pet === "dog" || pet === "cat" || pet === "croc" || pet === "panther") return <FollowerQuadruped key={pet} kind={pet} playing={playing} follow={follow} />;
+  if (pet === "parrot") return <FollowerParrot playing={playing} follow={follow} />;
+  return null;
+}
 
 // Perrito o gatito: te sigue un paso atrás, trota al caminar y se sienta cuando
 // te detienes. En la pantalla de inicio se sienta a tu lado.
-function FollowerQuadruped({ kind, playing }: { kind: Quadruped; playing: boolean }) {
+function FollowerQuadruped({ kind, playing, follow }: { kind: Quadruped; playing: boolean; follow?: Follow }) {
   const ref = useRef<THREE.Group>(null);
   const tail = useRef<THREE.Mesh>(null);
   const legs = useRef<Array<THREE.Mesh | null>>([]);
   const rear = useRef<THREE.Group>(null);
   const state = useRef({ x: PLAYER_START[0] - 1.9, z: PLAYER_START[2] + 0.6, heading: 0, trot: 0 });
-  const cat = kind === "cat";
+  // La pantera usa el cuerpo del gato; el mini Krucn, el del perro con hocico largo.
+  const cat = kind === "cat" || kind === "panther";
+  const croc = kind === "croc";
 
   useFrame((frame, rawDelta) => {
     const g = ref.current;
     if (!g) return;
     const delta = Math.min(rawDelta, 0.05);
     const s = state.current;
-    const p = campusRuntime.player;
+    const p = follow ?? campusRuntime.player;
     const t = frame.clock.elapsedTime;
     const back = playing ? 2.4 : 0;
     const side = playing ? 1.1 : -1.9;
     const hx = Math.sin(p.heading);
     const hz = Math.cos(p.heading);
-    const tx = p.x - hx * back + hz * side;
-    const tz = p.z - hz * back - hx * side;
+    let tx = p.x - hx * back + hz * side;
+    let tz = p.z - hz * back - hx * side;
+    // Al consentirla (solo la propia) viene frente al jugador; al jugar, va por la pelota.
+    const age = follow ? null : petActionAge();
+    const kind = age === null ? null : petAct.kind;
+    if (kind && age !== null) {
+      const fetch = kind === "play" && age > 0.55 && age < 2.1;
+      // Delante y a un lado, para que se vea junto al personaje y no tapado por él.
+      tx = fetch ? petAct.bx : p.x + hx * 1.4 + hz * 1.3;
+      tz = fetch ? petAct.bz : p.z + hz * 1.4 - hx * 1.3;
+    }
     const dx = tx - s.x;
     const dz = tz - s.z;
     const dist = Math.hypot(dx, dz);
-    const speed = dist > 0.4 ? Math.min(14, dist * 3.2) : 0;
+    const speed = dist > 0.4 ? Math.min(kind === "play" ? 16 : 14, dist * 3.2) : 0;
     if (speed > 0) {
       s.x += (dx / dist) * speed * delta;
       s.z += (dz / dist) * speed * delta;
@@ -228,8 +251,8 @@ function FollowerQuadruped({ kind, playing }: { kind: Quadruped; playing: boolea
       s.heading += diff * Math.min(1, delta * 8);
       s.trot += delta * speed * 2.2;
     } else {
-      // Quieto: mira hacia donde mira el jugador (o a la cámara al inicio).
-      const look = playing ? p.heading : 0;
+      // Quieto: mira hacia donde mira el jugador (o a la cámara al inicio); si la consientes, te mira a ti.
+      const look = kind ? Math.atan2(p.x - s.x, p.z - s.z) : playing ? p.heading : 0;
       let diff = look - s.heading;
       diff = Math.atan2(Math.sin(diff), Math.cos(diff));
       s.heading += diff * Math.min(1, delta * 3);
@@ -240,8 +263,22 @@ function FollowerQuadruped({ kind, playing }: { kind: Quadruped; playing: boolea
       s.z = (s.z / r) * WALK_RADIUS;
     }
     const moving = speed > 0.5;
-    g.position.set(s.x, 0.2 + (moving ? Math.abs(Math.sin(s.trot)) * 0.12 : 0), s.z);
-    g.rotation.y = s.heading;
+    // Reacciones: saltitos con el premio, un giro con salto para el truco.
+    let hop = 0;
+    let spin = 0;
+    if (kind === "treat" && age !== null && age < 1.6) hop = Math.abs(Math.sin(age * 9)) * 0.28;
+    if (kind === "pat" && age !== null) hop = Math.abs(Math.sin(age * 5)) * 0.08;
+    if (kind === "trick" && age !== null && age < 1.3) {
+      hop = Math.sin((age / 1.3) * Math.PI) * 1.1;
+      spin = (age / 1.3) * Math.PI * 2;
+    }
+    g.position.set(s.x, 0.2 + hop + (moving ? Math.abs(Math.sin(s.trot)) * 0.12 : 0), s.z);
+    g.rotation.y = s.heading + spin;
+    if (!follow) {
+      petPos.x = s.x;
+      petPos.z = s.z;
+      petHeading.h = s.heading;
+    }
     legs.current.forEach((l, i) => {
       if (l) l.rotation.x = moving ? Math.sin(s.trot + (i % 2 ? Math.PI : 0)) * 0.7 : 0;
     });
@@ -249,15 +286,19 @@ function FollowerQuadruped({ kind, playing }: { kind: Quadruped; playing: boolea
     if (tail.current) {
       // El perro mueve la cola rápido; el gato la balancea despacio, en alto.
       if (cat) tail.current.rotation.z = Math.sin(t * 2.2) * 0.35;
-      else tail.current.rotation.z = Math.sin(t * (moving ? 14 : 9)) * 0.6;
+      else tail.current.rotation.z = Math.sin(t * (kind ? 22 : moving ? 14 : 9)) * (kind ? 0.8 : 0.6);
     }
   });
 
-  const fur = cat ? "#E39A4F" : "#C98A4B";
-  const light = cat ? "#FFF3E2" : "#F2DDBF";
-  const dark = cat ? "#B8692E" : "#8A5A2E";
+  const PALETTE: Record<Quadruped, [string, string, string]> = {
+    dog: ["#C98A4B", "#F2DDBF", "#8A5A2E"],
+    cat: ["#E39A4F", "#FFF3E2", "#B8692E"],
+    croc: ["#3FA34D", "#E3E39A", "#2C7A38"],
+    panther: ["#C9A26B", "#EFE0C4", "#4A3420"],
+  };
+  const [fur, light, dark] = PALETTE[kind];
   return (
-    <group ref={ref} scale={cat ? 0.78 : 0.95}>
+    <group ref={ref} scale={kind === "cat" ? 0.78 : kind === "panther" ? 1.02 : 0.95}>
       <mesh position={[0, 0.95, 0.35]} scale={[0.42, 0.42, 0.55]} castShadow>
         <sphereGeometry args={[1, 14, 10]} />
         <Std color={fur} />
@@ -267,11 +308,11 @@ function FollowerQuadruped({ kind, playing }: { kind: Quadruped; playing: boolea
           <sphereGeometry args={[0.38, 16, 12]} />
           <Std color={fur} />
         </mesh>
-        <mesh position={[0, -0.08, 0.3]} scale={cat ? [0.7, 0.45, 0.5] : [0.75, 0.6, 0.8]}>
+        <mesh position={[0, croc ? -0.1 : -0.08, croc ? 0.42 : 0.3]} scale={cat ? [0.7, 0.45, 0.5] : croc ? [0.8, 0.42, 1.9] : [0.75, 0.6, 0.8]}>
           <sphereGeometry args={[0.24, 12, 10]} />
           <Std color={light} />
         </mesh>
-        <mesh position={[0, -0.02, cat ? 0.42 : 0.52]}>
+        <mesh position={[0, croc ? -0.02 : -0.02, cat ? 0.42 : croc ? 0.84 : 0.52]}>
           <sphereGeometry args={[cat ? 0.045 : 0.07, 8, 6]} />
           <Std color={cat ? "#E87A8A" : "#1E1410"} rough={0.3} />
         </mesh>
@@ -295,6 +336,12 @@ function FollowerQuadruped({ kind, playing }: { kind: Quadruped; playing: boolea
                   </mesh>
                 ))}
               </>
+            ) : croc ? (
+              /* Ojos saltones del cocodrilo, sobre la cabeza */
+              <mesh position={[sx * 0.13, 0.3, 0.12]}>
+                <sphereGeometry args={[0.1, 10, 8]} />
+                <Std color="#FFFFFF" rough={0.3} />
+              </mesh>
             ) : (
               <mesh position={[sx * 0.32, 0.05, -0.02]} rotation={[0, 0, sx * 0.35]} scale={[0.35, 0.8, 0.5]}>
                 <sphereGeometry args={[0.28, 10, 8]} />
@@ -306,7 +353,7 @@ function FollowerQuadruped({ kind, playing }: { kind: Quadruped; playing: boolea
         {/* Collar / pañuelo con los colores de KUN */}
         <mesh position={[0, -0.36, -0.05]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[cat ? 0.2 : 0.24, cat ? 0.035 : 0.06, 6, 16]} />
-          <Std color="#E8735A" />
+          <Std color={kind === "panther" || croc ? "#14306E" : "#E8735A"} />
         </mesh>
       </group>
       {[-1, 1].map((sx, i) => (
@@ -343,6 +390,11 @@ function FollowerQuadruped({ kind, playing }: { kind: Quadruped; playing: boolea
             <capsuleGeometry args={[0.055, 0.95, 4, 8]} />
             <Std color={dark} />
           </mesh>
+        ) : croc ? (
+          <mesh ref={tail} position={[0, 0.0, -1.15]} rotation={[1.35, 0, 0]}>
+            <capsuleGeometry args={[0.16, 0.9, 4, 8]} />
+            <Std color={dark} />
+          </mesh>
         ) : (
           <mesh ref={tail} position={[0, 0.4, -0.85]} rotation={[0.9, 0, 0]}>
             <capsuleGeometry args={[0.06, 0.45, 4, 8]} />
@@ -355,7 +407,7 @@ function FollowerQuadruped({ kind, playing }: { kind: Quadruped; playing: boolea
 }
 
 // Loro (guacamayo) que vuela a la altura de tu hombro, muy de Florida.
-function FollowerParrot({ playing }: { playing: boolean }) {
+function FollowerParrot({ playing, follow }: { playing: boolean; follow?: Follow }) {
   const ref = useRef<THREE.Group>(null);
   const wingL = useRef<THREE.Mesh>(null);
   const wingR = useRef<THREE.Mesh>(null);
@@ -366,23 +418,37 @@ function FollowerParrot({ playing }: { playing: boolean }) {
     if (!g) return;
     const delta = Math.min(rawDelta, 0.05);
     const s = state.current;
-    const p = campusRuntime.player;
+    const p = follow ?? campusRuntime.player;
     const t = frame.clock.elapsedTime;
     const hx = Math.sin(p.heading);
     const hz = Math.cos(p.heading);
     const side = playing ? 1.2 : -1.5;
     const back = playing ? 0.8 : 0;
-    const tx = p.x - hx * back + hz * side;
-    const tz = p.z - hz * back - hx * side;
+    let tx = p.x - hx * back + hz * side;
+    let tz = p.z - hz * back - hx * side;
+    const age = follow ? null : petActionAge();
+    const kind = age === null ? null : petAct.kind;
+    if (kind && age !== null) {
+      const fetch = kind === "play" && age > 0.55 && age < 2.1;
+      tx = fetch ? petAct.bx : p.x + hx * 1.7;
+      tz = fetch ? petAct.bz : p.z + hz * 1.7;
+    }
     s.x += (tx - s.x) * Math.min(1, delta * 4);
     s.z += (tz - s.z) * Math.min(1, delta * 4);
     const moving = Math.hypot(tx - s.x, tz - s.z) > 0.3;
-    const look = moving ? Math.atan2(tx - s.x, tz - s.z) : playing ? p.heading : 0;
+    const look = moving ? Math.atan2(tx - s.x, tz - s.z) : kind ? Math.atan2(p.x - s.x, p.z - s.z) : playing ? p.heading : 0;
     let diff = look - s.heading;
     diff = Math.atan2(Math.sin(diff), Math.cos(diff));
     s.heading += diff * Math.min(1, delta * 6);
-    g.position.set(s.x, 3.3 + Math.sin(t * 3) * 0.18, s.z);
-    g.rotation.y = s.heading;
+    const loop = kind === "trick" && age !== null && age < 1.4 ? (age / 1.4) * Math.PI * 2 : 0;
+    const bounce = kind === "pat" || kind === "treat" ? Math.abs(Math.sin(t * 8)) * 0.3 : 0;
+    g.position.set(s.x, 3.3 + Math.sin(t * 3) * 0.18 + bounce + Math.sin(loop) * 0.9, s.z);
+    g.rotation.y = s.heading + loop;
+    if (!follow) {
+      petPos.x = s.x;
+      petPos.z = s.z;
+      petHeading.h = s.heading;
+    }
     const flap = Math.sin(t * (moving ? 22 : 12)) * (moving ? 0.9 : 0.5);
     if (wingL.current) wingL.current.rotation.z = flap;
     if (wingR.current) wingR.current.rotation.z = -flap;
@@ -442,8 +508,8 @@ export function CampusAnimals({ playing, pet }: { playing: boolean; pet: Pet }) 
       {TURTLES.map((t, i) => (
         <SeaTurtle key={i} {...t} />
       ))}
-      {(pet === "dog" || pet === "cat") && <FollowerQuadruped key={pet} kind={pet} playing={playing} />}
-      {pet === "parrot" && <FollowerParrot playing={playing} />}
+      <PetFollower pet={pet} playing={playing} />
+      <PetFx pet={pet} />
     </group>
   );
 }

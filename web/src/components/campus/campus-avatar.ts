@@ -5,7 +5,24 @@ import type { Dict } from "@/i18n/locale-context";
 // descargados), así que cualquier combinación es instantánea.
 
 export type Gender = "male" | "female" | "other";
-export type HairStyle = "short" | "buzz" | "curly" | "long" | "ponytail" | "bun" | "afro" | "bald";
+export type HairStyle =
+  | "short"
+  | "buzz"
+  | "curly"
+  | "long"
+  | "ponytail"
+  | "bun"
+  | "afro"
+  | "bald"
+  | "bob"
+  | "pixie"
+  | "wavy"
+  | "braids"
+  | "puffs"
+  | "quiff"
+  | "spiky"
+  | "manbun"
+  | "dreads";
 export type EyeStyle = "round" | "almond" | "happy" | "big";
 export type BrowStyle = "soft" | "straight" | "arched";
 export type NoseStyle = "small" | "round" | "wide";
@@ -13,8 +30,8 @@ export type MouthStyle = "smile" | "grin" | "neutral" | "open";
 export type FacialHair = "none" | "mustache" | "beard";
 export type Glasses = "none" | "round" | "square" | "sun";
 export type TopStyle = "tshirt" | "hoodie" | "blazer";
-export type Accessory = "cap" | "headphones" | "backpack" | "none";
-export type Pet = "dog" | "cat" | "parrot" | "none";
+export type Accessory = "cap" | "headphones" | "backpack" | "none" | "gradcap" | "sunhat" | "crown";
+export type Pet = "dog" | "cat" | "parrot" | "none" | "croc" | "panther";
 
 export type Avatar = {
   name: string;
@@ -45,7 +62,7 @@ export const OUTFIT_COLORS = ["#E8735A", "#3D6FD9", "#1E9C7E", "#FFC85C", "#C238
 
 export const OPTIONS = {
   gender: ["male", "female", "other"] as Gender[],
-  hairStyle: ["short", "buzz", "curly", "long", "ponytail", "bun", "afro", "bald"] as HairStyle[],
+  hairStyle: ["long", "wavy", "bob", "pixie", "curly", "ponytail", "bun", "braids", "puffs", "afro", "short", "buzz", "quiff", "spiky", "manbun", "dreads", "bald"] as HairStyle[],
   eyes: ["round", "almond", "happy", "big"] as EyeStyle[],
   brows: ["soft", "straight", "arched"] as BrowStyle[],
   nose: ["small", "round", "wide"] as NoseStyle[],
@@ -55,6 +72,19 @@ export const OPTIONS = {
   top: ["tshirt", "hoodie", "blazer"] as TopStyle[],
   accessory: ["cap", "headphones", "backpack", "none"] as Accessory[],
   pet: ["dog", "cat", "parrot", "none"] as Pet[],
+};
+
+/** Peinados que se ofrecen según el género elegido (en "Otro", todos). */
+export function hairStylesFor(gender: Gender): HairStyle[] {
+  if (gender === "female") return ["long", "wavy", "bob", "pixie", "curly", "ponytail", "bun", "braids", "puffs", "afro"];
+  if (gender === "male") return ["short", "buzz", "quiff", "spiky", "curly", "manbun", "dreads", "long", "afro", "bald"];
+  return OPTIONS.hairStyle;
+}
+
+/** Opciones que se consiguen en la tienda (KUN Store) con monedas. */
+export const PREMIUM_OPTIONS = {
+  accessory: ["gradcap", "sunhat", "crown"] as Accessory[],
+  pet: ["croc", "panther"] as Pet[],
 };
 
 export const OPTION_LABELS: Dict<{
@@ -72,7 +102,7 @@ export const OPTION_LABELS: Dict<{
 }> = {
   es: {
     gender: { male: "Hombre", female: "Mujer", other: "Otro" },
-    hairStyle: { short: "Corto", buzz: "Rapado", curly: "Rizado", long: "Largo", ponytail: "Cola", bun: "Moño", afro: "Afro", bald: "Calvo" },
+    hairStyle: { short: "Corto", buzz: "Rapado", curly: "Rizos", long: "Largo liso", ponytail: "Cola alta", bun: "Moño", afro: "Afro", bald: "Calvo", bob: "Bob", pixie: "Corto pixie", wavy: "Largo ondulado", braids: "Trenzas", puffs: "Dos moñitos", quiff: "Tupé", spiky: "Puntas", manbun: "Moño atrás", dreads: "Rastas" },
     eyes: { round: "Redondos", almond: "Almendra", happy: "Felices", big: "Grandes" },
     brows: { soft: "Suaves", straight: "Rectas", arched: "Arqueadas" },
     nose: { small: "Pequeña", round: "Redonda", wide: "Ancha" },
@@ -80,12 +110,12 @@ export const OPTION_LABELS: Dict<{
     facialHair: { none: "Nada", mustache: "Bigote", beard: "Barba" },
     glasses: { none: "Sin lentes", round: "Redondos", square: "Cuadrados", sun: "De sol" },
     top: { tshirt: "Camiseta", hoodie: "Hoodie", blazer: "Blazer" },
-    accessory: { cap: "Gorra KUN", headphones: "Audífonos", backpack: "Mochila KUN", none: "Ninguno" },
-    pet: { dog: "🐶 Perrito", cat: "🐱 Gatito", parrot: "🦜 Loro", none: "Ninguna" },
+    accessory: { cap: "Gorra KUN", headphones: "Audífonos", backpack: "Mochila KUN", none: "Ninguno", gradcap: "🎓 Birrete", sunhat: "👒 Sombrero playero", crown: "👑 Corona" },
+    pet: { dog: "🐶 Perrito", cat: "🐱 Gatito", parrot: "🦜 Loro", none: "Ninguna", croc: "🐊 Mini Krucn", panther: "🐆 Pantera" },
   },
   en: {
     gender: { male: "Man", female: "Woman", other: "Other" },
-    hairStyle: { short: "Short", buzz: "Buzz", curly: "Curly", long: "Long", ponytail: "Ponytail", bun: "Bun", afro: "Afro", bald: "Bald" },
+    hairStyle: { short: "Short", buzz: "Buzz", curly: "Curls", long: "Long straight", ponytail: "High ponytail", bun: "Bun", afro: "Afro", bald: "Bald", bob: "Bob", pixie: "Pixie", wavy: "Long wavy", braids: "Braids", puffs: "Space buns", quiff: "Quiff", spiky: "Spiky", manbun: "Man bun", dreads: "Locs" },
     eyes: { round: "Round", almond: "Almond", happy: "Happy", big: "Big" },
     brows: { soft: "Soft", straight: "Straight", arched: "Arched" },
     nose: { small: "Small", round: "Round", wide: "Wide" },
@@ -93,8 +123,8 @@ export const OPTION_LABELS: Dict<{
     facialHair: { none: "None", mustache: "Mustache", beard: "Beard" },
     glasses: { none: "No glasses", round: "Round", square: "Square", sun: "Sunglasses" },
     top: { tshirt: "T-shirt", hoodie: "Hoodie", blazer: "Blazer" },
-    accessory: { cap: "KUN cap", headphones: "Headphones", backpack: "KUN backpack", none: "None" },
-    pet: { dog: "🐶 Puppy", cat: "🐱 Kitten", parrot: "🦜 Parrot", none: "None" },
+    accessory: { cap: "KUN cap", headphones: "Headphones", backpack: "KUN backpack", none: "None", gradcap: "🎓 Grad cap", sunhat: "👒 Beach hat", crown: "👑 Crown" },
+    pet: { dog: "🐶 Puppy", cat: "🐱 Kitten", parrot: "🦜 Parrot", none: "None", croc: "🐊 Mini Krucn", panther: "🐆 Panther" },
   },
 };
 

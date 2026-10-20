@@ -15,7 +15,9 @@ import {
   type RemotePlayer,
 } from "@/lib/campus-presence";
 import { CampusLabel } from "./campus-label";
+import { PetFollower } from "./campus-animals";
 import { CAFE_SEATS } from "./campus-cafe";
+import { setMurmur } from "./campus-audio";
 import { MiiAvatar, miiHeight } from "./campus-mii";
 import { campusRuntime } from "./campus-runtime";
 import { EMOTE_MS, emoteLabel, parseAvatar } from "./campus-social";
@@ -39,6 +41,18 @@ export function usePresencePlayers() {
     };
   }, []);
   return players;
+}
+
+// Posición que sigue la mascota de cada persona (se actualiza en cada frame, sin re-render).
+const PET_TARGETS = new Map<string, { x: number; z: number; heading: number }>();
+function petTarget(id: string) {
+  let t = PET_TARGETS.get(id);
+  if (!t) {
+    const p = getPlayer(id);
+    t = { x: p?.x ?? 0, z: p?.z ?? 0, heading: p?.h ?? 0 };
+    PET_TARGETS.set(id, t);
+  }
+  return t;
 }
 
 function EmoteBubble({ text, height, at, clock }: { text: string; height: number; at: number; clock: () => number }) {
@@ -103,6 +117,10 @@ function RemoteAvatar({ player, locale }: { player: RemotePlayer; locale: Locale
       g.position.set(s.x, 0.2 + s.y + (moving ? Math.abs(Math.sin(s.walk)) * 0.06 : 0), s.z);
       g.rotation.y = s.h;
     }
+    const follow = petTarget(player.id);
+    follow.x = seat ? seat.x : s.x;
+    follow.z = seat ? seat.z : s.z;
+    follow.heading = seat ? seat.face : s.h;
     const air = !seat && s.y > 0.3 ? -0.5 : 0;
     if (legL.current) legL.current.rotation.x = seat ? -1.45 : swing + air * 0.5;
     if (legR.current) legR.current.rotation.x = seat ? -1.45 : -swing - air * 0.3;
@@ -111,11 +129,14 @@ function RemoteAvatar({ player, locale }: { player: RemotePlayer; locale: Locale
   });
 
   return (
+    <>
+    <PetFollower pet={avatar.pet} playing follow={petTarget(player.id)} />
     <group ref={root} position={[player.x, 0.2, player.z]}>
       <MiiAvatar avatar={avatar} legLRef={legL} legRRef={legR} armLRef={armL} armRRef={armR} />
       {avatar.name && <CampusLabel text={avatar.name} color="#1E6B5C" position={[0, height + 0.75, 0]} width={4.4} />}
       <EmoteBubble text={emoteLabel(player.e, locale)} height={height} at={player.et ?? 0} clock={serverNow} />
     </group>
+    </>
   );
 }
 
@@ -148,7 +169,14 @@ export function RemotePlayers({
   myHeight: number;
 }) {
   const players = usePresencePlayers();
-  useFrame(() => {
+  const lastMurmur = useRef(0);
+  useFrame((state) => {
+    // Murmullo de ambiente según cuánta gente hay cerca (se revisa cada segundo).
+    if (state.clock.elapsedTime - lastMurmur.current > 1) {
+      lastMurmur.current = state.clock.elapsedTime;
+      const me = campusRuntime.player;
+      setMurmur(visiblePlayers().filter((o) => Math.hypot(o.x - me.x, o.z - me.z) < 18).length);
+    }
     if (enabled) {
       const p = campusRuntime.player;
       sendPosition(p.x, p.z, p.heading, p.y, campusRuntime.seat);
