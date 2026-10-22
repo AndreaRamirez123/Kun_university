@@ -100,7 +100,10 @@ function captionChunks(text: string) {
   return chunks;
 }
 
-const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+const clock = (t: number) => {
+  const s = Math.max(0, t);
+  return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+};
 
 type Gate = null | { kind: "check"; picked: number | null } | { kind: "next"; left: number } | { kind: "finished" };
 
@@ -306,15 +309,19 @@ function Course({ demo, stats, onClose }: { demo: NonNullable<ReturnType<typeof 
     <div className="absolute inset-0 z-[70] overflow-y-auto bg-[#06131A]/96 text-[#FFF3E6] backdrop-blur-md">
       <div className="mx-auto flex min-h-full max-w-[1320px] flex-col gap-4 px-6 py-4 max-md:px-3 max-md:py-3">
         {/* Encabezado: materia, progreso e idioma */}
-        <header className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <button type="button" onClick={onClose} className={`${MONO} cursor-pointer text-[11px] text-white/60 hover:text-white`}>
+        {/* En celular: arriba volver, idioma y cerrar; debajo el nombre de la materia a todo el ancho. */}
+        <header className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-x-5 gap-y-2 max-md:grid-cols-[minmax(0,1fr)_auto_auto] max-md:gap-x-2">
+          <button type="button" onClick={onClose} className={`${MONO} cursor-pointer justify-self-start text-[11px] text-white/60 hover:text-white`}>
             {t.back}
           </button>
-          <div className="min-w-0 flex-1">
-            <div className={`${MONO} text-[10.5px] text-white/50`}>
-              {t.kicker} · {demo.code} · {demo.program[locale]}
+          <div className="min-w-0 max-md:order-last max-md:col-span-3">
+            <div className={`${MONO} truncate text-[10.5px] text-white/50`}>
+              {t.kicker} · {demo.code}
+              <span className="max-md:hidden"> · {demo.program[locale]}</span>
             </div>
-            <h2 className="m-0 truncate font-(family-name:--font-gabarito) text-[22px] font-black max-md:text-lg">{demo.name[locale]}</h2>
+            <h2 className="m-0 truncate font-(family-name:--font-gabarito) text-[22px] font-black max-md:line-clamp-2 max-md:text-[19px] max-md:leading-tight max-md:whitespace-normal">
+              {demo.name[locale]}
+            </h2>
           </div>
           <div className="flex items-center gap-1 rounded-full border border-white/15 p-1" role="group" aria-label={t.lang}>
             {(["es", "en"] as const).map((l) => (
@@ -342,9 +349,10 @@ function Course({ demo, stats, onClose }: { demo: NonNullable<ReturnType<typeof 
           {/* Reproductor */}
           <div className="flex min-w-0 flex-col gap-3">
             <div className="relative overflow-hidden rounded-[18px] border bg-black" style={{ borderColor: `${accent}44` }}>
+              <div className="relative">
               <canvas ref={canvas} role="img" aria-label={chapters[index].title} className="block aspect-video w-full" onClick={() => !gate && setPlaying((p) => !p)} />
               {captions && !gate && (
-                <p className="pointer-events-none absolute inset-x-[8%] bottom-[19%] m-0 text-center max-md:bottom-[24%]">
+                <p className="pointer-events-none absolute inset-x-[8%] bottom-[19%] m-0 text-center max-md:inset-x-[4%] max-md:bottom-[6%]">
                   <span ref={caption} className="inline rounded-md bg-black/72 box-decoration-clone px-2.5 py-1 text-[19px] leading-[1.55] font-semibold max-md:text-[12px]" />
                 </p>
               )}
@@ -353,9 +361,10 @@ function Course({ demo, stats, onClose }: { demo: NonNullable<ReturnType<typeof 
                   ▶
                 </button>
               )}
+              </div>
               {gate && <GateCard gate={gate} setGate={setGate} check={check} locale={locale} next={chapters[index + 1]?.title} onNext={() => go(index + 1)} onReplay={() => go(0)} onCircuit={() => setStation("quiz")} last={index === chapters.length - 1} />}
               {/* Barra de controles */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-4 pt-6 pb-2.5 max-md:px-2">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-4 pt-6 pb-2.5 max-md:static max-md:bg-none max-md:bg-[#0B1A22] max-md:px-3 max-md:pt-3">
                 <div className="group relative h-2 cursor-pointer rounded-full bg-white/20" onClick={seek} role="slider" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label="Progreso">
                   <div ref={bar} className="absolute inset-y-0 left-0 rounded-full" style={{ background: accent }} />
                   {starts.slice(1).map((s, i) => (
@@ -505,7 +514,7 @@ function GateCard({
   const t = usePick(COPY);
   const accent = THEME_STYLE.wellness.accents[0];
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#06131A]/80 p-4 backdrop-blur-sm max-md:items-start max-md:overflow-y-auto max-md:p-2">
+    <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#06131A]/80 p-4 backdrop-blur-sm max-md:static max-md:bg-[#0B1A22] max-md:p-2">
       <div className="reveal-animate w-[min(620px,100%)] rounded-2xl border border-white/15 bg-[#0B1A22] p-5 shadow-2xl max-md:p-3">
         {gate.kind === "check" && check && (
           <>

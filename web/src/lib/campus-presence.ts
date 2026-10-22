@@ -174,7 +174,7 @@ export async function joinPresence(name: string, avatarJson: string, pos: { x: n
     // Sin print=silent para leer la hora del servidor y calcular el desfase de relojes.
     const res = await fetch(url(`${PATH}/${state.myId}`), {
       method: "PUT",
-      body: JSON.stringify({ n: name.slice(0, 16), a: avatarJson.slice(0, 800), x: pos.x, z: pos.z, h: pos.h, t: { ".sv": "timestamp" } }),
+      body: JSON.stringify({ n: name.slice(0, 16), a: avatarJson.slice(0, 800), x: pos.x, z: pos.z, h: Math.atan2(Math.sin(pos.h), Math.cos(pos.h)), t: { ".sv": "timestamp" } }),
     });
     const echo = (await res.json()) as { t?: number };
     if (typeof echo.t === "number") state.offset = echo.t - (t0 + Date.now()) / 2;
@@ -202,7 +202,9 @@ export function sendPosition(x: number, z: number, h: number, y = 0, seat = -1) 
   state.lastSent = now;
   state.lastPos = { x, z, h, y, s: seat };
   const r = (v: number) => Math.round(v * 100) / 100;
-  void write("PATCH", { x: r(x), z: r(z), h: r(h), y: r(Math.max(0, y)), s: seat, t: { ".sv": "timestamp" } }).catch(() => {});
+  // El giro se acumula vuelta tras vuelta; se envía entre -π y π (las reglas piden |h| < 20).
+  const hw = Math.atan2(Math.sin(h), Math.cos(h));
+  void write("PATCH", { x: r(x), z: r(z), h: r(hw), y: r(Math.max(0, y)), s: seat, t: { ".sv": "timestamp" } }).catch(() => {});
 }
 
 /** Muestra un emote (emoji o frase) sobre la cabeza del jugador para todos. */

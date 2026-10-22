@@ -27,7 +27,7 @@ const COMMON = {
     semester: (n: number) => `Semestre ${n}`,
     comingSoon: "El plan de materias de este programa se publicará próximamente.",
     seePlan: "Ver plan de estudios →",
-    heroTitle: "La universidad que se rediseñó alrededor de la IA, no al revés.",
+    heroTitle: "La universidad que puso la inteligencia artificial en el centro de su evolución.",
     heroBody:
       "KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los semestres.",
     statSchools: "Escuelas",
@@ -70,7 +70,7 @@ const COMMON = {
     schoolsTitle: "Cuatro escuelas. Un mismo motor IA-Native.",
     schoolsBody:
       "Cada programa se rediseña continuamente con IA y expertos humanos para reflejar lo que la industria necesita hoy.",
-    tagline: "La universidad IA-Native. Rediseñada alrededor de la inteligencia artificial, no al revés.",
+    tagline: "La universidad IA-Native que puso la inteligencia artificial en el centro de su evolución.",
   },
   en: {
     classroom: "Virtual classroom",
@@ -85,7 +85,7 @@ const COMMON = {
     semester: (n: number) => `Semester ${n}`,
     comingSoon: "This program's course plan will be published soon.",
     seePlan: "View course plan →",
-    heroTitle: "The university that redesigned itself around AI, not the other way around.",
+    heroTitle: "The university that put artificial intelligence at the center of its evolution.",
     heroBody:
       "KUN University AI trains professionals in Health, Technology, Business and Digital Media with a curriculum that updates at the speed of science, not of semesters.",
     statSchools: "Schools",
@@ -126,7 +126,7 @@ const COMMON = {
     launch: "Launch the rocket",
     schoolsTitle: "Four schools. One AI-Native engine.",
     schoolsBody: "Every program is continuously redesigned with AI and human experts to reflect what industry needs today.",
-    tagline: "The AI-Native university. Redesigned around artificial intelligence, not the other way around.",
+    tagline: "The AI-Native university that put artificial intelligence at the center of its evolution.",
   },
 };
 

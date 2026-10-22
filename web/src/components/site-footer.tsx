@@ -7,7 +7,7 @@ import { usePick } from "@/i18n/locale-context";
 
 const COPY = {
   es: {
-    tagline: "La universidad IA-Native. Rediseñada alrededor de la inteligencia artificial, no al revés.",
+    tagline: "La universidad IA-Native que puso la inteligencia artificial en el centro de su evolución.",
     schoolsTitle: "Escuelas",
     schools: ["Ingeniería", "Transformación de Negocios", "Bienestar y Desarrollo Humano", "Diseño y Tecnologías de Comunicación"],
     institutionTitle: "Institución",
@@ -21,7 +21,7 @@ const COPY = {
     copyright: "© 2026 KUN University AI",
   },
   en: {
-    tagline: "The AI-Native university. Redesigned around artificial intelligence, not the other way around.",
+    tagline: "The AI-Native university that put artificial intelligence at the center of its evolution.",
     schoolsTitle: "Schools",
     schools: ["Engineering", "Business Transformation", "Wellness and Human Development", "Design and Communication Technologies"],
     institutionTitle: "Institution",

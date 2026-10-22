@@ -1,17 +1,15 @@
 "use client";
 
 import { CountUp } from "./count-up";
-import { GreetingBadge } from "./greeting-badge";
 import { Parallax } from "./parallax";
 import { usePick } from "@/i18n/locale-context";
 import type { Stats } from "@/lib/types";
 
 const COPY = {
   es: {
-    greeting: "Saludos desde KUN University · Florida",
-    titleStart: "La universidad que se",
-    titleHighlight: "rediseñó alrededor de la IA",
-    titleEnd: ", no al revés.",
+    titleStart: "La universidad que puso",
+    titleHighlight: "la inteligencia artificial",
+    titleEnd: " en el centro de su evolución.",
     body: "KUN University AI forma profesionales en Salud, Tecnología, Negocios y Medios Digitales con un currículo que se actualiza a la velocidad de la ciencia, no de los semestres.",
     ctaPrimary: "Explora los programas",
     ctaSecondary: "Certifícate gratis en 40h",
@@ -21,10 +19,9 @@ const COPY = {
     online: "Online/Global",
   },
   en: {
-    greeting: "Greetings from KUN University · Florida",
-    titleStart: "The university that",
-    titleHighlight: "redesigned itself around AI",
-    titleEnd: ", not the other way around.",
+    titleStart: "The university that put",
+    titleHighlight: "artificial intelligence",
+    titleEnd: " at the center of its evolution.",
     body: "KUN University AI trains professionals in Health, Technology, Business and Digital Media with a curriculum that updates at the speed of science, not of semesters.",
     ctaPrimary: "Explore the programs",
     ctaSecondary: "Get certified free in 40h",
@@ -88,8 +85,6 @@ export function Hero({ stats }: { stats: Stats }) {
 
       <div className="relative z-10 mx-auto max-w-220 px-14 pt-16 pb-10 text-center max-md:px-6 max-md:pt-6 lg:max-w-320">
         <div className="mx-auto max-w-170 rounded-t-[110px] rounded-b-3xl border-2 border-burgundy/50 bg-cream/95 px-12 py-14 shadow-[0_40px_80px_rgba(3,62,140,0.28)] backdrop-blur-sm max-md:rounded-t-[36px] max-md:px-6 max-md:py-10 lg:max-w-none lg:w-full">
-          <GreetingBadge>{t.greeting}</GreetingBadge>
-
           <h1 className="font-display mb-5.5 text-[46px] leading-[1.2] font-normal max-md:text-[30px]">
             {t.titleStart}{" "}
             <span className="bg-linear-to-r from-cyan to-burgundy bg-clip-text text-transparent">
