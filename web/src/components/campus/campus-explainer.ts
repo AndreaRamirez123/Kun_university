@@ -66,7 +66,7 @@ export function explainerChapters(locale: Locale, stats: Stats): Chapter[] {
     ];
   }
   return [
-    { id: "welcome", menu: "Bienvenida", title: "KUN University AI", voice: "Bienvenido a KUN University AI, la universidad IA-Native con sede en Florida.", accent: "#E8735A" },
+    { id: "welcome", menu: "Bienvenida", title: "KUN University AI", voice: "Te damos la bienvenida a KUN University AI, la universidad IA-Native con sede en Florida.", accent: "#E8735A" },
     { id: "online", menu: "100% online", title: "Estudia desde donde estés", voice: "Todo es cien por ciento online: estudias desde cualquier lugar del mundo y a tu ritmo.", accent: "#3D6FD9" },
     { id: "numbers", menu: "Programas", title: `${stats.schools} escuelas · ${stats.programs} programas`, voice: `Tenemos ${stats.schools} escuelas, ${stats.programs} programas y ${stats.certifications} certificaciones en inteligencia artificial, con un currículo que se actualiza a la velocidad de la ciencia.`, accent: "#1E9C7E", extra: ["ESCUELAS", "PROGRAMAS", "CERTIF. IA", "% ONLINE"] },
     { id: "steps", menu: "Cómo inscribirte", title: "Inscribirte son 3 pasos", voice: "Inscribirte es fácil: eliges tu programa, llenas el formulario y un asesor te contacta.", accent: "#FFC85C", extra: ["Elige tu programa", "Llena el formulario", "Habla con un asesor"] },

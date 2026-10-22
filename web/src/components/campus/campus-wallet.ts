@@ -48,7 +48,7 @@ export const REWARDS: Record<RewardKind, Rule> = {
 
 export const REWARD_LABELS: Dict<Record<RewardKind, string>> = {
   es: {
-    welcome: "¡Bienvenida al campus!",
+    welcome: "Regalo de bienvenida",
     visit: "Lugar descubierto",
     allVisited: "¡Recorriste todo el campus!",
     learn: "Aprendiste algo nuevo",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { pickVoice, voiceLang } from "./campus-voice";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import type { Stats } from "@/lib/types";
 import { drawExplainer, THEME_STYLE, type Chapter } from "./campus-explainer";
@@ -114,8 +115,8 @@ function speak(text: string, locale: "es" | "en", onEnd: () => void) {
   if (!synth) return;
   synth.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = locale === "es" ? "es-ES" : "en-US";
-  const voice = synth.getVoices().find((v) => v.lang.toLowerCase().startsWith(locale));
+  u.lang = voiceLang(locale);
+  const voice = pickVoice(synth, locale);
   if (voice) u.voice = voice;
   u.rate = 1.02;
   u.onend = onEnd;

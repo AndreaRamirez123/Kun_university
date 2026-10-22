@@ -17,7 +17,7 @@ export const EMOTES: Emote[] = [
   { emoji: "👋", text: { es: "¡Hola!", en: "Hi!" } },
   { emoji: "🎓", text: { es: "¿Qué estudias?", en: "What do you study?" } },
   { emoji: "☕", text: { es: "¡Vamos a la cafetería!", en: "Let's go to the café!" } },
-  { emoji: "🙌", text: { es: "¡Bienvenido/a al campus!", en: "Welcome to campus!" } },
+  { emoji: "🙌", text: { es: "¡Te damos la bienvenida!", en: "Welcome to campus!" } },
   { emoji: "🤝", text: { es: "¡Mucho gusto!", en: "Nice to meet you!" } },
   { emoji: "🧭", text: { es: "¡Sígueme!", en: "Follow me!" } },
   { emoji: "💻", text: { es: "Me interesa Ingeniería", en: "I'm into Engineering" } },

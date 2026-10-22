@@ -53,6 +53,9 @@ const state = {
   lastPos: { x: NaN, z: NaN, h: NaN, y: 0, s: -1 },
   heartbeat: 0,
   joined: false,
+  /** Nombre y avatar propios, para volver a registrarse si nos borraron. */
+  profile: { n: "", a: "" },
+  rejoining: false,
 };
 
 export const serverNow = () => Date.now() + state.offset;
@@ -149,7 +152,34 @@ async function write(method: "PUT" | "PATCH" | "DELETE", body?: object, keepaliv
     body: body ? JSON.stringify(body) : undefined,
     keepalive,
   });
+  // Si el registro propio desapareció (otra persona lo limpió mientras la pestaña
+  // estaba en segundo plano), un PATCH parcial no pasa las reglas: se registra de nuevo.
+  if (method === "PATCH" && (res.status === 401 || res.status === 403) && !state.rejoining) void rejoin();
   return res;
+}
+
+const wrapH = (h: number) => Math.atan2(Math.sin(h), Math.cos(h));
+
+async function rejoin() {
+  state.rejoining = true;
+  const p = state.lastPos;
+  try {
+    await fetch(url(`${PATH}/${state.myId}`, "?print=silent"), {
+      method: "PUT",
+      body: JSON.stringify({
+        n: state.profile.n,
+        a: state.profile.a,
+        x: Number.isFinite(p.x) ? Math.round(p.x * 100) / 100 : 0,
+        z: Number.isFinite(p.z) ? Math.round(p.z * 100) / 100 : 0,
+        h: Number.isFinite(p.h) ? Math.round(wrapH(p.h) * 100) / 100 : 0,
+        t: { ".sv": "timestamp" },
+      }),
+    });
+  } catch {
+    /* sin conexión: se reintenta con el próximo latido */
+  } finally {
+    state.rejoining = false;
+  }
 }
 
 /** Entra al campus compartido con el nombre y el avatar del jugador. */
@@ -169,6 +199,7 @@ export async function joinPresence(name: string, avatarJson: string, pos: { x: n
       /* ignorado */
     }
   }
+  state.profile = { n: name.slice(0, 16), a: avatarJson.slice(0, 800) };
   const t0 = Date.now();
   try {
     // Sin print=silent para leer la hora del servidor y calcular el desfase de relojes.
@@ -215,7 +246,8 @@ export function sendEmote(index: number) {
 
 export function updateProfile(name: string, avatarJson: string) {
   if (!state.joined || !state.myId) return;
-  void write("PATCH", { n: name.slice(0, 16), a: avatarJson.slice(0, 800) }).catch(() => {});
+  state.profile = { n: name.slice(0, 16), a: avatarJson.slice(0, 800) };
+  void write("PATCH", state.profile).catch(() => {});
 }
 
 /** Borra de la base a quienes se fueron sin despedirse (cierre forzado, sin red…). */

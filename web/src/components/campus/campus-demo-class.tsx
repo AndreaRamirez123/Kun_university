@@ -8,6 +8,7 @@ import { chapterSeconds, demoChapters, findDemo, markLesson, stonesFor, useDemoP
 import { Cairn, CampusDemoCircuit, STATION_STYLE } from "./campus-demo-circuit";
 import { drawExplainer, THEME_STYLE } from "./campus-explainer";
 import { labelFontFamily } from "./campus-label";
+import { pickVoice, voiceLang } from "./campus-voice";
 import { resetCampusInput } from "./campus-runtime";
 import { earn } from "./campus-wallet";
 
@@ -196,7 +197,9 @@ function Course({ demo, stats, onClose }: { demo: NonNullable<ReturnType<typeof 
     synth.cancel();
     speech.current.key = key;
     const u = new SpeechSynthesisUtterance(chapters[index].voice);
-    u.lang = locale === "es" ? "es-ES" : "en-US";
+    u.lang = voiceLang(locale);
+    const v = pickVoice(synth, locale);
+    if (v) u.voice = v;
     u.rate = speed;
     clockRef.current.char = -1;
     u.onstart = () => (clockRef.current.speaking = true);
@@ -306,6 +309,7 @@ function Course({ demo, stats, onClose }: { demo: NonNullable<ReturnType<typeof 
   const btn = `${MONO} cursor-pointer rounded-full border border-white/20 px-3 py-1.5 text-[11px] hover:bg-white/10`;
 
   return (
+    <>
     <div className="absolute inset-0 z-[70] overflow-y-auto bg-[#06131A]/96 text-[#FFF3E6] backdrop-blur-md">
       <div className="mx-auto flex min-h-full max-w-[1320px] flex-col gap-4 px-6 py-4 max-md:px-3 max-md:py-3">
         {/* Encabezado: materia, progreso e idioma */}
@@ -484,8 +488,10 @@ function Course({ demo, stats, onClose }: { demo: NonNullable<ReturnType<typeof 
           </aside>
         </div>
       </div>
-      {station && <CampusDemoCircuit key={station} demo={demo} station={station} onClose={() => setStation(null)} />}
     </div>
+    {/* Fuera del contenedor con scroll: el juego aparece frente a la persona, no arriba de la página. */}
+    {station && <CampusDemoCircuit key={station} demo={demo} station={station} onClose={() => setStation(null)} />}
+    </>
   );
 }
 

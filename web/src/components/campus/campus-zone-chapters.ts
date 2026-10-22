@@ -12,7 +12,7 @@ import { catalogText, findCatalogSchool, groupCourses, isByLevel, type CatalogPr
 const T = {
   es: {
     welcomeMenu: "Bienvenida",
-    welcomeVoice: (name: string, tagline: string) => `Bienvenido a la ${name}. ${tagline}`,
+    welcomeVoice: (name: string, tagline: string) => `Te damos la bienvenida a la ${name}. ${tagline}`,
     programVoice: (name: string, degree: string, credits: number, sem: number) =>
       `${name}: un programa ${degree} de ${credits} créditos${sem ? `, en ${sem} semestres` : ""}, cien por ciento online.`,
     credits: "CRÉDITOS",
@@ -36,7 +36,7 @@ const T = {
     enrollTitle: "Tu carrera arranca aquí",
     enrollVoice: (name: string) => `¿Te interesa la ${name}? Inscríbete ahora o escríbenos a ${ADMISSIONS_EMAIL}.`,
     curWelcome: "No enseñamos lo que se enseñaba hace cinco años",
-    curWelcomeVoice: "Bienvenido al Currículo vivo, el corazón del campus. Aquí ves cómo se construye cada curso de KUN.",
+    curWelcomeVoice: "Te damos la bienvenida al Currículo vivo, el corazón del campus. Aquí ves cómo se construye cada curso de KUN.",
     cur1: ["La IA rastrea la frontera", "Agentes de IA monitorean lo último que publica la ciencia, la industria y la regulación en cada campo que enseñamos."],
     cur2: ["El criterio humano decide", "El equipo académico experto revisa, valida y da forma al contenido. La IA propone, las personas deciden."],
     cur3: ["Aprendes lo de hoy", "No lo que se enseñaba hace cinco años: las competencias que las empresas buscan hoy."],
@@ -44,7 +44,7 @@ const T = {
     curSchools: "Cuatro escuelas, un motor",
     curSchoolsVoice: (n: number, p: number) => `El mismo motor IA-Native impulsa nuestras ${n} escuelas y ${p} programas.`,
     certWelcome: "No tienes que esperar a graduarte",
-    certWelcomeVoice: (n: number) => `Bienvenido a la plataforma de lanzamiento. Tenemos ${n} certificaciones de 36 a 40 horas para aplicar lo aprendido desde la primera semana.`,
+    certWelcomeVoice: (n: number) => `Te damos la bienvenida a la plataforma de lanzamiento. Tenemos ${n} certificaciones de 36 a 40 horas para aplicar lo aprendido desde la primera semana.`,
     hours: "HORAS",
     certVoice: (name: string, h: number, desc: string) => `${name}: ${h} horas, cien por ciento online. ${desc}`,
     certStart: "Despega hoy",

@@ -23,8 +23,8 @@ const COPY = {
     names: { quiz: "Sauna", match: "Piscina", sort: "Jardín" } as Record<Station, string>,
     hints: {
       quiz: "10 preguntas · 20 segundos cada una. Cada respuesta te explica por qué.",
-      match: "Toca un término y luego su definición.",
-      sort: "Toca un servicio y luego la canasta donde va. Al final revisamos.",
+      match: "Elige la definición correcta de cada término.",
+      sort: "¿Dónde va cada servicio? Toca la canasta correcta.",
     } as Record<Station, string>,
     close: "Volver a la materia",
     q: (i: number) => `Pregunta ${i} de 10`,
@@ -33,10 +33,9 @@ const COPY = {
     time: "Se acabó el tiempo.",
     next: "Siguiente",
     finish: "Ver mi resultado",
-    terms: "Términos",
-    defs: "Definiciones",
-    tries: (n: number) => `${n} intentos`,
-    check: "Revisar mis canastas",
+    whatMeans: "¿Qué significa?",
+    whereGoes: "¿Dónde va este servicio?",
+    wrongBasket: (b: string) => `Va en: ${b}.`,
     score: "Puntaje",
     again: "Repetir",
     r: [
@@ -52,8 +51,8 @@ const COPY = {
     names: { quiz: "Sauna", match: "Pool", sort: "Garden" } as Record<Station, string>,
     hints: {
       quiz: "10 questions · 20 seconds each. Every answer explains why.",
-      match: "Tap a term, then its definition.",
-      sort: "Tap a service, then the basket it belongs in. We check at the end.",
+      match: "Pick the right definition for each term.",
+      sort: "Where does each service go? Tap the right basket.",
     } as Record<Station, string>,
     close: "Back to the course",
     q: (i: number) => `Question ${i} of 10`,
@@ -62,10 +61,9 @@ const COPY = {
     time: "Time is up.",
     next: "Next",
     finish: "See my result",
-    terms: "Terms",
-    defs: "Definitions",
-    tries: (n: number) => `${n} attempts`,
-    check: "Check my baskets",
+    whatMeans: "What does it mean?",
+    whereGoes: "Where does this service go?",
+    wrongBasket: (b: string) => `It goes in: ${b}.`,
     score: "Score",
     again: "Replay",
     r: [
@@ -208,134 +206,162 @@ function Quiz({ demo, onDone }: { demo: CourseDemo; onDone: (pct: number) => voi
   );
 }
 
-function Match({ demo, onDone }: { demo: CourseDemo; onDone: (pct: number) => void }) {
-  const t = usePick(COPY);
-  const { locale } = useLocale();
-  const [terms] = useState(() => shuffle(demo.pairs.map((_, i) => i)));
-  const [defs] = useState(() => shuffle(demo.pairs.map((_, i) => i)));
-  const [sel, setSel] = useState<number | null>(null);
-  const [done, setDone] = useState<number[]>([]);
-  const [tries, setTries] = useState(0);
-  const [shake, setShake] = useState<number | null>(null);
-
-  const pickDef = (d: number) => {
-    if (sel === null) return;
-    const n = tries + 1;
-    setTries(n);
-    if (d === sel) {
-      const next = [...done, d];
-      setDone(next);
-      setSel(null);
-      playChime();
-      if (next.length === demo.pairs.length) onDone(Math.round((demo.pairs.length / n) * 100));
-    } else {
-      setShake(d);
-      window.setTimeout(() => setShake(null), 380);
-    }
-  };
-  const stone = "block w-full cursor-pointer rounded-[22px_14px_20px_12px] px-4 py-3 text-left text-[14px] font-semibold text-[#0D3B4F] shadow-[inset_0_-5px_0_rgba(0,0,0,.08)] transition";
+/** Barra de avance común de Piscina y Jardín. */
+function Steps({ i, n, color }: { i: number; n: number; color: string }) {
   return (
-    <div>
-      <div className="mb-3 font-mono text-[11px] tracking-[0.14em] text-white/55 uppercase">
-        {done.length} / {demo.pairs.length} · {t.tries(tries)}
-      </div>
-      <div className="grid grid-cols-2 gap-4 max-md:grid-cols-1">
-        <div className="flex flex-col gap-2">
-          <h3 className="m-0 text-[13px] font-bold text-white/60">{t.terms}</h3>
-          {terms.map((i) => (
-            <button
-              key={i}
-              type="button"
-              disabled={done.includes(i)}
-              onClick={() => setSel(i)}
-              className={`${stone} font-(family-name:--font-gabarito) text-[15px] ${done.includes(i) ? "bg-[#9ED9B9]" : "bg-[#F1E8D8] hover:translate-x-1"} ${sel === i ? "ring-4 ring-[#3BB3B5]" : ""}`}
-            >
-              {demo.pairs[i][0][locale]}
-            </button>
-          ))}
-        </div>
-        <div className="flex flex-col gap-2">
-          <h3 className="m-0 text-[13px] font-bold text-white/60">{t.defs}</h3>
-          {defs.map((i) => (
-            <button
-              key={i}
-              type="button"
-              disabled={done.includes(i)}
-              onClick={() => pickDef(i)}
-              className={`${stone} ${done.includes(i) ? "bg-[#9ED9B9]" : "bg-[#F1E8D8] hover:translate-x-1"} ${shake === i ? "ring-4 ring-[#E2574C]" : ""}`}
-            >
-              {demo.pairs[i][1][locale]}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="mb-4 flex gap-1">
+      {Array.from({ length: n }, (_, k) => (
+        <span key={k} className="h-1.5 flex-1 rounded-full" style={{ background: k < i ? color : k === i ? `${color}99` : "rgba(255,255,255,.15)" }} />
+      ))}
     </div>
   );
 }
 
+// Piscina: un término a la vez y cuatro definiciones para elegir (sin listas largas).
+function Match({ demo, onDone }: { demo: CourseDemo; onDone: (pct: number) => void }) {
+  const t = usePick(COPY);
+  const { locale } = useLocale();
+  const n = demo.pairs.length;
+  const [rounds] = useState(() =>
+    shuffle(demo.pairs.map((_, i) => i)).map((i) => ({
+      term: i,
+      options: shuffle([i, ...shuffle(demo.pairs.map((_, k) => k).filter((k) => k !== i)).slice(0, 3)]),
+    })),
+  );
+  const [i, setI] = useState(0);
+  const [score, setScore] = useState(0);
+  const [picked, setPicked] = useState<number | null>(null);
+  const round = rounds[i];
+  const color = STATION_STYLE.match.color;
+  const last = i === n - 1;
+
+  const pick = (d: number) => {
+    if (picked !== null) return;
+    setPicked(d);
+    if (d === round.term) {
+      setScore((s) => s + 1);
+      playChime();
+    }
+  };
+
+  return (
+    <div>
+      <Steps i={i} n={n} color={color} />
+      <div className="mb-1 font-mono text-[11px] tracking-[0.14em] text-white/55 uppercase">{t.whatMeans}</div>
+      <h3 className="m-0 mb-4 rounded-2xl px-4 py-3 font-(family-name:--font-gabarito) text-[24px] font-black text-[#06262A] max-md:text-[20px]" style={{ background: color }}>
+        {demo.pairs[round.term][0][locale]}
+      </h3>
+      <div className="grid grid-cols-2 gap-2.5 max-md:grid-cols-1 max-md:gap-2">
+        {round.options.map((d) => {
+          const state = picked === null ? "" : d === round.term ? "ring-4 ring-[#3FB37F]" : d === picked ? "ring-4 ring-[#E2574C]" : "opacity-45";
+          return (
+            <button
+              key={d}
+              type="button"
+              disabled={picked !== null}
+              onClick={() => pick(d)}
+              className={`cursor-pointer rounded-[20px_14px_18px_12px] bg-[#F1E8D8] px-4 py-3 text-left text-[14px] leading-snug font-semibold text-[#0D3B4F] transition enabled:hover:-translate-y-0.5 max-md:py-2.5 max-md:text-[13px] ${state}`}
+            >
+              {demo.pairs[d][1][locale]}
+            </button>
+          );
+        })}
+      </div>
+      {picked !== null && (
+        <div className="reveal-animate mt-3 flex items-center justify-between gap-3">
+          <b className="text-[14px]">{picked === round.term ? t.right : t.wrong}</b>
+          <button
+            type="button"
+            autoFocus
+            onClick={() => {
+              if (last) onDone(Math.round((score / n) * 100));
+              else {
+                setI(i + 1);
+                setPicked(null);
+              }
+            }}
+            className="cursor-pointer rounded-full px-5 py-2 font-bold text-[#06262A]"
+            style={{ background: color }}
+          >
+            {last ? t.finish : t.next} →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Jardín: un servicio a la vez y dos canastas lado a lado; se corrige al instante.
 function Sort({ demo, onDone }: { demo: CourseDemo; onDone: (pct: number) => void }) {
   const t = usePick(COPY);
   const { locale } = useLocale();
-  const [pool, setPool] = useState(() => shuffle(demo.sort.items.map((_, i) => i)));
-  const [sel, setSel] = useState<number | null>(null);
-  const [baskets, setBaskets] = useState<[number[], number[]]>([[], []]);
-  const [checked, setChecked] = useState(false);
+  const n = demo.sort.items.length;
+  const [order] = useState(() => shuffle(demo.sort.items.map((_, i) => i)));
+  const [i, setI] = useState(0);
+  const [score, setScore] = useState(0);
+  const [picked, setPicked] = useState<0 | 1 | null>(null);
+  const [counts, setCounts] = useState<[number, number]>([0, 0]);
+  const item = demo.sort.items[order[i]];
+  const color = STATION_STYLE.sort.color;
+  const last = i === n - 1;
+
   const drop = (b: 0 | 1) => {
-    if (sel === null || checked) return;
-    setBaskets((bs) => (b === 0 ? [[...bs[0], sel], bs[1]] : [bs[0], [...bs[1], sel]]));
-    setPool((p) => p.filter((x) => x !== sel));
-    setSel(null);
+    if (picked !== null) return;
+    setPicked(b);
+    setCounts((c) => (b === 0 ? [c[0] + 1, c[1]] : [c[0], c[1] + 1]));
+    if (b === item.b) {
+      setScore((s) => s + 1);
+      playChime();
+    }
   };
-  const correct = baskets[0].filter((i) => demo.sort.items[i].b === 0).length + baskets[1].filter((i) => demo.sort.items[i].b === 1).length;
-  const chip = "rounded-[20px_14px_18px_12px] px-3.5 py-2 text-[13.5px] font-bold text-[#0D3B4F]";
+  const next = () => {
+    if (last) onDone(Math.round((score / n) * 100));
+    else {
+      setI(i + 1);
+      setPicked(null);
+    }
+  };
+
   return (
     <div>
-      {pool.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-2 rounded-3xl bg-black/20 p-3">
-          {pool.map((i) => (
-            <button key={i} type="button" onClick={() => setSel(i)} className={`${chip} cursor-pointer bg-[#F1E8D8] ${sel === i ? "ring-4 ring-[#7DB83A]" : ""}`}>
-              {demo.sort.items[i].t[locale]}
-            </button>
-          ))}
-        </div>
-      )}
-      <div className="grid grid-cols-2 gap-4 max-md:grid-cols-1">
+      <Steps i={i} n={n} color={color} />
+      <div className="mb-1 font-mono text-[11px] tracking-[0.14em] text-white/55 uppercase">{t.whereGoes}</div>
+      <div
+        key={i}
+        className={`reveal-animate mb-4 rounded-2xl bg-[#F1E8D8] px-5 py-5 text-center font-(family-name:--font-gabarito) text-[22px] leading-tight font-black text-[#1E3608] max-md:py-4 max-md:text-[19px] ${
+          picked === null ? "" : picked === item.b ? "ring-4 ring-[#3FB37F]" : "ring-4 ring-[#E2574C]"
+        }`}
+      >
+        {item.t[locale]}
+      </div>
+      <div className="grid grid-cols-2 gap-3">
         {([0, 1] as const).map((b) => (
           <button
             key={b}
             type="button"
+            disabled={picked !== null}
             onClick={() => drop(b)}
-            className="flex min-h-40 cursor-pointer flex-col items-start gap-2 rounded-[30px_30px_40px_40px] p-4 text-left shadow-[inset_0_-10px_0_rgba(0,0,0,.1)]"
+            className={`flex cursor-pointer flex-col items-center gap-1 rounded-[26px_26px_34px_34px] px-3 py-4 text-center shadow-[inset_0_-8px_0_rgba(0,0,0,.1)] transition enabled:hover:-translate-y-0.5 ${
+              picked !== null && item.b === b ? "ring-4 ring-[#3FB37F]" : ""
+            }`}
             style={{ background: b === 0 ? "linear-gradient(170deg,#E3F5C9,#B9E07E)" : "linear-gradient(170deg,#F6E3F0,#DDB3D2)" }}
           >
-            <span className="font-(family-name:--font-gabarito) text-[17px] font-extrabold text-[#24123F]">
-              {b === 0 ? "🌿" : "⚕️"} {demo.sort.baskets[b][locale]}
+            <span className="text-2xl" aria-hidden>
+              {b === 0 ? "🌿" : "⚕️"}
             </span>
-            <span className="flex flex-wrap gap-1.5">
-              {baskets[b].map((i) => (
-                <span
-                  key={i}
-                  className={`${chip} bg-white ${checked ? (demo.sort.items[i].b === b ? "ring-2 ring-[#3FB37F]" : "line-through ring-2 ring-[#E2574C]") : ""}`}
-                >
-                  {demo.sort.items[i].t[locale]}
-                </span>
-              ))}
-            </span>
+            <span className="text-[14px] leading-tight font-extrabold text-[#24123F] max-md:text-[13px]">{demo.sort.baskets[b][locale]}</span>
+            <span className="font-mono text-[11px] text-[#24123F]/60">{counts[b]}</span>
           </button>
         ))}
       </div>
-      <div className="mt-4 text-right">
-        {pool.length === 0 && !checked && (
-          <button type="button" onClick={() => setChecked(true)} className="cursor-pointer rounded-full bg-[#7DB83A] px-5 py-2 font-bold text-[#1E3608]">
-            {t.check}
+      {picked !== null && (
+        <div className="reveal-animate mt-3 flex items-center justify-between gap-3">
+          <b className="text-[14px]">{picked === item.b ? t.right : t.wrongBasket(demo.sort.baskets[item.b][locale])}</b>
+          <button type="button" autoFocus onClick={next} className="shrink-0 cursor-pointer rounded-full px-5 py-2 font-bold text-[#1E3608]" style={{ background: color }}>
+            {last ? t.finish : t.next} →
           </button>
-        )}
-        {checked && (
-          <button type="button" onClick={() => onDone(Math.round((correct / demo.sort.items.length) * 100))} className="cursor-pointer rounded-full bg-[#7DB83A] px-5 py-2 font-bold text-[#1E3608]">
-            {t.finish} →
-          </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -365,7 +391,7 @@ export function CampusDemoCircuit({ demo, station, onClose }: { demo: CourseDemo
       className="absolute inset-0 z-[80] flex items-center justify-center p-4 backdrop-blur-md max-md:items-end max-md:p-2"
       style={{ background: `radial-gradient(80% 60% at 50% 0%, ${style.color}33, rgba(5,8,14,0.82))` }}
     >
-      <div role="dialog" aria-modal="true" className="reveal-animate flex max-h-[92dvh] w-[min(900px,100%)] flex-col overflow-hidden rounded-[30px] border border-white/15 bg-[#0B1A22]/95 text-[#F4FAF8] shadow-[0_40px_100px_-30px_rgba(0,0,0,0.9)]">
+      <div role="dialog" aria-modal="true" className="reveal-animate flex max-h-[92dvh] w-[min(900px,100%)] flex-col overflow-hidden rounded-[30px] max-md:h-full max-md:max-h-none max-md:rounded-[22px] border border-white/15 bg-[#0B1A22]/95 text-[#F4FAF8] shadow-[0_40px_100px_-30px_rgba(0,0,0,0.9)]">
         <header className="flex items-center gap-4 border-b border-white/10 px-6 py-4 max-md:px-4" style={{ background: `linear-gradient(90deg, ${style.color}40, transparent)` }}>
           <span aria-hidden className="text-3xl">
             {style.emoji}
@@ -375,8 +401,8 @@ export function CampusDemoCircuit({ demo, station, onClose }: { demo: CourseDemo
             <h2 className="m-0 font-(family-name:--font-gabarito) text-[24px] font-black">{t.names[station]}</h2>
             <p className="m-0 text-[12.5px] text-white/65">{t.hints[station]}</p>
           </div>
-          <button type="button" onClick={onClose} className="shrink-0 cursor-pointer rounded-full border border-white/20 px-4 py-2 text-[13px] font-bold transition hover:bg-white/10">
-            ← {t.close}
+          <button type="button" onClick={onClose} aria-label={t.close} className="shrink-0 cursor-pointer rounded-full border border-white/20 px-4 py-2 text-[13px] font-bold transition hover:bg-white/10 max-md:h-10 max-md:w-10 max-md:px-0">
+            ← <span className="max-md:hidden">{t.close}</span>
           </button>
         </header>
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5 max-md:px-4">
