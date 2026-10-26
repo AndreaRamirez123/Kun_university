@@ -1,14 +1,24 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CampusLang } from "./campus-lang";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import type { Avatar } from "./campus-avatar";
-import { campusRuntime, resetCampusInput } from "./campus-runtime";
+import { activeTreat, campusRuntime, resetCampusInput, startTreat } from "./campus-runtime";
+import { addHappy } from "./campus-pet";
+import { playChime } from "./campus-audio";
 import { STORE, zoneDoor } from "./campus-zones";
+import { CAFE_COUNTER } from "./campus-cafe";
 import { buy, HOW_TO_EARN, onEarn, REWARD_LABELS, SHOP_ITEMS, useWallet, type ShopItem } from "./campus-wallet";
 
 // Interfaz de la tienda: el contador de monedas del HUD, el aviso para entrar a
 // la KUN Store y la ventana con los artículos.
+
+/** Lo que se ve en el HUD mientras dura la comida o bebida. */
+const TREAT_CHIP: Record<string, string> = { coffee: "☕ ⚡", juice: "🍊 🦘", icecream: "🍦 💗" };
+
+/** Cuánto dura una comida o bebida de la cafetería. */
+const TREAT_MS = 120_000;
 
 const COPY = {
   es: {
@@ -17,6 +27,9 @@ const COPY = {
     hats: "Sombreros",
     pets: "Mascotas",
     colors: "Colores de ropa",
+    treats: "☕ Cafetería · comidas y bebidas (duran 2 min)",
+    order: "Pedir",
+    enjoy: (n: string) => `¡Disfruta tu ${n}! Lo llevas en la mano por 2 minutos.`,
     buy: "Comprar",
     use: "Usar",
     inUse: "En uso",
@@ -25,6 +38,9 @@ const COPY = {
     howTo: "Cómo ganar KUN Coins",
     close: "Cerrar",
     enter: "Entrar a la tienda",
+    menu: "Ver el menú de la cafetería",
+    cafeTitle: "KUN Café",
+    cafeSubtitle: "Pide algo con tus KUN Coins: cada cosa dura 2 minutos",
     coins: "monedas",
     bought: (n: string) => `¡Compraste ${n}! Ya lo llevas puesto.`,
   },
@@ -34,6 +50,9 @@ const COPY = {
     hats: "Hats",
     pets: "Pets",
     colors: "Outfit colors",
+    treats: "☕ Café · food and drinks (last 2 min)",
+    order: "Order",
+    enjoy: (n: string) => `Enjoy your ${n}! You hold it for 2 minutes.`,
     buy: "Buy",
     use: "Use",
     inUse: "In use",
@@ -42,6 +61,9 @@ const COPY = {
     howTo: "How to earn KUN Coins",
     close: "Close",
     enter: "Enter the store",
+    menu: "See the café menu",
+    cafeTitle: "KUN Café",
+    cafeSubtitle: "Order something with your KUN Coins: each lasts 2 minutes",
     coins: "coins",
     bought: (n: string) => `You bought ${n}! You're wearing it now.`,
   },
@@ -54,6 +76,16 @@ export function CampusCoinsHud({ visible, onOpen }: { visible: boolean; onOpen: 
   const { coins } = useWallet();
   const [pops, setPops] = useState<Array<{ id: number; text: string }>>([]);
   const next = useRef(0);
+  // Comida o bebida activa y cuánto le queda (se revisa cada segundo).
+  const [treat, setTreat] = useState<{ kind: string; left: number } | null>(null);
+  useEffect(() => {
+    if (!visible) return;
+    const id = window.setInterval(() => {
+      const kind = activeTreat();
+      setTreat(kind ? { kind, left: Math.ceil((campusRuntime.treat.until - performance.now()) / 1000) } : null);
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [visible]);
 
   useEffect(
     () =>
@@ -79,6 +111,11 @@ export function CampusCoinsHud({ visible, onOpen }: { visible: boolean; onOpen: 
         <span className="text-[11px] font-semibold text-[#F2C14E]">KUN Coins</span>
         <span className="text-white/60 max-md:hidden">· 🛍️ {t.title}</span>
       </button>
+      {treat && (
+        <span className="rounded-full border border-white/20 bg-[#0E061E]/75 px-3 py-1 text-[12px] font-bold text-[#FFF3E6] backdrop-blur-md">
+          {TREAT_CHIP[treat.kind]} · {Math.floor(treat.left / 60)}:{String(treat.left % 60).padStart(2, "0")}
+        </span>
+      )}
       {pops.map((p) => (
         <span
           key={p.id}
@@ -91,24 +128,48 @@ export function CampusCoinsHud({ visible, onOpen }: { visible: boolean; onOpen: 
   );
 }
 
-/** Aviso para entrar a la tienda al acercarse a su puerta (o tecla E). */
-export function CampusStorePrompt({ enabled, blocked, onOpen }: { enabled: boolean; /** Krucn o una puerta tienen prioridad. */ blocked: boolean; onOpen: () => void }) {
-  const t = usePick(COPY);
+/** Aviso al acercarse a un punto (puerta de la tienda, mostrador del café); también con la tecla E. */
+function PlacePrompt({
+  enabled,
+  blocked,
+  onOpen,
+  at,
+  reach,
+  emoji,
+  label,
+  color,
+  onNear,
+}: {
+  enabled: boolean;
+  blocked: boolean;
+  onOpen: () => void;
+  at: () => { x: number; z: number };
+  reach: number;
+  emoji: string;
+  label: string;
+  color: string;
+  onNear?: (near: boolean) => void;
+}) {
   const [near, setNear] = useState(false);
-  const live = useRef({ near, onOpen, blocked });
+  const live = useRef({ near, onOpen, blocked, at, onNear });
   useEffect(() => {
-    live.current = { near, onOpen, blocked };
+    live.current = { near, onOpen, blocked, at, onNear };
   });
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      live.current.onNear?.(false);
+      return;
+    }
     const id = window.setInterval(() => {
       const p = campusRuntime.player;
-      const door = zoneDoor(STORE);
-      setNear(Math.hypot(p.x - door.x, p.z - door.z) < 4);
+      const point = live.current.at();
+      const n = p.y < 1 && Math.hypot(p.x - point.x, p.z - point.z) < reach;
+      setNear(n);
+      live.current.onNear?.(n && !live.current.blocked);
     }, 200);
     return () => window.clearInterval(id);
-  }, [enabled]);
+  }, [enabled, reach]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -129,13 +190,34 @@ export function CampusStorePrompt({ enabled, blocked, onOpen }: { enabled: boole
       <button
         type="button"
         onClick={onOpen}
-        className="flex cursor-pointer items-center gap-2.5 rounded-full border-2 border-[#F2C14E] bg-[#0E061E]/85 px-5 py-2.5 text-[15px] font-bold text-[#FFF3E6] shadow-[0_18px_40px_-18px_rgba(0,0,0,0.8)] backdrop-blur-md transition hover:-translate-y-0.5"
+        className="flex cursor-pointer items-center gap-2.5 rounded-full border-2 bg-[#0E061E]/85 px-5 py-2.5 text-[15px] font-bold text-[#FFF3E6] shadow-[0_18px_40px_-18px_rgba(0,0,0,0.8)] backdrop-blur-md transition hover:-translate-y-0.5"
+        style={{ borderColor: color }}
       >
-        <span aria-hidden>🛍️</span>
-        {t.enter}
+        <span aria-hidden>{emoji}</span>
+        {label}
         <kbd className="rounded-md border border-white/40 px-1.5 font-mono text-[11px] max-md:hidden">E</kbd>
       </button>
     </div>
+  );
+}
+
+const storeDoor = () => zoneDoor(STORE);
+const cafeCounter = () => CAFE_COUNTER;
+const setNearCounter = (n: boolean) => {
+  campusRuntime.nearCounter = n;
+};
+
+/** Aviso para entrar a la tienda al acercarse a su puerta (o tecla E). */
+export function CampusStorePrompt({ enabled, blocked, onOpen }: { enabled: boolean; /** Krucn o una puerta tienen prioridad. */ blocked: boolean; onOpen: () => void }) {
+  const t = usePick(COPY);
+  return <PlacePrompt enabled={enabled} blocked={blocked} onOpen={onOpen} at={storeDoor} reach={4} emoji="🛍️" label={t.enter} color="#F2C14E" />;
+}
+
+/** Aviso frente al mostrador de la cafetería para ver su menú (o tecla E). */
+export function CampusCafePrompt({ enabled, blocked, onOpen }: { enabled: boolean; blocked: boolean; onOpen: () => void }) {
+  const t = usePick(COPY);
+  return (
+    <PlacePrompt enabled={enabled} blocked={blocked} onOpen={onOpen} at={cafeCounter} reach={3.2} emoji="☕" label={t.menu} color="#B8743A" onNear={setNearCounter} />
   );
 }
 
@@ -151,11 +233,14 @@ function patchFor(item: ShopItem): Partial<Avatar> {
 
 export function CampusShop({
   open,
+  mode = "store",
   avatar,
   onEquip,
   onClose,
 }: {
   open: boolean;
+  /** "store": ropa, sombreros y mascotas · "cafe": el menú de comidas y bebidas. */
+  mode?: "store" | "cafe";
   avatar: Avatar;
   onEquip: (patch: Partial<Avatar>) => void;
   onClose: () => void;
@@ -178,13 +263,25 @@ export function CampusShop({
 
   if (!open) return null;
 
-  const sections: Array<[string, ShopItem["kind"]]> = [
-    [t.hats, "accessory"],
-    [t.pets, "pet"],
-    [t.colors, "outfit"],
-  ];
+  const sections: Array<[string, ShopItem["kind"]]> =
+    mode === "cafe"
+      ? [[t.treats, "treat"]]
+      : [
+          [t.hats, "accessory"],
+          [t.pets, "pet"],
+          [t.colors, "outfit"],
+        ];
+  const cafe = mode === "cafe";
 
   function purchase(item: ShopItem) {
+    if (item.kind === "treat") {
+      if (!buy(item)) return;
+      startTreat(item.value as "coffee" | "juice" | "icecream", TREAT_MS);
+      if (item.value === "icecream") addHappy(25);
+      playChime();
+      setNotice(t.enjoy(item.name[locale]));
+      return;
+    }
     if (!buy(item)) return;
     onEquip(patchFor(item));
     setNotice(t.bought(item.name[locale]));
@@ -205,17 +302,18 @@ export function CampusShop({
       >
         <header className="flex items-center gap-4 border-b border-white/10 px-7 py-5 max-md:px-4 max-md:py-4">
           <span aria-hidden className="text-3xl max-md:text-2xl">
-            🛍️
+            {cafe ? "☕" : "🛍️"}
           </span>
           <div className="min-w-0 flex-1">
             <h2 id="shop-title" className="m-0 font-(family-name:--font-gabarito) text-[26px] leading-tight font-black max-md:text-xl">
-              {t.title}
+              {cafe ? t.cafeTitle : t.title}
             </h2>
-            <p className="m-0 text-[13px] text-white/60 max-md:text-[12px]">{t.subtitle}</p>
+            <p className="m-0 text-[13px] text-white/60 max-md:text-[12px]">{cafe ? t.cafeSubtitle : t.subtitle}</p>
           </div>
           <div className="rounded-full border-2 border-[#F2C14E] px-4 py-1.5 text-[16px] font-black tabular-nums max-md:px-3 max-md:text-sm">
             🪙 {coins}
           </div>
+          <CampusLang />
           <button
             type="button"
             onClick={onClose}
@@ -233,7 +331,7 @@ export function CampusShop({
               <h3 className="m-0 mb-3 font-mono text-[12px] tracking-[0.15em] text-white/55 uppercase">{title}</h3>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-3">
                 {SHOP_ITEMS.filter((i) => i.kind === kind).map((item) => {
-                  const has = owned.includes(item.id);
+                  const has = item.kind !== "treat" && owned.includes(item.id);
                   const on = isEquipped(item, avatar);
                   const short = item.price - coins;
                   return (
@@ -249,6 +347,7 @@ export function CampusShop({
                         <div className="min-w-0">
                           <div className="font-(family-name:--font-gabarito) text-[16px] leading-tight font-extrabold">{item.name[locale]}</div>
                           {!has && <div className="mt-0.5 text-[13px] font-bold text-[#F2C14E]">🪙 {item.price}</div>}
+                          {item.effect && <div className="mt-1 text-[12px] leading-snug text-white/65">{item.effect[locale]}</div>}
                         </div>
                       </div>
                       {has ? (
@@ -280,7 +379,7 @@ export function CampusShop({
                           onClick={() => purchase(item)}
                           className="cursor-pointer rounded-xl bg-[#F2C14E] py-2 text-[13px] font-black text-[#24123F] transition enabled:hover:-translate-y-0.5 disabled:cursor-default disabled:bg-white/10 disabled:text-white/45"
                         >
-                          {short > 0 ? t.missing(short) : `${t.buy} · 🪙 ${item.price}`}
+                          {short > 0 ? t.missing(short) : `${item.kind === "treat" ? t.order : t.buy} · 🪙 ${item.price}`}
                         </button>
                       )}
                     </div>

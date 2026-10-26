@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CampusLang } from "./campus-lang";
 import { pickVoice, voiceLang } from "./campus-voice";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import type { Stats } from "@/lib/types";
@@ -78,6 +79,7 @@ const COPY = {
     choose: "Elige un programa",
     send: "Enviar inscripción →",
     orEmail: "¿Prefieres escribirnos?",
+    speed: "Velocidad",
     prev: "Capítulo anterior",
     next: "Capítulo siguiente",
   },
@@ -103,14 +105,16 @@ const COPY = {
     send: "Send sign-up →",
     orEmail: "Prefer email?",
     prev: "Previous chapter",
+    speed: "Speed",
     next: "Next chapter",
   },
 };
 
 const MONO = "font-mono uppercase tracking-[0.12em]";
+const SPEEDS = [1, 1.25, 1.5, 2];
 const GLASS = "border border-white/15 bg-[#0A0516]/70 backdrop-blur-xl";
 
-function speak(text: string, locale: "es" | "en", onEnd: () => void) {
+function speak(text: string, locale: "es" | "en", rate: number, onEnd: () => void) {
   const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
   if (!synth) return;
   synth.cancel();
@@ -118,7 +122,7 @@ function speak(text: string, locale: "es" | "en", onEnd: () => void) {
   u.lang = voiceLang(locale);
   const voice = pickVoice(synth, locale);
   if (voice) u.voice = voice;
-  u.rate = 1.02;
+  u.rate = 1.02 * rate;
   u.onend = onEnd;
   synth.speak(u);
 }
@@ -156,6 +160,13 @@ export function StudioRoom({
   const [playing, setPlaying] = useState(true);
   const [voice, setVoice] = useState(false);
   const [mode, setMode] = useState<"video" | "signup">("video");
+  const [speed, setSpeed] = useState(1);
+  useEffect(() => {
+    campusRuntime.explainer.speed = speed;
+    return () => {
+      campusRuntime.explainer.speed = 1;
+    };
+  }, [speed]);
   const progress = useRef<HTMLDivElement>(null);
   const speaking = useRef(false);
 
@@ -197,10 +208,10 @@ export function StudioRoom({
       return;
     }
     speaking.current = true;
-    speak(chapters[chapter]?.voice ?? "", locale, () => {
+    speak(chapters[chapter]?.voice ?? "", locale, speed, () => {
       speaking.current = false;
     });
-  }, [voice, playing, chapter, chapters, locale]);
+  }, [voice, playing, chapter, chapters, locale, speed]);
 
   useEffect(() => {
     campusRuntime.explainer.playing = playing;
@@ -225,11 +236,12 @@ export function StudioRoom({
     // subtítulos · inscripción); en escritorio cada pieza flota en su esquina.
     <div className="pointer-events-none absolute inset-0 z-30 text-[#FFF3E6] max-md:pointer-events-auto max-md:flex max-md:flex-row max-md:flex-wrap max-md:content-start max-md:gap-2.5 max-md:overflow-y-auto max-md:px-3 max-md:pt-[calc(12px+env(safe-area-inset-top,0px))] max-md:pb-[calc(16px+env(safe-area-inset-bottom,0px))]">
       {/* Arriba a la izquierda: salir */}
-      <div className="pointer-events-auto absolute top-[calc(20px+env(safe-area-inset-top,0px))] left-5 flex flex-col gap-2 max-md:static max-md:order-1">
+      <div className="pointer-events-auto absolute top-[calc(20px+env(safe-area-inset-top,0px))] left-5 flex flex-col gap-2 max-md:static max-md:order-1 max-md:w-full max-md:flex-row max-md:items-center max-md:justify-between">
         <button type="button" onClick={onExit} className={`${GLASS} flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition hover:bg-white/10 max-md:h-10`}>
           ← {t.exit}
           <kbd className="rounded border border-white/25 px-1.5 font-mono text-[10px] max-md:hidden">Esc</kbd>
         </button>
+        <CampusLang desktop className="self-start max-md:self-auto" />
         <span className={`${MONO} pl-2 text-[10px] text-white/50 max-md:hidden`}>{roomTitle}</span>
       </div>
 
@@ -257,7 +269,7 @@ export function StudioRoom({
 
       {/* Centro: el video, nítido, dibujado a la resolución real de la pantalla */}
       {mode === "video" && (
-        <div className="absolute top-[13%] left-1/2 flex w-[min(54vw,1100px)] -translate-x-1/2 flex-col items-center gap-2 max-md:static max-md:order-3 max-md:w-full max-md:translate-x-0">
+        <div className="absolute top-[13%] left-1/2 flex w-[min(54vw,1100px,calc((100dvh-340px)*16/9))] -translate-x-1/2 flex-col items-center gap-2 max-md:static max-md:order-3 max-md:w-full max-md:translate-x-0">
           <p className={`${MONO} m-0 text-center text-[11px] text-white/70 [text-shadow:0_2px_10px_rgba(0,0,0,0.9)] max-md:hidden`}>{t.howTo}</p>
           {videoUrl ? (
             <video
@@ -335,6 +347,14 @@ export function StudioRoom({
               <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/15">
                 <div ref={progress} className="h-full rounded-full" style={{ width: "0%", background: current.accent }} />
               </div>
+              <button
+                type="button"
+                aria-label={t.speed}
+                onClick={() => setSpeed((s) => SPEEDS[(SPEEDS.indexOf(s) + 1) % SPEEDS.length])}
+                className={`${MONO} cursor-pointer rounded-full border border-white/20 px-3 py-1 text-[11px] tabular-nums hover:bg-white/10`}
+              >
+                {speed}x
+              </button>
               <button
                 type="button"
                 aria-pressed={voice}

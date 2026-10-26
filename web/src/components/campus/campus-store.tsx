@@ -126,7 +126,27 @@ export function KunStore({ locale }: { locale: Locale }) {
 // ---------------------------------------------------------------- monedas flotantes
 
 const COIN_COUNT = 16;
-const RESPAWN_SECONDS = 90;
+/** Las monedas recogidas no vuelven hasta el día siguiente (se guardan en el navegador). */
+const PICKED_KEY = "kun-coins-picked-v1";
+const today = () => new Date().toISOString().slice(0, 10);
+
+function loadPicked(): Set<number> {
+  try {
+    const raw = JSON.parse(localStorage.getItem(PICKED_KEY) ?? "null") as { day: string; picked: number[] } | null;
+    if (raw?.day === today()) return new Set(raw.picked);
+  } catch {
+    /* sin almacenamiento */
+  }
+  return new Set();
+}
+
+function savePicked(picked: Set<number>) {
+  try {
+    localStorage.setItem(PICKED_KEY, JSON.stringify({ day: today(), picked: [...picked] }));
+  } catch {
+    /* ignorado */
+  }
+}
 const PICK_RADIUS = 1.4;
 
 /** Lugares para las monedas: por la isla, lejos de edificios, cafetería y tienda. */
@@ -152,7 +172,8 @@ const COIN_SPOTS = coinSpots();
 export function CampusCoins({ enabled, onCollect }: { enabled: boolean; onCollect: () => void }) {
   const spots = COIN_SPOTS;
   const refs = useRef<Array<THREE.Group | null>>([]);
-  const respawnAt = useRef<number[]>(spots.map(() => 0));
+  const picked = useRef<Set<number> | null>(null);
+  const day = useRef("");
   const onCollectRef = useRef(onCollect);
   useEffect(() => {
     onCollectRef.current = onCollect;
@@ -161,16 +182,23 @@ export function CampusCoins({ enabled, onCollect }: { enabled: boolean; onCollec
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     const p = campusRuntime.player;
+    // Al cambiar de día (o la primera vez) se leen las recogidas de hoy.
+    if (!picked.current || day.current !== today()) {
+      picked.current = loadPicked();
+      day.current = today();
+    }
+    const done = picked.current;
     spots.forEach((s, i) => {
       const g = refs.current[i];
       if (!g) return;
-      const active = t >= respawnAt.current[i];
+      const active = !done.has(i);
       g.visible = active;
       if (!active) return;
       g.rotation.y = t * 2.2 + i;
       g.position.y = 1.3 + Math.sin(t * 2.4 + i) * 0.2;
       if (enabled && p.y < 2.5 && Math.hypot(p.x - s.x, p.z - s.z) < PICK_RADIUS) {
-        respawnAt.current[i] = t + RESPAWN_SECONDS;
+        done.add(i);
+        savePicked(done);
         onCollectRef.current();
       }
     });

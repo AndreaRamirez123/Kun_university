@@ -62,7 +62,7 @@ function currentHappy(m: Mood) {
   return Math.max(0, Math.min(100, m.happy - ((Date.now() - m.at) / 3_600_000) * DECAY_PER_HOUR));
 }
 
-function addHappy(n: number) {
+export function addHappy(n: number) {
   const m = load();
   mood = { happy: Math.min(100, currentHappy(m) + n), at: Date.now() };
   try {

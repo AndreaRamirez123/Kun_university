@@ -78,7 +78,7 @@ export function CampusSeatPrompt({ enabled, blocked }: { enabled: boolean; /** K
     function onKey(e: KeyboardEvent) {
       const el = e.target as HTMLElement | null;
       if (el?.closest?.("input, textarea, select, button, a")) return;
-      if (e.code !== "KeyE" || live.current.blocked) return;
+      if (e.code !== "KeyE" || live.current.blocked || campusRuntime.nearCounter) return;
       if (live.current.near < 0 && !live.current.seated) return;
       e.preventDefault();
       toggle();
@@ -87,7 +87,7 @@ export function CampusSeatPrompt({ enabled, blocked }: { enabled: boolean; /** K
     return () => window.removeEventListener("keydown", onKey);
   }, [enabled]);
 
-  if (!enabled || blocked || (near < 0 && !seated)) return null;
+  if (!enabled || blocked || (near < 0 && !seated) || (!seated && campusRuntime.nearCounter)) return null;
   return (
     <div className="reveal-animate absolute inset-x-0 bottom-[calc(84px+env(safe-area-inset-bottom,0px))] z-20 mx-auto flex w-fit flex-col items-center gap-1.5 max-md:bottom-[calc(132px+env(safe-area-inset-bottom,0px))]">
       <button

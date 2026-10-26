@@ -1,6 +1,7 @@
 "use client";
 
 import { earn } from "./campus-wallet";
+import { CampusLang } from "./campus-lang";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import { catalog, catalogText, findCatalogSchool, schoolLabel, type CatalogProgram } from "@/lib/catalog";
@@ -139,6 +140,7 @@ export function SignupPanel({
         className="reveal-animate relative grid max-h-[92dvh] w-[min(980px,100%)] grid-cols-[0.95fr_1.05fr] overflow-hidden rounded-[28px] border border-white/12 bg-[#0B0716] shadow-[0_40px_100px_-30px_rgba(0,0,0,0.9)] max-md:grid-cols-1 max-md:overflow-y-auto"
         style={{ boxShadow: `0 0 120px -40px ${accent}` }}
       >
+        <CampusLang className="absolute top-5 right-16 z-10" />
         <button
           type="button"
           onClick={onClose}

@@ -22,7 +22,7 @@ export function ExplainerStudio({ chapters, theme }: { chapters: Chapter[]; stat
     const delta = Math.min(rawDelta, 0.1);
     const e = campusRuntime.explainer;
     if (e.playing) {
-      e.local += delta / CHAPTER_SECONDS;
+      e.local += (delta * e.speed) / CHAPTER_SECONDS;
       if (e.local >= 1) {
         e.local = 0;
         e.chapter = (e.chapter + 1) % chapters.length;

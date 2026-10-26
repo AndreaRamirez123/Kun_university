@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { CampusLang } from "./campus-lang";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import { ADMISSIONS_EMAIL } from "@/lib/contact";
 import type { School } from "@/lib/types";
@@ -76,6 +77,7 @@ export function CampusFormModal({
         }}
         className="reveal-animate relative w-[min(440px,100%)] rounded-[26px] bg-[#FFF8F0] p-6.5 text-[#24123F] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7)]"
       >
+        <CampusLang tone="light" className="absolute top-5 right-17" />
         <button
           type="button"
           onClick={onClose}

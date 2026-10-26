@@ -89,7 +89,7 @@ export const REWARD_LABELS: Dict<Record<RewardKind, string>> = {
 export const HOW_TO_EARN: Dict<Array<[string, string]>> = {
   es: [
     ["🏛️", "Entra por primera vez a cada lugar: +20 (y +50 al completar todos)"],
-    ["🪙", "Recoge las KUN Coins que flotan por la isla: +1"],
+    ["🪙", "Recoge las KUN Coins que flotan por la isla: +1 (16 al día, mañana vuelven)"],
     ["🎬", "Quédate a ver el video de una sala: +15"],
     ["📚", "Abre el Catálogo académico: +10 · Inscríbete: +50"],
     ["☂️", "Rebota en las sombrillas o empuja las letras y pelotas: +1"],
@@ -99,7 +99,7 @@ export const HOW_TO_EARN: Dict<Array<[string, string]>> = {
   ],
   en: [
     ["🏛️", "Enter each place for the first time: +20 (and +50 for all of them)"],
-    ["🪙", "Pick up the KUN Coins floating around the island: +1"],
+    ["🪙", "Pick up the KUN Coins floating around the island: +1 (16 a day, back tomorrow)"],
     ["🎬", "Stay to watch a room's video: +15"],
     ["📚", "Open the Academic catalog: +10 · Sign up: +50"],
     ["☂️", "Bounce on umbrellas or push the letters and balls: +1"],
@@ -111,11 +111,13 @@ export const HOW_TO_EARN: Dict<Array<[string, string]>> = {
 
 export type ShopItem = {
   id: string;
-  kind: "accessory" | "pet" | "outfit";
+  kind: "accessory" | "pet" | "outfit" | "treat";
   value: string;
   price: number;
   emoji: string;
   name: Dict<string>;
+  /** Para comidas y bebidas: qué hace mientras dura. */
+  effect?: Dict<string>;
 };
 
 export const SHOP_ITEMS: ShopItem[] = [
@@ -129,6 +131,34 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: "outfit:#3FA34D", kind: "outfit", value: "#3FA34D", price: 40, emoji: "👕", name: { es: "Verde cocodrilo", en: "Crocodile green" } },
   { id: "outfit:#FF4FA3", kind: "outfit", value: "#FF4FA3", price: 50, emoji: "👕", name: { es: "Rosa Miami", en: "Miami pink" } },
   { id: "outfit:#D4A72C", kind: "outfit", value: "#D4A72C", price: 120, emoji: "👕", name: { es: "Dorado", en: "Gold" } },
+  // Comidas y bebidas: se compran cada vez y duran 2 minutos.
+  {
+    id: "treat:coffee",
+    kind: "treat",
+    value: "coffee",
+    price: 8,
+    emoji: "☕",
+    name: { es: "Café KUN", en: "KUN coffee" },
+    effect: { es: "⚡ Caminas y corres más rápido", en: "⚡ You walk and run faster" },
+  },
+  {
+    id: "treat:juice",
+    kind: "treat",
+    value: "juice",
+    price: 10,
+    emoji: "🍊",
+    name: { es: "Jugo de naranja de Florida", en: "Florida orange juice" },
+    effect: { es: "🦘 Saltas mucho más alto", en: "🦘 You jump much higher" },
+  },
+  {
+    id: "treat:icecream",
+    kind: "treat",
+    value: "icecream",
+    price: 6,
+    emoji: "🍦",
+    name: { es: "Helado de coco", en: "Coconut ice cream" },
+    effect: { es: "💗 Lo compartes y tu mascota se pone feliz", en: "💗 You share it and your pet gets happy" },
+  },
 ];
 
 // ---------------------------------------------------------------- estado
@@ -218,9 +248,11 @@ export function earn(kind: RewardKind, id = "") {
 /** Compra un artículo de la tienda. */
 export function buy(item: ShopItem) {
   const w = load();
-  if (w.owned.includes(item.id) || w.coins < item.price) return false;
+  // Las comidas y bebidas no se guardan: se consumen y se pueden volver a comprar.
+  const consumable = item.kind === "treat";
+  if ((!consumable && w.owned.includes(item.id)) || w.coins < item.price) return false;
   w.coins -= item.price;
-  w.owned = [...w.owned, item.id];
+  if (!consumable) w.owned = [...w.owned, item.id];
   save();
   changed();
   return true;

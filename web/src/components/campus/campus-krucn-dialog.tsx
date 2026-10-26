@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CampusLang } from "./campus-lang";
 import { useLocale, usePick, type Locale } from "@/i18n/locale-context";
 import { askKrucn, krucnAgentAvailable, type KrucnAction, type KrucnTurn } from "@/lib/krucn-agent";
 import type { School } from "@/lib/types";
 import { krucnLocalReply, type BrainMemory } from "./campus-krucn-brain";
 import { campusRuntime } from "./campus-runtime";
+import { campusSoundOn } from "./campus-audio";
+import { speakKrucn, stopKrucn } from "./campus-voice";
 import { GUIDE_PLACES, ZONES } from "./campus-zones";
 
 // Conversación con Krucn, la mascota del campus: guía, asesor y quien responde.
@@ -220,6 +223,19 @@ export function KrucnDialog({
     };
   }, []);
 
+  // Krucn lee en voz alta lo que dice (si el sonido del campus está activado).
+  const spoken = answer.live ? (busy ? "" : answer.text) : message;
+  useEffect(() => {
+    if (!open || !spoken || !campusSoundOn()) return;
+    // Pequeña pausa para que primero se oiga su ruidito de cocodrilo.
+    const id = window.setTimeout(() => speakKrucn(spoken, locale), 420);
+    return () => window.clearTimeout(id);
+  }, [open, spoken, locale]);
+  useEffect(() => {
+    if (!open) stopKrucn();
+  }, [open]);
+  useEffect(() => () => stopKrucn(), []);
+
   // Al cerrar el diálogo se corta la respuesta que esté en camino.
   useEffect(() => {
     if (!open) liveRequest?.abort();
@@ -340,6 +356,7 @@ export function KrucnDialog({
       className="reveal-animate absolute inset-x-0 bottom-[calc(24px+env(safe-area-inset-bottom,0px))] z-[60] mx-auto w-[min(720px,calc(100%-24px))] max-md:bottom-[calc(12px+env(safe-area-inset-bottom,0px))]"
     >
       <div className="relative rounded-[26px] border-2 border-[#3FA34D] bg-[#0E061E]/90 p-5 text-[#FFF3E6] shadow-[0_30px_70px_-24px_rgba(0,0,0,0.85)] backdrop-blur-xl max-md:rounded-[20px] max-md:p-3">
+        <CampusLang className="absolute top-2 right-12 z-10" />
         <button
           type="button"
           onClick={onClose}

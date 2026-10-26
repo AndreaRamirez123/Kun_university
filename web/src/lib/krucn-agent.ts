@@ -15,6 +15,11 @@ let statusPromise: Promise<boolean> | null = null;
 
 /** ¿Está el agente encendido? Se consulta una vez por visita. */
 export function krucnAgentAvailable() {
+  // Sin API publicada (la URL apunta a localhost y el sitio no corre en local), ni se intenta:
+  // el navegador bloquearía la llamada y dejaría un error en la consola.
+  if (typeof window !== "undefined" && /localhost|127\.0\.0\.1/.test(API_URL) && !/^(localhost|127\.0\.0\.1)$/.test(window.location.hostname)) {
+    statusPromise ??= Promise.resolve(false);
+  }
   statusPromise ??= fetch(`${API_URL}/krucn/status`)
     .then((r) => (r.ok ? r.json() : { enabled: false }))
     .then((d: { enabled?: boolean }) => Boolean(d.enabled))

@@ -209,7 +209,9 @@ export function KunLetters({ onBump }: { onBump?: (strength: number) => void }) 
   const refs = useRef<Array<THREE.Group | null>>([]);
   // Las letras no se desplazan (son sólidas para el personaje, ver
   // LETTER_COLLIDERS): solo se tambalean al chocarlas y vuelven a quedar de pie.
-  const bodies = useRef(LETTERS.map(() => ({ tiltX: 0, tiltZ: 0, tiltVX: 0, tiltVZ: 0, cooldown: 0, lastDist: Infinity })));
+  const bodies = useRef(
+    LETTERS.map(() => ({ tiltX: 0, tiltZ: 0, tiltVX: 0, tiltVZ: 0, cooldown: 0, lastDist: Infinity, fall: null as null | { dir: number; t: number } })),
+  );
 
   useFrame((_, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05);
@@ -224,15 +226,56 @@ export function KunLetters({ onBump }: { onBump?: (strength: number) => void }) 
       const contact = LETTER_COLLIDER_RADIUS + PLAYER_RADIUS + 0.2;
       const approach = Number.isFinite(b.lastDist) ? (b.lastDist - dist) / Math.max(delta, 0.001) : 0;
       const speed = Math.max(Math.hypot(p.vx, p.vz), approach);
-      if (dist < contact && b.lastDist >= contact && dist > 0.0001 && speed > 0.5 && b.cooldown === 0) {
+      if (!b.fall && dist < contact && b.lastDist >= contact && dist > 0.0001 && speed > 0.5 && b.cooldown === 0) {
         const nx = dx / dist;
         const nz = dz / dist;
-        b.tiltVX += nz * speed * 0.35;
-        b.tiltVZ -= nx * speed * 0.35;
         onBump?.(Math.min(1, speed / 12) * 0.8);
         b.cooldown = 0.35;
+        // Con un buen empujón (corriendo o de frente) la letra se cae hacia atrás y
+        // después se levanta sola; si es suave, solo se tambalea.
+        if (speed > 5.5 && Math.abs(nz) > 0.45) {
+          b.fall = { dir: Math.sign(nz), t: 0 };
+          b.tiltVX = b.tiltVZ = b.tiltZ = 0;
+        } else {
+          b.tiltVX += nz * speed * 0.35;
+          b.tiltVZ -= nx * speed * 0.35;
+        }
       }
       b.lastDist = dist;
+
+      if (b.fall) {
+        const f = b.fall;
+        const before = f.t;
+        f.t += delta;
+        const DOWN = 0.55;
+        const LIE = 1.6;
+        const UP = 1.1;
+        let a2: number;
+        if (f.t < DOWN) {
+          // Cae acelerando, como algo pesado.
+          const k = f.t / DOWN;
+          a2 = k * k * 1.48;
+        } else if (f.t < DOWN + 0.22) {
+          // Pequeño rebote al chocar con el suelo.
+          const k = (f.t - DOWN) / 0.22;
+          a2 = 1.48 - Math.sin(k * Math.PI) * 0.12;
+        } else if (f.t < DOWN + LIE) {
+          a2 = 1.48;
+        } else if (f.t < DOWN + LIE + UP) {
+          // Se levanta sola con un movimiento suave.
+          const k = (f.t - DOWN - LIE) / UP;
+          a2 = 1.48 * (1 - (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2));
+        } else {
+          a2 = 0;
+          b.fall = null;
+          // Termina con un tambaleo corto, como quien se acomoda.
+          b.tiltVX = -f.dir * 1.4;
+        }
+        if (before < DOWN && f.t >= DOWN) onBump?.(1);
+        const g0 = refs.current[i];
+        if (g0) g0.rotation.set(f.dir * a2, 0, 0);
+        return;
+      }
       // Resorte amortiguado que las devuelve a estar de pie.
       b.tiltVX += -b.tiltX * 60 * delta;
       b.tiltVZ += -b.tiltZ * 60 * delta;

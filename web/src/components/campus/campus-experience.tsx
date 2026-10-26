@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type * as THREE from "three";
-import { playBump, playChime, playFanfare, playLaunch, setCampusSound } from "./campus-audio";
+import { playBump, playChime, playCroc, playFanfare, playLaunch, setAmbience, setCampusSound } from "./campus-audio";
 import { CampusFormModal } from "./campus-form-modal";
 import { CampusGuidePill, CampusHud, CampusToast, CampusTouchControls } from "./campus-hud";
 import { StudioRoom } from "./campus-admissions-ui";
@@ -28,7 +28,8 @@ import { joinPresence, leavePresence, sendEmote, updateProfile } from "@/lib/cam
 import { serializeAvatar } from "./campus-social";
 import { CampusSocialPanel } from "./campus-social-panel";
 import { CampusSeatPrompt } from "./campus-seat-prompt";
-import { CampusCoinsHud, CampusShop, CampusStorePrompt } from "./campus-shop";
+import { CampusTips } from "./campus-tips";
+import { CampusCafePrompt, CampusCoinsHud, CampusShop, CampusStorePrompt } from "./campus-shop";
 import { CampusPetPanel } from "./campus-pet";
 import { CampusDemoCourse } from "./campus-demo-class";
 import { schoolHasDemo } from "./campus-demo";
@@ -141,10 +142,12 @@ export function CampusExperience(props: {
   const [guide, setGuide] = useState<string | null>(null);
   // Tienda de recompensas (KUN Store).
   const [shopOpen, setShopOpen] = useState(false);
+  // Menú de la cafetería (las comidas y bebidas van aparte de la tienda).
+  const [cafeOpen, setCafeOpen] = useState(false);
   // Materia con demo abierta (código, p. ej. "WELL 101"): clases y circuito de repaso.
   const [demoCourse, setDemoCourse] = useState<string | null>(null);
   // Ventanas a pantalla completa (tienda o demo): pausan el campus.
-  const modal = shopOpen || demoCourse !== null;
+  const modal = shopOpen || cafeOpen || demoCourse !== null;
   // Último emote propio (lo ven todos sobre tu personaje).
   const [myEmote, setMyEmote] = useState<{ index: number; at: number } | null>(null);
   const [toast, setToast] = useState({ message: "", visible: false });
@@ -186,6 +189,7 @@ export function CampusExperience(props: {
     return () => {
       resetCampusInput();
       setCampusSound(false);
+      window.speechSynthesis?.cancel();
       leavePresence();
       window.clearTimeout(toastTimer.current);
       portalTimers.current.forEach(clearTimeout);
@@ -213,7 +217,10 @@ export function CampusExperience(props: {
       guideRef.current = null;
       setGuide(null);
       const place = findGuidePlace(id);
-      if (place) showToast(t.arrived(place.label[locale]));
+      if (place) {
+        playCroc();
+        showToast(t.arrived(place.label[locale]));
+      }
     },
     [showToast, t, locale],
   );
@@ -244,6 +251,7 @@ export function CampusExperience(props: {
           return;
         }
         setGuide(zone.id);
+        playCroc();
         showToast(t.following);
       } else if (action.type === "catalog") {
         setCatalogView({ open: true, school: action.school, program: action.program });
@@ -311,6 +319,7 @@ export function CampusExperience(props: {
   }
 
   function startTalk() {
+    playCroc();
     earn("krucn");
     resetCampusInput();
     setTalk((n) => n + 1);
@@ -321,6 +330,16 @@ export function CampusExperience(props: {
 
   // En celular los botones flotantes del sitio (idioma, modelos) tapan los paneles:
   // se esconden mientras hay lobby, sala, Krucn, catálogo o formulario abiertos.
+  // Dentro de una escuela no se oye la playa (ni la música ni el murmullo de la isla).
+  useEffect(() => {
+    setAmbience(phase !== "inside");
+    // En la sala el ES/EN va junto a "Salir" (el flotante tapaba la narración).
+    document.documentElement.dataset.campusRoom = phase === "inside" ? "on" : "off";
+    return () => {
+      delete document.documentElement.dataset.campusRoom;
+    };
+  }, [phase]);
+
   const overlayOpen = phase !== "playing" || talking || form.open || catalogView.open || modal;
   useEffect(() => {
     const root = document.documentElement;
@@ -340,6 +359,7 @@ export function CampusExperience(props: {
     closeTop.current = () => {
       if (demoCourse) setDemoCourse(null);
       else if (shopOpen) setShopOpen(false);
+      else if (cafeOpen) setCafeOpen(false);
       else if (form.open) setForm((f) => ({ ...f, open: false }));
       else if (catalogView.open) setCatalogView({ open: false });
       else if (talking) setTalking(false);
@@ -591,6 +611,19 @@ export function CampusExperience(props: {
         avatar={avatar}
         onEquip={(patch) => setAvatar((a) => ({ ...a, ...patch }))}
         onClose={() => setShopOpen(false)}
+      />
+      <CampusTips enabled={playing && portal.stage === "idle" && !talking && !form.open && !catalogView.open && !modal} />
+      <CampusCafePrompt
+        enabled={playing && portal.stage === "idle" && !talking && !form.open && !catalogView.open && !modal}
+        blocked={krucnNear || !!activeZoneId}
+        onOpen={() => setCafeOpen(true)}
+      />
+      <CampusShop
+        open={cafeOpen}
+        mode="cafe"
+        avatar={avatar}
+        onEquip={(patch) => setAvatar((a) => ({ ...a, ...patch }))}
+        onClose={() => setCafeOpen(false)}
       />
       <CampusSeatPrompt
         enabled={playing && portal.stage === "idle" && !talking && !form.open && !catalogView.open && !modal}

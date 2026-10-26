@@ -398,6 +398,11 @@ body {
   }
 }
 
+/* Dentro de una sala del campus el idioma va en la barra de la sala. */
+html[data-campus-room="on"] .campus-float {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal-hidden,
   .reveal-animate,

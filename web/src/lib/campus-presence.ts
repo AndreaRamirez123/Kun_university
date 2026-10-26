@@ -56,6 +56,8 @@ const state = {
   /** Nombre y avatar propios, para volver a registrarse si nos borraron. */
   profile: { n: "", a: "" },
   rejoining: false,
+  /** Ya llegó la primera foto completa de la base por la escucha en vivo. */
+  synced: false,
 };
 
 export const serverNow = () => Date.now() + state.offset;
@@ -108,7 +110,10 @@ function isPlayer(v: unknown): v is Omit<RemotePlayer, "id"> {
 function apply(kind: "put" | "patch", path: string, data: unknown) {
   const parts = path.split("/").filter(Boolean);
   if (parts.length === 0) {
-    if (kind === "put") state.players.clear();
+    if (kind === "put") {
+      state.players.clear();
+      state.synced = true;
+    }
     for (const [id, v] of Object.entries((data as Record<string, unknown>) ?? {})) {
       if (v === null) state.players.delete(id);
       else if (isPlayer(v)) state.players.set(id, { ...(state.players.get(id) ?? {}), ...v, id } as RemotePlayer);
@@ -147,6 +152,12 @@ function listen() {
 }
 
 async function write(method: "PUT" | "PATCH" | "DELETE", body?: object, keepalive = false) {
+  // Ya sabemos (por la escucha en vivo) que nuestro registro no existe: registrarse de nuevo
+  // en vez de mandar un PATCH parcial que las reglas rechazarían.
+  if (method === "PATCH" && state.synced && !state.players.has(state.myId)) {
+    if (!state.rejoining) void rejoin();
+    return;
+  }
   const res = await fetch(url(`${PATH}/${state.myId}`, method === "DELETE" ? "" : "?print=silent"), {
     method,
     body: body ? JSON.stringify(body) : undefined,

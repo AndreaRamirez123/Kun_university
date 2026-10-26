@@ -1,6 +1,27 @@
 // Voz de la narración (clases demo y videos de las salas). En español se
 // prefiere el acento latinoamericano antes que el de España.
 
+/** Voz de Krucn: la misma voz latina, más grave y juguetona (solo con el sonido del campus activado). */
+export function speakKrucn(text: string, locale: "es" | "en") {
+  const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
+  if (!synth) return;
+  synth.cancel();
+  // Sin emojis ni símbolos que la voz leería en voz alta.
+  const clean = text.replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "").replace(/[*_#>•·→]/g, " ").trim();
+  if (!clean) return;
+  const u = new SpeechSynthesisUtterance(clean);
+  u.lang = voiceLang(locale);
+  const v = pickVoice(synth, locale);
+  if (v) u.voice = v;
+  u.pitch = 0.7;
+  u.rate = 1.05;
+  synth.speak(u);
+}
+
+export function stopKrucn() {
+  if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+}
+
 export const voiceLang = (locale: "es" | "en") => (locale === "es" ? "es-MX" : "en-US");
 
 /** Español latino (México, EE. UU., Colombia…) antes que el de España; si no hay, la que exista. */

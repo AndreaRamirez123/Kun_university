@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { CampusLabel, labelFontFamily, useFontsReady } from "./campus-label";
 import { campusRuntime } from "./campus-runtime";
+import { playCroc } from "./campus-audio";
 import { findGuidePlace, ZONES, zoneDoor } from "./campus-zones";
 
 // Krucn, la mascota del campus: un cocodrilo de botarga con la camiseta de KUN
@@ -81,6 +82,7 @@ export function Krucn({
   const alert = useRef<THREE.Group>(null);
   const jersey = useJerseyTexture();
   const sim = useRef({ x: ROUTE[0][0], z: ROUTE[0][1], heading: 0, target: 1, pause: 2, walk: 0, near: false, wasGuiding: false, quietUntil: 0 });
+  const lastCroak = useRef(-99);
 
   useFrame((state, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05);
@@ -100,6 +102,11 @@ export function Krucn({
     if (near !== s.near) {
       s.near = near;
       onNearChange(near);
+      // Al acercarse, Krucn saluda con su ruidito de cocodrilo (no más de uno cada 6 s).
+      if (near && t - lastCroak.current > 6) {
+        lastCroak.current = t;
+        playCroc();
+      }
     }
 
     let moving = false;

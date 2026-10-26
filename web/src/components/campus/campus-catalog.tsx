@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CampusLang } from "./campus-lang";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import {
   allCertifications,
@@ -154,7 +155,7 @@ export function CampusCatalog({
             <div className={`${MONO} text-[10px] text-white/50`}>
               {catalog.institucion} · {t.title}
             </div>
-            <h2 id="catalog-title" className="m-0 mt-1.5 truncate font-(family-name:--font-gabarito) text-[26px] leading-tight font-black max-md:text-xl" style={{ color: school ? accent : undefined }}>
+            <h2 id="catalog-title" className="m-0 mt-1.5 truncate font-(family-name:--font-gabarito) text-[26px] leading-tight font-black max-md:line-clamp-2 max-md:text-xl max-md:whitespace-normal" style={{ color: school ? accent : undefined }}>
               {program ? catalogText(program.programa, locale) : school ? schoolLabel(school, locale) : t.schools}
             </h2>
             <div className="mt-2 flex flex-wrap gap-3">
@@ -170,6 +171,7 @@ export function CampusCatalog({
               )}
             </div>
           </div>
+          <CampusLang className="ml-auto" />
           <button
             type="button"
             onClick={onClose}

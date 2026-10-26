@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CampusLang } from "./campus-lang";
 import { usePick } from "@/i18n/locale-context";
 import {
   HAIR_COLORS,
@@ -338,6 +339,7 @@ export function CampusIntro({
         transition: "opacity 700ms ease",
       }}
     >
+      <CampusLang className="absolute top-[calc(12px+env(safe-area-inset-top,0px))] left-3 z-10" />
       <form
         noValidate
         className="flex h-full w-full max-w-115 flex-col gap-3 text-[#FFF3E6] md:pl-2 max-md:h-[max(62dvh,min(100%,470px))]"
@@ -661,7 +663,8 @@ export function CampusGenderStep({
       }`}
       style={{ background: "linear-gradient(180deg, rgba(29,12,60,0.7) 0%, rgba(29,12,60,0) 32%, rgba(29,12,60,0) 70%, rgba(29,12,60,0.75) 100%)" }}
     >
-      <div className="max-w-180">
+      <CampusLang className="absolute top-[calc(12px+env(safe-area-inset-top,0px))] right-3" />
+      <div className="max-w-180 max-md:pt-9">
         <div className="mb-2 text-xs font-bold tracking-[0.25em] text-[#FFC85C] uppercase">{t.eyebrow}</div>
         <h1 id="campus-gender-title" className="m-0 font-(family-name:--font-gabarito) text-[clamp(28px,4.2vw,52px)] leading-[1.02] font-black">
           {t.title}

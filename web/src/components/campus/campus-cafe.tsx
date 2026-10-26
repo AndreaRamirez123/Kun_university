@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useEffect, useMemo } from "react";
 import * as THREE from "three";
-import { campusRuntime } from "./campus-runtime";
 import type { Locale } from "@/i18n/locale-context";
 import { CampusLabel, labelFontFamily, useFontsReady } from "./campus-label";
 import { CAFE, type Collider } from "./campus-zones";
@@ -48,6 +46,9 @@ export const CAFE_COLLIDERS: Collider[] = [
 ];
 
 /** Zona libre de palmeras y arbustos. */
+/** Frente al mostrador del kiosco: ahí se abre el menú de la cafetería. */
+export const CAFE_COUNTER = toWorld(KIOSK[0], KIOSK[1] + 3.4);
+
 export const CAFE_SPOTS = [{ x: CAFE.x, z: CAFE.z, r: CAFE.deck + 1 }];
 
 /** Ángulos de los taburetes alrededor de cada mesa (local, sin escalar). */
@@ -88,8 +89,10 @@ export const CAFE_SEATS: CafeSeat[] = TABLES.flatMap(([tx, tz]) => {
 
 /** Medidas de la sombrilla (locales, sin escalar): aro y punta del cono. */
 const UMBRELLA_R = 1.55;
-const UMBRELLA_RIM = 2.65;
-const UMBRELLA_TIP = 3.35;
+// Altas, para que la lona pase por encima del personaje y no lo tape.
+const UMBRELLA_Y = 4.4;
+const UMBRELLA_RIM = UMBRELLA_Y - 0.35;
+const UMBRELLA_TIP = UMBRELLA_Y + 0.35;
 
 export type Trampoline = { x: number; z: number; r: number; top: (d: number) => number };
 
@@ -155,7 +158,7 @@ function Std({ color, rough = 0.6, metal = 0 }: { color: string; rough?: number;
   return <meshStandardMaterial color={color} roughness={rough} metalness={metal} />;
 }
 
-function Table({ x, z, umbrella, canopyRef }: { x: number; z: number; umbrella: string; canopyRef: (m: THREE.MeshStandardMaterial | null) => void }) {
+function Table({ x, z, umbrella }: { x: number; z: number; umbrella: string }) {
   return (
     <group position={[x, 0, z]}>
       <mesh position={[0, 1.0, 0]} castShadow receiveShadow>
@@ -167,13 +170,13 @@ function Table({ x, z, umbrella, canopyRef }: { x: number; z: number; umbrella: 
         <Std color="#5A4E40" metal={0.4} />
       </mesh>
       {/* Sombrilla */}
-      <mesh position={[0, 1.95, 0]}>
-        <cylinderGeometry args={[0.04, 0.04, 2.1, 6]} />
+      <mesh position={[0, (1.0 + UMBRELLA_Y) / 2, 0]}>
+        <cylinderGeometry args={[0.045, 0.045, UMBRELLA_Y - 1.0, 6]} />
         <Std color="#E9E6EF" metal={0.5} />
       </mesh>
-      <mesh position={[0, 3.0, 0]} castShadow>
+      <mesh position={[0, UMBRELLA_Y, 0]} castShadow>
         <coneGeometry args={[1.55, 0.7, 10]} />
-        <meshStandardMaterial ref={canopyRef} color={umbrella} roughness={0.7} flatShading transparent />
+        <meshStandardMaterial color={umbrella} roughness={0.7} flatShading />
       </mesh>
       {/* Taburetes */}
       {STOOL_ANGLES.map((a) => (
@@ -210,23 +213,6 @@ function StringLights({ from, to }: { from: [number, number, number]; to: [numbe
 
 export function KunCafe({ locale }: { locale: Locale }) {
   const { awning, sign } = useCafeTextures();
-  // Si el personaje queda debajo o detrás de una sombrilla, esta se vuelve
-  // transparente para que no lo tape (la cámara mira desde el sur).
-  const canopies = useRef<Array<THREE.MeshStandardMaterial | null>>([]);
-  useFrame((_, delta) => {
-    const p = campusRuntime.player;
-    CAFE_TRAMPOLINES.forEach((u, i) => {
-      const m = canopies.current[i];
-      if (!m) return;
-      const dx = p.x - u.x;
-      const dz = p.z - u.z;
-      // Debajo, o un poco al norte (la sombrilla queda entre la cámara y el personaje).
-      const hidden = p.y < u.top(0) - 0.4 && Math.hypot(dx, dz + 1.2) < u.r + 1.4;
-      const target = hidden ? 0.22 : 1;
-      m.opacity += (target - m.opacity) * Math.min(1, delta * 8);
-      m.depthWrite = m.opacity > 0.95;
-    });
-  });
   const [kx, kz] = KIOSK;
   return (
     <group position={[CAFE.x, 0.2, CAFE.z]} rotation={[0, ROT, 0]}>
@@ -293,9 +279,6 @@ export function KunCafe({ locale }: { locale: Locale }) {
             x={x}
             z={z}
             umbrella={i % 2 ? NAVY : RED}
-            canopyRef={(m) => {
-              canopies.current[i] = m;
-            }}
           />
         ))}
 

@@ -7,8 +7,9 @@ import { MiiAvatar, miiHeight } from "./campus-mii";
 import { CampusLabel } from "./campus-label";
 import { CAFE_SEATS, CAFE_TRAMPOLINES } from "./campus-cafe";
 import { BEACH_TRAMPOLINES } from "./campus-florida";
-import { campusRuntime } from "./campus-runtime";
-import { GRASS_RADIUS, PLAYER_START, WALK_RADIUS, type Avatar, type Collider } from "./campus-zones";
+import { activeTreat, campusRuntime } from "./campus-runtime";
+import { playStep, type Ground } from "./campus-audio";
+import { CAFE, GRASS_RADIUS, ISLAND_RADIUS, PLAYER_START, WALK_RADIUS, ZONES, type Avatar, type Collider } from "./campus-zones";
 
 const WALK_SPEED = 7;
 const RUN_SPEED = 12;
@@ -28,6 +29,87 @@ const MOVE_KEYS = new Set(["KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowDown
 function isTyping(target: EventTarget | null) {
   const el = target as HTMLElement | null;
   return !!el && (el.tagName === "INPUT" || el.tagName === "SELECT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+}
+
+/** La comida o bebida de la KUN Store en la mano derecha, mientras dura. */
+function HeldTreat({ avatar }: { avatar: Avatar }) {
+  const ref = useRef<THREE.Group>(null);
+  const kinds = useRef<{ [k: string]: THREE.Object3D | null }>({});
+  useFrame(() => {
+    const kind = activeTreat();
+    if (ref.current) ref.current.visible = kind !== null;
+    for (const [k, o] of Object.entries(kinds.current)) if (o) o.visible = k === kind;
+  });
+  const y = 0.22 + 0.72 * avatar.height + 0.55 * avatar.height;
+  const x = 0.42 * avatar.build + 0.2;
+  return (
+    <group ref={ref} position={[x, y, 0.22]} visible={false}>
+      {/* Vaso de café con tapa */}
+      <group ref={(o) => void (kinds.current.coffee = o)}>
+        <mesh castShadow>
+          <cylinderGeometry args={[0.13, 0.1, 0.32, 14]} />
+          <meshStandardMaterial color="#FFF8F0" />
+        </mesh>
+        <mesh position={[0, 0.02, 0]}>
+          <cylinderGeometry args={[0.135, 0.125, 0.1, 14]} />
+          <meshStandardMaterial color="#14306E" />
+        </mesh>
+        <mesh position={[0, 0.18, 0]}>
+          <cylinderGeometry args={[0.14, 0.14, 0.05, 14]} />
+          <meshStandardMaterial color="#C8102E" />
+        </mesh>
+      </group>
+      {/* Jugo con pajilla */}
+      <group ref={(o) => void (kinds.current.juice = o)}>
+        <mesh castShadow>
+          <cylinderGeometry args={[0.12, 0.1, 0.34, 14]} />
+          <meshStandardMaterial color="#FF9A1F" transparent opacity={0.92} />
+        </mesh>
+        <mesh position={[0.04, 0.28, 0]} rotation={[0, 0, -0.25]}>
+          <cylinderGeometry args={[0.02, 0.02, 0.32, 6]} />
+          <meshStandardMaterial color="#FF4FA3" />
+        </mesh>
+        <mesh position={[-0.1, 0.16, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <torusGeometry args={[0.06, 0.025, 6, 12, Math.PI]} />
+          <meshStandardMaterial color="#FFC85C" />
+        </mesh>
+      </group>
+      {/* Cono de helado */}
+      <group ref={(o) => void (kinds.current.icecream = o)}>
+        <mesh rotation={[Math.PI, 0, 0]} castShadow>
+          <coneGeometry args={[0.12, 0.3, 12]} />
+          <meshStandardMaterial color="#D9A066" />
+        </mesh>
+        <mesh position={[0, 0.2, 0]} castShadow>
+          <sphereGeometry args={[0.14, 14, 10]} />
+          <meshStandardMaterial color="#FFF8F0" />
+        </mesh>
+        <mesh position={[0, 0.34, 0]}>
+          <sphereGeometry args={[0.04, 8, 6]} />
+          <meshStandardMaterial color="#C8102E" />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+/** Qué pisa el jugador: terraza de la cafetería, arena (fuera del pasto), camino o pasto. */
+function groundAt(x: number, z: number): Ground {
+  if (Math.hypot(x - CAFE.x, z - CAFE.z) < CAFE.deck) return "wood";
+  const r = Math.hypot(x, z);
+  if (r > GRASS_RADIUS || r > ISLAND_RADIUS) return "sand";
+  // Mismo trazado que los caminos de campus-world: anillo de la plaza, la entrada
+  // desde la playa sur y un camino recto de la plaza a cada lugar.
+  if (r > 7 && r < 10.5) return "path";
+  if (Math.abs(x) < 1.4 && z > 10.5 && z < 41.5) return "path";
+  for (const zn of ZONES) {
+    if (zn.kind === "curriculum") continue;
+    const d = Math.hypot(zn.x, zn.z);
+    const along = (x * zn.x + z * zn.z) / d;
+    const across = Math.abs(x * zn.z - z * zn.x) / d;
+    if (across < 1.4 && along > 10 && along < d - zn.r) return "path";
+  }
+  return "grass";
 }
 
 export function CampusPlayer({
@@ -70,6 +152,8 @@ export function CampusPlayer({
     dustIndex: 0,
     /** Al lanzarse o rebotar en una sombrilla, punto de la lona hacia el que se acomoda en el aire. */
     aim: null as { x: number; z: number } | null,
+    /** El salto va de una sombrilla a otra (se guía aunque haya teclas presionadas). */
+    hop: false,
   });
   // Estado de simulación mutable: vive en refs, no en estado de React.
   const dustState = useRef(
@@ -139,7 +223,8 @@ export function CampusPlayer({
       iz += campusRuntime.stick.z;
       len = Math.hypot(ix, iz);
       const running = k.ShiftLeft || k.ShiftRight || (campusRuntime.stick.active && len > 0.95);
-      speed = running ? RUN_SPEED : WALK_SPEED;
+      // El café de la KUN Store da energía: un 30 % más rápido.
+      speed = (running ? RUN_SPEED : WALK_SPEED) * (activeTreat() === "coffee" ? 1.3 : 1);
 
       const sitting = CAFE_SEATS[campusRuntime.seat];
       if (sitting && (len > 0.08 || campusRuntime.jumpQueued)) {
@@ -157,7 +242,8 @@ export function CampusPlayer({
           // Debajo de una sombrilla, el salto es un lanzamiento hasta la lona.
           // (La mesa no deja pararse justo debajo: basta con estar junto a ella.)
           const under = m.y < 0.5 ? TRAMPOLINES.find((u) => Math.hypot(g.position.x - u.x, g.position.z - u.z) < u.r + 0.4) : undefined;
-          m.vy = under ? TRAMPOLINE_LAUNCH : JUMP_SPEED;
+          // Impulso suficiente para pasar un poco por encima de la lona (las de la cafetería son altas).
+          m.vy = under ? Math.max(TRAMPOLINE_LAUNCH, Math.sqrt(2 * GRAVITY * (under.top(0) + 0.9))) : JUMP_SPEED * (activeTreat() === "juice" ? 1.45 : 1);
           if (under) m.aim = { x: under.x + (g.position.x - under.x) * 0.25, z: under.z + (g.position.z - under.z) * 0.25 };
           m.grounded = false;
           m.squashV = under ? 9 : 6;
@@ -172,7 +258,8 @@ export function CampusPlayer({
 
     let vx = 0;
     let vz = 0;
-    if (len > 0.08) {
+    // Saltando de una sombrilla a otra, el vuelo lo guía el salto (las teclas solo eligen el destino).
+    if (len > 0.08 && !(m.hop && !m.grounded)) {
       ix /= Math.max(1, len);
       iz /= Math.max(1, len);
       vx = ix * speed;
@@ -204,7 +291,12 @@ export function CampusPlayer({
       let diff = target - g.rotation.y;
       diff = Math.atan2(Math.sin(diff), Math.cos(diff));
       g.rotation.y += diff * Math.min(1, delta * TURN_SMOOTHING);
+      const before = m.walk;
       m.walk += delta * speed * 1.4;
+      // Un paso cada medio ciclo de la caminata (cuando un pie toca el suelo).
+      if (m.grounded && Math.floor(m.walk / Math.PI) !== Math.floor(before / Math.PI)) {
+        playStep(groundAt(g.position.x, g.position.z), speed === RUN_SPEED);
+      }
 
       if (m.grounded && speed === RUN_SPEED) {
         m.dustTimer -= delta;
@@ -243,6 +335,29 @@ export function CampusPlayer({
             m.y = top;
             m.vy = TRAMPOLINE_BOUNCE;
             m.aim = { x: u.x + (g.position.x - u.x) * 0.4, z: u.z + (g.position.z - u.z) * 0.4 };
+            m.hop = false;
+            // Con una dirección presionada, salta a la sombrilla más cercana hacia ese lado.
+            if (len > 0.08) {
+              const dx = ix / len;
+              const dz = iz / len;
+              let best: (typeof TRAMPOLINES)[number] | null = null;
+              let bestD = 11;
+              for (const o of TRAMPOLINES) {
+                if (o === u) continue;
+                const ox = o.x - g.position.x;
+                const oz = o.z - g.position.z;
+                const od = Math.hypot(ox, oz);
+                if (od < bestD && (ox * dx + oz * dz) / od > 0.55) {
+                  best = o;
+                  bestD = od;
+                }
+              }
+              if (best) {
+                m.aim = { x: best.x, z: best.z };
+                m.hop = true;
+                m.vy = TRAMPOLINE_BOUNCE + 2;
+              }
+            }
             m.squashV = -10;
             spawnDust(g.position.x, g.position.z, 4);
             onBounce?.();
@@ -251,13 +366,14 @@ export function CampusPlayer({
         }
       }
       // Sin teclas, se acomoda sobre la lona para seguir rebotando.
-      if (m.aim && len < 0.08) {
-        const k = Math.min(1, delta * 3.5);
+      if (m.aim && (len < 0.08 || m.hop)) {
+        const k = Math.min(1, delta * (m.hop ? 2.6 : 3.5));
         g.position.x += (m.aim.x - g.position.x) * k;
         g.position.z += (m.aim.z - g.position.z) * k;
       }
       if (m.y <= 0) {
         m.aim = null;
+        m.hop = false;
         const impact = Math.min(1, Math.abs(m.vy) / JUMP_SPEED);
         m.y = 0;
         m.vy = 0;
@@ -351,6 +467,7 @@ export function CampusPlayer({
       <group ref={groupRef} position={PLAYER_START} visible={visible}>
         <group ref={body}>
           <MiiAvatar avatar={avatar} legLRef={legL} legRRef={legR} armLRef={armL} armRRef={armR} headRef={head} />
+          <HeldTreat avatar={avatar} />
         </group>        {avatar.name.trim() && (
           <CampusLabel text={avatar.name.trim()} color="#24123F" position={[0, miiHeight(avatar) + 0.75, 0]} width={4.4} />
         )}
