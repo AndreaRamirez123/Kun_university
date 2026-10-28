@@ -30,7 +30,6 @@ import { CampusSocialPanel } from "./campus-social-panel";
 import { CampusSeatPrompt } from "./campus-seat-prompt";
 import { CampusTips } from "./campus-tips";
 import { CampusCafePrompt, CampusCoinsHud, CampusShop, CampusStorePrompt } from "./campus-shop";
-import { CampusPetPanel } from "./campus-pet";
 import { CampusDemoCourse } from "./campus-demo-class";
 import { schoolHasDemo } from "./campus-demo";
 import { earn } from "./campus-wallet";
@@ -470,6 +469,16 @@ export function CampusExperience(props: {
     showToast(t.launch);
   }
 
+  function editAvatar() {
+          // Vuelve al editor del lobby (paso "personalizar") sin perder el progreso.
+          resetCampusInput();
+          campusRuntime.seat = -1;
+          returning.current = true;
+          setLeavingIntro(false);
+          setIntroStep("edit");
+          setPhase("intro");
+  }
+
   function toggleSound() {
     const next = !soundOn;
     setSoundOn(next);
@@ -553,15 +562,6 @@ export function CampusExperience(props: {
         floridaTime={floridaTime}
         onCycleSky={() => setSkyMode((m) => SKY_CYCLE[(SKY_CYCLE.indexOf(m) + 1) % SKY_CYCLE.length])}
         onOpenCatalog={() => setCatalogView({ open: true })}
-        onEditAvatar={() => {
-          // Vuelve al editor del lobby (paso "personalizar") sin perder el progreso.
-          resetCampusInput();
-          campusRuntime.seat = -1;
-          returning.current = true;
-          setLeavingIntro(false);
-          setIntroStep("edit");
-          setPhase("intro");
-        }}
       />
       <CampusZonePrompt
         zone={playing && portal.stage === "idle" && !krucnNear && !talking ? activeZone : null}
@@ -600,8 +600,13 @@ export function CampusExperience(props: {
       <CampusTouchControls enabled={playing && !form.open && !talking && !catalogView.open && !modal} targetRef={wrapperRef} />
       <CampusGuidePill zoneId={playing && portal.stage === "idle" ? guide : null} onCancel={() => setGuide(null)} onArrive={arriveAt} />
       <CampusSocialPanel visible={playing && !talking && !form.open && !catalogView.open && !modal} onEmote={handleEmote} />
-      <CampusPetPanel visible={playing && !talking && !form.open && !catalogView.open && !modal} pet={avatar.pet} />
-      <CampusCoinsHud visible={playing && !talking && !form.open && !catalogView.open && !modal} onOpen={() => setShopOpen(true)} />
+      <CampusCoinsHud
+        visible={playing && !talking && !form.open && !catalogView.open && !modal}
+        onOpen={() => setShopOpen(true)}
+        name={avatar.name.trim()}
+        pet={avatar.pet}
+        onEditAvatar={editAvatar}
+      />
       <CampusStorePrompt
         enabled={playing && portal.stage === "idle" && !talking && !form.open && !catalogView.open && !modal}
         blocked={krucnNear || !!activeZoneId}

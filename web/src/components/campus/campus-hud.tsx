@@ -14,7 +14,7 @@ const COPY = {
   es: {
     subtitle: "Campus virtual en Florida",
     classicSite: "← Sitio clásico",
-    catalog: "Catálogo académico",
+    catalog: "Explora tu programa",
     editAvatar: "Mi personaje",
     follow: "Síguenos",
     visited: (n: number, total: number) => `Visitaste ${n} de ${total} lugares`,
@@ -35,7 +35,7 @@ const COPY = {
   en: {
     subtitle: "Virtual campus in Florida",
     classicSite: "← Classic site",
-    catalog: "Academic catalog",
+    catalog: "Explore your program",
     editAvatar: "My character",
     follow: "Follow us",
     visited: (n: number, total: number) => `You visited ${n} of ${total} places`,
@@ -303,7 +303,6 @@ export function CampusHud({
   floridaTime,
   onCycleSky,
   onOpenCatalog,
-  onEditAvatar,
 }: {
   visible: boolean;
   visited: Set<string>;
@@ -314,7 +313,6 @@ export function CampusHud({
   floridaTime: string;
   onCycleSky: () => void;
   onOpenCatalog: () => void;
-  onEditAvatar: () => void;
 }) {
   const t = usePick(COPY);
   const hint = usePick(HINT);
@@ -340,14 +338,7 @@ export function CampusHud({
           onClick={onOpenCatalog}
           className="mt-2 flex cursor-pointer items-center gap-2 rounded-full bg-[#FFC85C] px-4 py-2 text-[13px] font-bold text-[#24123F] shadow-[0_10px_24px_-10px_rgba(255,200,92,0.9)] transition hover:-translate-y-0.5 max-md:mt-1.5 max-md:gap-1.5 max-md:px-3 max-md:py-1.5 max-md:text-xs"
         >
-          <span aria-hidden>📚</span> {t.catalog}
-        </button>
-        <button
-          type="button"
-          onClick={onEditAvatar}
-          className="mt-2 flex cursor-pointer items-center gap-2 rounded-full bg-[#1D0C3C]/60 px-4 py-2 text-[13px] font-bold backdrop-blur-md transition hover:bg-[#1D0C3C]/85 max-md:mt-1.5 max-md:px-3 max-md:py-1.5 max-md:text-xs"
-        >
-          <span aria-hidden>✏️</span> {t.editAvatar}
+          <span aria-hidden>🎓</span> {t.catalog}
         </button>
       </div>
 

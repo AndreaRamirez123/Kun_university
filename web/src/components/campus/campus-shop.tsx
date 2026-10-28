@@ -9,6 +9,8 @@ import { addHappy } from "./campus-pet";
 import { playChime } from "./campus-audio";
 import { STORE, zoneDoor } from "./campus-zones";
 import { CAFE_COUNTER } from "./campus-cafe";
+import { CampusPetPanel } from "./campus-pet";
+import type { Pet } from "./campus-avatar";
 import { buy, HOW_TO_EARN, onEarn, REWARD_LABELS, SHOP_ITEMS, useWallet, type ShopItem } from "./campus-wallet";
 
 // Interfaz de la tienda: el contador de monedas del HUD, el aviso para entrar a
@@ -42,6 +44,10 @@ const COPY = {
     cafeTitle: "KUN Café",
     cafeSubtitle: "Pide algo con tus KUN Coins: cada cosa dura 2 minutos",
     coins: "monedas",
+    profile: "Mi perfil",
+    editCharacter: "✏️ Editar mi personaje",
+    store: "🛍️ KUN Store",
+    noPet: "Aún no tienes mascota: elígela al editar tu personaje.",
     bought: (n: string) => `¡Compraste ${n}! Ya lo llevas puesto.`,
   },
   en: {
@@ -65,13 +71,34 @@ const COPY = {
     cafeTitle: "KUN Café",
     cafeSubtitle: "Order something with your KUN Coins: each lasts 2 minutes",
     coins: "coins",
+    profile: "My profile",
+    editCharacter: "✏️ Edit my character",
+    store: "🛍️ KUN Store",
+    noPet: "No pet yet: pick one when you edit your character.",
     bought: (n: string) => `You bought ${n}! You're wearing it now.`,
   },
 };
 
-/** Contador de monedas con la animación "+5 🪙" al ganar; al tocarlo abre la tienda. */
-export function CampusCoinsHud({ visible, onOpen }: { visible: boolean; onOpen: () => void }) {
+/**
+ * "Mi perfil": un solo botón con las monedas que, al abrirse, reúne el personaje,
+ * la tienda y la mascota (antes eran tres botones flotantes). Debajo aparecen la
+ * animación "+5 🪙" al ganar y la bebida activa.
+ */
+export function CampusCoinsHud({
+  visible,
+  onOpen,
+  name,
+  pet,
+  onEditAvatar,
+}: {
+  visible: boolean;
+  onOpen: () => void;
+  name: string;
+  pet: Pet;
+  onEditAvatar: () => void;
+}) {
   const t = usePick(COPY);
+  const [open, setOpen] = useState(false);
   const labels = usePick(REWARD_LABELS);
   const { coins } = useWallet();
   const [pops, setPops] = useState<Array<{ id: number; text: string }>>([]);
@@ -99,18 +126,53 @@ export function CampusCoinsHud({ visible, onOpen }: { visible: boolean; onOpen: 
 
   if (!visible) return null;
   return (
-    <div className="absolute top-[calc(258px+env(safe-area-inset-top,0px))] left-5 z-20 flex flex-col items-start gap-1.5 max-md:top-[calc(222px+env(safe-area-inset-top,0px))] max-md:left-3">
+    <div className="absolute top-[calc(214px+env(safe-area-inset-top,0px))] left-5 z-20 flex flex-col items-start gap-1.5 max-md:top-[calc(186px+env(safe-area-inset-top,0px))] max-md:left-3">
       <button
         type="button"
-        onClick={onOpen}
-        title={t.title}
-        className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-[#F2C14E] bg-[#0E061E]/75 px-3.5 py-1.5 text-[13px] font-bold text-[#FFF3E6] backdrop-blur-md transition hover:bg-[#0E061E]/90 max-md:px-3 max-md:text-xs"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="flex cursor-pointer items-center gap-2 rounded-full bg-[#1D0C3C]/70 px-3.5 py-1.5 text-[13px] font-bold text-[#FFF3E6] backdrop-blur-md transition hover:bg-[#1D0C3C]/90 max-md:px-3 max-md:text-xs"
       >
-        <span aria-hidden>🪙</span>
-        <span className="tabular-nums">{coins}</span>
-        <span className="text-[11px] font-semibold text-[#F2C14E]">KUN Coins</span>
-        <span className="text-white/60 max-md:hidden">· 🛍️ {t.title}</span>
+        <span aria-hidden>👤</span>
+        {t.profile}
+        <span className="rounded-full bg-[#F2C14E]/20 px-2 py-0.5 text-[12px] tabular-nums text-[#F2C14E]">🪙 {coins}</span>
+        <span aria-hidden className={`text-[10px] text-white/60 transition ${open ? "rotate-180" : ""}`}>
+          ▼
+        </span>
       </button>
+      {open && (
+        <div className="reveal-animate flex w-[250px] flex-col gap-2.5 rounded-2xl border border-white/15 bg-[#0E061E]/90 p-3 text-[#FFF3E6] backdrop-blur-md">
+          <div className="flex items-center justify-between gap-2">
+            <b className="truncate text-[14px]">{name || t.profile}</b>
+            <span className="shrink-0 text-[12px] font-bold text-[#F2C14E]">🪙 {coins} KUN Coins</span>
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                onEditAvatar();
+              }}
+              className="cursor-pointer rounded-xl bg-white/10 px-2 py-2 text-[12px] font-bold transition hover:bg-white/20"
+            >
+              {t.editCharacter}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                onOpen();
+              }}
+              className="cursor-pointer rounded-xl bg-[#F2C14E] px-2 py-2 text-[12px] font-black text-[#24123F] transition hover:-translate-y-0.5"
+            >
+              {t.store}
+            </button>
+          </div>
+          <div className="border-t border-white/10 pt-2.5">
+            {pet === "none" ? <p className="m-0 text-[12px] text-white/60">{t.noPet}</p> : <CampusPetPanel visible pet={pet} inline />}
+          </div>
+        </div>
+      )}
       {treat && (
         <span className="rounded-full border border-white/20 bg-[#0E061E]/75 px-3 py-1 text-[12px] font-bold text-[#FFF3E6] backdrop-blur-md">
           {TREAT_CHIP[treat.kind]} · {Math.floor(treat.left / 60)}:{String(treat.left % 60).padStart(2, "0")}

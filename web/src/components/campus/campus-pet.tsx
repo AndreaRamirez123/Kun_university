@@ -123,7 +123,8 @@ const COPY = {
 const ICONS: Record<PetAction, string> = { pat: "🤚", treat: "🦴", play: "🎾", trick: "✨" };
 const PET_EMOJI: Record<Pet, string> = { dog: "🐶", cat: "🐱", parrot: "🦜", croc: "🐊", panther: "🐆", none: "" };
 
-export function CampusPetPanel({ visible, pet }: { visible: boolean; pet: Pet }) {
+/** Cuidar a la mascota: felicidad y acciones (dentro de "Mi perfil" con `inline`). */
+export function CampusPetPanel({ visible, pet, inline = false }: { visible: boolean; pet: Pet; inline?: boolean }) {
   const t = usePick(COPY);
   const L = usePick(OPTION_LABELS);
   const m = useMood();
@@ -148,6 +149,34 @@ export function CampusPetPanel({ visible, pet }: { visible: boolean; pet: Pet })
     setBusy(true);
     window.setTimeout(() => setBusy(false), PET_ACTION_SECONDS[kind] * 1000);
   };
+
+  const care = (
+    <>
+      <div className="flex items-baseline justify-between text-[12px]">
+        <b>
+          {PET_EMOJI[pet]} {name} · 💗 {happy}%
+        </b>
+        <span className="text-white/65">{moodText}</span>
+      </div>
+      <div className="mt-2 grid grid-cols-4 gap-1.5">
+        {(Object.keys(ICONS) as PetAction[]).map((k) => (
+          <button
+            key={k}
+            type="button"
+            disabled={busy}
+            onClick={() => act(k)}
+            className="flex cursor-pointer flex-col items-center gap-0.5 rounded-xl bg-white/8 py-2 text-[10.5px] font-semibold transition enabled:hover:-translate-y-0.5 enabled:hover:bg-white/15 disabled:opacity-45"
+          >
+            <span aria-hidden className="text-xl leading-none">
+              {k === "treat" ? treat : ICONS[k]}
+            </span>
+            {t.actions[k]}
+          </button>
+        ))}
+      </div>
+    </>
+  );
+  if (inline) return care;
 
   return (
     <div className="absolute top-[calc(344px+env(safe-area-inset-top,0px))] left-5 z-20 text-[#FFF3E6] max-md:top-[calc(300px+env(safe-area-inset-top,0px))] max-md:left-3">

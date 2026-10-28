@@ -13,7 +13,9 @@ export function CountUp({
 }) {
   const prefersReducedMotion =
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const [display, setDisplay] = useState(prefersReducedMotion ? value : 0);
+  // Muestra siempre la cifra real (también antes de animar, en capturas o sin JS):
+  // nunca un "0" que haga parecer que no hay escuelas ni programas.
+  const [display, setDisplay] = useState(value);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
 
@@ -29,12 +31,13 @@ export function CountUp({
         function tick(now: number) {
           const progress = Math.min((now - start) / duration, 1);
           const eased = 1 - Math.pow(1 - progress, 3);
-          setDisplay(Math.round(eased * value));
+          // Sube desde la mitad, no desde 0, y nunca queda por debajo de 0.
+          setDisplay(Math.max(0, Math.round(value * (0.5 + 0.5 * eased))));
           if (progress < 1) requestAnimationFrame(tick);
         }
         requestAnimationFrame(tick);
       },
-      { threshold: 0.4 },
+      { threshold: 0.6 },
     );
     observer.observe(node);
     return () => observer.disconnect();

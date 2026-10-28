@@ -70,7 +70,7 @@ export function CampusSocialPanel({ visible, onEmote }: { visible: boolean; onEm
   };
 
   return (
-    <div className="absolute top-[calc(214px+env(safe-area-inset-top,0px))] left-5 z-20 text-[#FFF3E6] max-md:top-[calc(180px+env(safe-area-inset-top,0px))] max-md:left-3">
+    <div className="absolute top-[calc(170px+env(safe-area-inset-top,0px))] left-5 z-20 text-[#FFF3E6] max-md:top-[calc(144px+env(safe-area-inset-top,0px))] max-md:left-3">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
