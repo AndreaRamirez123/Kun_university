@@ -1,0 +1,25 @@
+{
+  "instrucciones": "Datos de la página /transparencia. Llena cada campo solo con información REAL y verificada; lo que quede vacío se muestra como 'En preparación'. No inventes nombres, cifras ni direcciones. Ejemplos de formato: liderazgo: [{ \"nombre\": \"...\", \"cargo\": { \"es\": \"Rector(a)\", \"en\": \"President\" }, \"bio\": { \"es\": \"...\", \"en\": \"...\" }, \"foto\": \"/equipo/nombre.jpg\" }] · profesores: [{ \"nombre\": \"...\", \"titulo\": { \"es\": \"PhD en ...\", \"en\": \"PhD in ...\" }, \"escuela\": { \"es\": \"Ingeniería\", \"en\": \"Engineering\" } }] · costos.items: [{ \"concepto\": { \"es\": \"Crédito académico\", \"en\": \"Credit hour\" }, \"valor\": \"USD ...\" }] · documentos: [{ \"titulo\": { \"es\": \"Catálogo institucional\", \"en\": \"Institutional catalog\" }, \"url\": \"/docs/catalogo.pdf\" }]",
+  "licencia": {
+    "estado": {
+      "es": "En proceso de licenciamiento ante la Comisión de Educación Independiente de Florida (CIE).",
+      "en": "In the licensing process with the Florida Commission for Independent Education (CIE)."
+    },
+    "numero": "",
+    "fecha": "",
+    "acreditacion": { "es": "", "en": "" }
+  },
+  "institucion": {
+    "razonSocial": "",
+    "direccion": "",
+    "telefono": "",
+    "correo": "admissions@kununiversityai.com"
+  },
+  "liderazgo": [],
+  "profesores": [],
+  "costos": {
+    "nota": { "es": "", "en": "" },
+    "items": []
+  },
+  "documentos": []
+}

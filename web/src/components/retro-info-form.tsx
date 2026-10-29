@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ConsentCheckbox, LicenseNote } from "@/components/compliance";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import type { School } from "@/lib/types";
 
@@ -15,7 +16,7 @@ const COPY = {
     phone: "Teléfono",
     program: "Programa de interés",
     programPlaceholder: "Elige un programa",
-    submit: "Enviar solicitud →",
+    submit: "Unirme a la lista de interés →",
   },
   en: {
     successTitle: "All set!",
@@ -221,6 +222,8 @@ export function RetroInfoForm({ schools }: { schools: School[] }) {
         </IconField>
       </label>
 
+      <ConsentCheckbox />
+      <LicenseNote />
       <button
         type="submit"
         className="btn-jelly col-span-2 mt-2 rounded-full border-[3px] px-7 py-4 text-sm font-bold text-white uppercase transition hover:-translate-y-0.5 max-md:col-span-1"

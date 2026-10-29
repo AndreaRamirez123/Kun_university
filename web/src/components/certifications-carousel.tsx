@@ -15,7 +15,7 @@ const COPY = {
     next: "Siguiente certificación",
     hoursSuffix: "horas · 100% online",
     goTo: (name: string) => `Ir a ${name}`,
-    cta: "Inscríbete a una certificación",
+    cta: "Quiero información de una certificación",
   },
   en: {
     eyebrow: "Continuing education",
@@ -25,7 +25,7 @@ const COPY = {
     next: "Next certification",
     hoursSuffix: "hours · 100% online",
     goTo: (name: string) => `Go to ${name}`,
-    cta: "Enroll in a certification",
+    cta: "Request info about a certification",
   },
 };
 

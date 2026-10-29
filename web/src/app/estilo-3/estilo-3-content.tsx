@@ -113,7 +113,7 @@ const COPY = {
     continuing: {
       heading: "No tienes que esperar a graduarte",
       body: "Seis certificaciones de 36 a 40 horas, diseñadas para aplicar lo aprendido desde la primera semana.",
-      cta: "Inscríbete a una certificación",
+      cta: "Quiero información de una certificación",
     },
     info: {
       badge: "Sin compromiso",
@@ -193,7 +193,7 @@ const COPY = {
     continuing: {
       heading: "You don't have to wait until graduation",
       body: "Six certifications of 36 to 40 hours, designed to apply what you learn from the very first week.",
-      cta: "Enroll in a certification",
+      cta: "Request info about a certification",
     },
     info: {
       badge: "No commitment",

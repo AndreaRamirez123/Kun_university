@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LicenseNote } from "@/components/compliance";
 import { CampusLang } from "./campus-lang";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import {
@@ -44,7 +45,7 @@ const COPY = {
     continuingAll: "Educación continua de todas las escuelas",
     hours: (h: number) => `${h} horas`,
     noContinuing: "Esta escuela aún no tiene certificaciones de educación continua.",
-    signup: "Inscribirme en este programa",
+    signup: "Quiero información de este programa",
     byLevel: "Agrupado por nivel",
     demos: "Clases demo",
     demosHint: "Mira una clase real de este programa, con preguntas rápidas y su juego de repaso. Es una vista previa: no es una inscripción.",
@@ -74,7 +75,7 @@ const COPY = {
     continuingAll: "Continuing education across all schools",
     hours: (h: number) => `${h} hours`,
     noContinuing: "This school has no continuing education certificates yet.",
-    signup: "Sign up for this program",
+    signup: "Request info about this program",
     byLevel: "Grouped by level",
     demos: "Demo classes",
     demosHint: "Watch a real class from this program, with quick questions and its review game. It is a preview, not an enrollment.",
@@ -371,6 +372,7 @@ function ProgramView({
           </button>
         )}
       </div>
+      <LicenseNote className="text-white" />
       <div className="grid grid-cols-2 gap-3 max-md:grid-cols-1">
         {groups.map((g) => (
           <section key={String(g.periodo)} className={`${CARD} flex flex-col p-4`}>

@@ -13,7 +13,8 @@ const COPY = {
     institutionTitle: "Institución",
     institutionLinks: [
       { label: "Sobre KUN", href: "#" },
-      { label: "Licenciamiento y acreditación", href: "#registro" },
+      { label: "Transparencia y licenciamiento", href: "/transparencia" },
+      { label: "Política de privacidad", href: "/privacidad" },
       { label: "Contacto", href: "#" },
     ],
     followTitle: "Síguenos",
@@ -27,7 +28,8 @@ const COPY = {
     institutionTitle: "Institution",
     institutionLinks: [
       { label: "About KUN", href: "#" },
-      { label: "Licensing and accreditation", href: "#registro" },
+      { label: "Transparency and licensing", href: "/transparencia" },
+      { label: "Privacy policy", href: "/privacidad" },
       { label: "Contact", href: "#" },
     ],
     followTitle: "Follow us",

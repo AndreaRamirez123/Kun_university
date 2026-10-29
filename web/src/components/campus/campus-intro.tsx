@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PRIVACY_PATH } from "@/lib/compliance";
 import { CampusLang } from "./campus-lang";
 import { usePick } from "@/i18n/locale-context";
 import {
@@ -54,6 +55,8 @@ const COPY = {
     spinRight: "Girar a la derecha",
     spinBack: "🔄 Ver espalda",
     spinHint: "o arrastra el personaje",
+    privacyNote: "Tu nombre y tu personaje los verán otras personas del campus.",
+    privacyLink: "Privacidad",
     hairColor: "Color de pelo",
     top: "Prenda",
     outfit: "Color de la ropa",
@@ -96,6 +99,8 @@ const COPY = {
     spinRight: "Turn right",
     spinBack: "🔄 See back",
     spinHint: "or drag the character",
+    privacyNote: "Other people on campus will see your name and character.",
+    privacyLink: "Privacy",
     hairColor: "Hair color",
     top: "Top",
     outfit: "Outfit color",
@@ -585,6 +590,12 @@ export function CampusIntro({
               </button>
             </div>
             <p className="m-0 text-center text-[11.5px] text-[#5C4A72] max-md:hidden">{t.legend}</p>
+            <p className="m-0 text-center text-[11px] text-[#5C4A72]">
+              {t.privacyNote}{" "}
+              <a href={PRIVACY_PATH} target="_blank" rel="noopener" className="font-bold text-[#24123F] underline">
+                {t.privacyLink}
+              </a>
+            </p>
           </div>
         </div>
       </form>

@@ -247,9 +247,9 @@ const COPY: Record<Locale, T> = {
       `${shortName(p)} tiene ${p.materias.length} materias repartidas en ${groups} ${groups === 1 ? "bloque" : "bloques"}. ¡Te abro el plan completo en el catálogo!`,
     signup: (p) =>
       p
-        ? `¡Qué emoción! Te abro el formulario de inscripción para ${shortName(p)}.`
-        : "¡Qué emoción! Te abro el formulario de inscripción; ahí eliges tu programa.",
-    email: "¡Gracias! Para que admisiones te contacte, te abro el formulario de inscripción: así llegan tus datos completos.",
+        ? `¡Qué bien! Te abro la lista de interés de ${shortName(p)}: te avisamos cuando abran las inscripciones.`
+        : "¡Qué bien! Te abro la lista de interés; ahí eliges tu programa y te avisamos cuando abran las inscripciones.",
+    email: "¡Gracias! Para que un asesor te contacte, te abro la lista de interés: así llegan tus datos completos.",
     certs: (list, school) =>
       `${school ? `En ${school} hay` : "Estos son los"} certificados de educación continua: ${list}. ¡Ideales si quieres algo corto y práctico!`,
     noCerts: (school) =>
@@ -265,9 +265,9 @@ const COPY: Record<Locale, T> = {
     faqPending: (q) =>
       `Buena pregunta (“${q}”). Todavía no tengo ese dato oficial, ¡no quiero inventarte nada! Escríbele a admisiones a ${ADMISSIONS_EMAIL} y te responden.`,
     faqPartial: `El resto todavía no lo tengo confirmado; escríbele a admisiones a ${ADMISSIONS_EMAIL} y te cuentan.`,
-    hello: "¡Hola! 🐊 Pregúntame lo que quieras: carreras, materias, certificados, cómo inscribirte… o pídeme que te lleve a algún lugar.",
+    hello: "¡Hola! 🐊 Pregúntame lo que quieras: carreras, materias, certificados, cómo unirte a la lista de interés… o pídeme que te lleve a algún lugar.",
     thanks: "¡Con gusto! Aquí sigo paseando por el campus si necesitas algo más.",
-    fallback: `Mmm, no estoy seguro de haber entendido 🐊. Puedo llevarte a un lugar, contarte de carreras y materias, certificados o cómo inscribirte. Prueba con: “¿Qué maestrías hay?” o “Llévame a Ingeniería”. Si es otra cosa, escribe a ${ADMISSIONS_EMAIL}.`,
+    fallback: `Mmm, no estoy seguro de haber entendido 🐊. Puedo llevarte a un lugar, contarte de carreras y materias, certificados o la lista de interés. Prueba con: “¿Qué maestrías hay?” o “Llévame a Ingeniería”. Si es otra cosa, escribe a ${ADMISSIONS_EMAIL}.`,
   },
   en: {
     where: "",
@@ -278,8 +278,8 @@ const COPY: Record<Locale, T> = {
     courses: (p, groups) =>
       `${shortName(p)} has ${p.materias.length} courses across ${groups} ${groups === 1 ? "block" : "blocks"}. I'm opening the full plan in the catalog!`,
     signup: (p) =>
-      p ? `How exciting! I'm opening the sign-up form for ${shortName(p)}.` : "How exciting! I'm opening the sign-up form; you can pick your program there.",
-    email: "Thanks! So admissions can reach you, I'm opening the sign-up form so your details arrive complete.",
+      p ? `Great! I'm opening the interest list for ${shortName(p)}: we'll let you know when enrollment opens.` : "Great! I'm opening the interest list; pick your program there and we'll let you know when enrollment opens.",
+    email: "Thanks! So an advisor can reach you, I'm opening the interest list so your details arrive complete.",
     certs: (list, school) =>
       `${school ? `${schoolLabel(school, "en")} offers these` : "These are the"} continuing education certificates: ${list}. Great if you want something short and practical!`,
     noCerts: (school) => `The School of ${schoolLabel(school, "en")} has no continuing education certificates yet. Check the other schools in the Academic catalog.`,
@@ -294,9 +294,9 @@ const COPY: Record<Locale, T> = {
     faqPending: (q) =>
       `Good question (“${q}”). I don't have that official info yet, and I don't want to make anything up! Write to admissions at ${ADMISSIONS_EMAIL} and they'll answer.`,
     faqPartial: `I don't have the rest confirmed yet; write to admissions at ${ADMISSIONS_EMAIL} and they'll tell you.`,
-    hello: "Hi! 🐊 Ask me anything: programs, courses, certificates, how to sign up… or ask me to take you somewhere.",
+    hello: "Hi! 🐊 Ask me anything: programs, courses, certificates, the interest list… or ask me to take you somewhere.",
     thanks: "My pleasure! I'll keep strolling around campus if you need anything else.",
-    fallback: `Hmm, I'm not sure I understood 🐊. I can take you somewhere, tell you about programs and courses, certificates or how to sign up. Try: “What master's programs are there?” or “Take me to Engineering”. For anything else, write to ${ADMISSIONS_EMAIL}.`,
+    fallback: `Hmm, I'm not sure I understood 🐊. I can take you somewhere, tell you about programs and courses, certificates or the interest list. Try: “What master's programs are there?” or “Take me to Engineering”. For anything else, write to ${ADMISSIONS_EMAIL}.`,
   },
 };
 

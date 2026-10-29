@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ConsentCheckbox, LicenseNote } from "@/components/compliance";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import type { School } from "@/lib/types";
 
@@ -23,7 +24,7 @@ const COPY = {
     phone: "Teléfono",
     programOfInterest: "Programa de interés",
     choosePlaceholder: "Elige un programa",
-    submit: "Enviar solicitud →",
+    submit: "Unirme a la lista de interés →",
   },
   en: {
     title: "Request information",
@@ -195,6 +196,10 @@ export function CollageInfoForm({ schools }: { schools: School[] }) {
                 </select>
               </label>
 
+              <div className="col-span-2 flex flex-col gap-2 max-md:col-span-1">
+                <ConsentCheckbox accent={RED} />
+                <LicenseNote />
+              </div>
               <button
                 type="submit"
                 className="col-span-2 mt-2 rounded-full border-[3px] border-[#10101A] px-6.5 py-4 text-sm font-extrabold text-[#FFF9EC] transition hover:-translate-y-0.5 max-md:col-span-1"

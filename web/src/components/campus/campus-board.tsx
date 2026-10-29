@@ -65,7 +65,7 @@ const COMMON = {
     certsBody: (n: number) =>
       `${n} certificaciones de 36 a 40 horas, diseñadas para aplicar lo aprendido desde la primera semana.`,
     hours: (h: number) => `${h} horas · 100% online`,
-    enrollCert: "Inscríbete a una certificación",
+    enrollCert: "Quiero información de una certificación",
     launch: "Despegar el cohete",
     schoolsTitle: "Cuatro escuelas. Un mismo motor IA-Native.",
     schoolsBody:
@@ -122,7 +122,7 @@ const COMMON = {
     certsTitle: "You don't have to wait until you graduate",
     certsBody: (n: number) => `${n} certifications of 36 to 40 hours, designed so you apply what you learn from the first week.`,
     hours: (h: number) => `${h} hours · 100% online`,
-    enrollCert: "Enroll in a certification",
+    enrollCert: "Request info about a certification",
     launch: "Launch the rocket",
     schoolsTitle: "Four schools. One AI-Native engine.",
     schoolsBody: "Every program is continuously redesigned with AI and human experts to reflect what industry needs today.",

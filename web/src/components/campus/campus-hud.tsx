@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { CONSENT, PRIVACY_PATH, TRANSPARENCY_PATH } from "@/lib/compliance";
 import Link from "next/link";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import { ADMISSIONS_EMAIL, SOCIAL_LINKS, socialHref } from "@/lib/contact";
@@ -439,6 +440,23 @@ export function CampusHud({
               <rect x="3" y="5" width="18" height="14" rx="2" />
               <path d="M3 7l9 6 9-6" />
             </svg>
+          </a>
+          <a
+            href={PRIVACY_PATH}
+            target="_blank"
+            rel="noopener"
+            title={CONSENT[locale].policy}
+            className="ml-1 rounded-full px-2 py-1 text-[11px] font-semibold whitespace-nowrap text-[#FFF3E6]/75 no-underline transition hover:bg-white/10 hover:text-[#FFC85C]"
+          >
+            🔒 {locale === "es" ? "Privacidad" : "Privacy"}
+          </a>
+          <a
+            href={TRANSPARENCY_PATH}
+            target="_blank"
+            rel="noopener"
+            className="rounded-full px-2 py-1 text-[11px] font-semibold whitespace-nowrap text-[#FFF3E6]/75 no-underline transition hover:bg-white/10 hover:text-[#FFC85C] max-md:hidden"
+          >
+            {locale === "es" ? "Transparencia" : "Transparency"}
           </a>
         </span>
       </div>

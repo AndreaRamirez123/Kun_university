@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ConsentCheckbox, LicenseNote } from "@/components/compliance";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import type { School } from "@/lib/types";
 
@@ -15,7 +16,7 @@ const COPY = {
     phone: "Teléfono",
     program: "Programa de interés",
     choose: "Elige un programa",
-    submit: "Enviar solicitud →",
+    submit: "Unirme a la lista de interés →",
   },
   en: {
     successTitle: "All set!",
@@ -125,6 +126,8 @@ export function DecoInfoForm({ schools }: { schools: School[] }) {
               </select>
             </label>
 
+            <ConsentCheckbox />
+            <LicenseNote />
             <button
               type="submit"
               className="col-span-2 mt-2 rounded-full bg-navy px-9 py-4 text-[15px] font-bold text-cream shadow-[0_14px_28px_rgba(3,62,140,0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(3,62,140,0.55)] max-md:col-span-1"

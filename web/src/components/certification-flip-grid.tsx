@@ -12,11 +12,11 @@ const DISPLAY = "var(--font-archivo-black), sans-serif";
 
 const COPY = {
   es: {
-    enroll: "Inscríbete →",
+    enroll: "Quiero información →",
     viewMore: "Ver más",
   },
   en: {
-    enroll: "Enroll →",
+    enroll: "Request info →",
     viewMore: "View more",
   },
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { earn } from "./campus-wallet";
+import { ConsentCheckbox, LicenseNote } from "@/components/compliance";
 import { CampusLang } from "./campus-lang";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, usePick } from "@/i18n/locale-context";
@@ -14,8 +15,8 @@ import { ADMISSIONS_EMAIL } from "@/lib/contact";
 
 const COPY = {
   es: {
-    kicker: "Inscripción",
-    title: "Empieza tu carrera en KUN",
+    kicker: "Lista de interés",
+    title: "Quiero saber más de KUN",
     close: "Volver al video",
     yourProgram: "Tu carrera",
     credential: "Credencial",
@@ -23,7 +24,7 @@ const COPY = {
     modality: "Modalidad",
     courses: (n: number) => `${n} materias`,
     nextTitle: "¿Qué pasa después?",
-    steps: ["Un asesor de admisiones te escribe en menos de 24 horas.", "Resuelves dudas sobre becas, fechas y requisitos.", "Empiezas a estudiar 100% online, desde donde estés."],
+    steps: ["Un asesor te escribe para resolver tus dudas.", "Te contamos de becas, fechas y requisitos.", "Te avisamos en cuanto abran las inscripciones."],
     name: "Nombre completo",
     email: "Correo electrónico",
     phone: "Teléfono (con indicativo)",
@@ -31,17 +32,16 @@ const COPY = {
     choose: "Elige una carrera",
     thisSchool: "En esta escuela",
     otherSchools: "Otras escuelas",
-    consent: "Acepto que KUN University AI me contacte sobre esta inscripción.",
-    send: "Enviar inscripción",
+    send: "Unirme a la lista de interés",
     orEmail: "¿Prefieres escribirnos?",
     doneTitle: (name: string) => `¡Listo${name ? `, ${name}` : ""}!`,
     doneBody: (p: string) => `Recibimos tu interés en ${p}. Un asesor de admisiones te contactará muy pronto.`,
-    doneNote: "Prototipo: en la versión final, esta inscripción llegará al equipo de admisiones.",
+    doneNote: "Esto no es una inscripción: te avisaremos cuando abran las inscripciones.",
     back: "Volver al video",
   },
   en: {
-    kicker: "Sign up",
-    title: "Start your career at KUN",
+    kicker: "Interest list",
+    title: "I want to know more about KUN",
     close: "Back to the video",
     yourProgram: "Your program",
     credential: "Credential",
@@ -49,7 +49,7 @@ const COPY = {
     modality: "Format",
     courses: (n: number) => `${n} courses`,
     nextTitle: "What happens next?",
-    steps: ["An admissions advisor writes to you within 24 hours.", "You get answers on scholarships, dates and requirements.", "You start studying 100% online, from wherever you are."],
+    steps: ["An advisor writes to answer your questions.", "We tell you about scholarships, dates and requirements.", "We let you know as soon as enrollment opens."],
     name: "Full name",
     email: "Email",
     phone: "Phone (with country code)",
@@ -57,12 +57,11 @@ const COPY = {
     choose: "Choose a program",
     thisSchool: "In this school",
     otherSchools: "Other schools",
-    consent: "I agree that KUN University AI may contact me about this sign-up.",
-    send: "Send sign-up",
+    send: "Join the interest list",
     orEmail: "Prefer email?",
     doneTitle: (name: string) => `All set${name ? `, ${name}` : ""}!`,
     doneBody: (p: string) => `We received your interest in ${p}. An admissions advisor will contact you very soon.`,
-    doneNote: "Prototype: in the final version, this sign-up will reach the admissions team.",
+    doneNote: "This is not an enrollment: we will let you know when enrollment opens.",
     back: "Back to the video",
   },
 };
@@ -276,10 +275,8 @@ export function SignupPanel({
                   </optgroup>
                 </select>
               </label>
-              <label className="flex cursor-pointer items-start gap-3 text-[13px] leading-snug text-white/70">
-                <input required type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer" style={{ accentColor: accent }} />
-                {t.consent}
-              </label>
+              <ConsentCheckbox accent={accent} className="text-white/70" />
+              <LicenseNote className="text-white" />
               <button
                 type="submit"
                 className="mt-1 h-13 cursor-pointer rounded-full text-[15px] font-bold text-[#0B0716] transition hover:-translate-y-0.5 hover:brightness-110"

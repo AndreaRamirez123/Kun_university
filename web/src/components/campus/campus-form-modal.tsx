@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { ConsentCheckbox, LicenseNote } from "@/components/compliance";
 import { CampusLang } from "./campus-lang";
 import { useLocale, usePick } from "@/i18n/locale-context";
 import { ADMISSIONS_EMAIL } from "@/lib/contact";
@@ -124,6 +125,8 @@ export function CampusFormModal({
               )}
             </select>
           </label>
+          <ConsentCheckbox accent="#24123F" />
+          <LicenseNote />
           <button
             type="submit"
             className="mt-1 h-13 cursor-pointer rounded-2xl font-bold text-[#24123F] transition hover:-translate-y-0.5"

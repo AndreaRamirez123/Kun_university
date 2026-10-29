@@ -59,20 +59,20 @@ export function explainerChapters(locale: Locale, stats: Stats): Chapter[] {
       { id: "welcome", menu: "Welcome", title: "KUN University AI", voice: "Welcome to KUN University AI, the AI-Native university based in Florida.", accent: "#E8735A" },
       { id: "online", menu: "100% online", title: "Study from anywhere", voice: "Everything is one hundred percent online, so you can study from anywhere in the world, at your own pace.", accent: "#3D6FD9" },
       { id: "numbers", menu: "Programs", title: `${stats.schools} schools · ${stats.programs} programs`, voice: `We have ${stats.schools} schools, ${stats.programs} programs and ${stats.certifications} AI certifications, with a curriculum that updates at the speed of science.`, accent: "#1E9C7E", extra: ["SCHOOLS", "PROGRAMS", "AI CERTS", "% ONLINE"] },
-      { id: "steps", menu: "How to enroll", title: "Enrolling takes 3 steps", voice: "Enrolling is easy: pick your program, fill out the form, and an advisor will contact you.", accent: "#FFC85C", extra: ["Pick a program", "Fill out the form", "Talk to an advisor"] },
+      { id: "steps", menu: "Stay informed", title: "3 steps to stay informed", voice: "Pick your program, join the interest list, and an advisor will answer your questions. We will let you know when enrollment opens.", accent: "#FFC85C", extra: ["Pick a program", "Join the list", "Talk to an advisor"] },
       { id: "support", menu: "Scholarships & dates", title: "Ask with no commitment", voice: "Ask us about scholarships and start dates. We'll tell you everything, with no commitment.", accent: "#C2387A" },
       { id: "trust", menu: "Accreditation", title: "Florida CIE · SACSCOC", voice: "KUN is listed with the Florida Commission for Independent Education, and SACSCOC institutional accreditation is in progress.", accent: "#7A4FD0" },
-      { id: "start", menu: "Start today", title: "Your career starts here", voice: `Ready? Sign up now, or email us at ${ADMISSIONS_EMAIL}.`, accent: "#FF8A4C" },
+      { id: "start", menu: "Start today", title: "Your career starts here", voice: `Want to know more? Join the interest list, or email us at ${ADMISSIONS_EMAIL}.`, accent: "#FF8A4C" },
     ];
   }
   return [
     { id: "welcome", menu: "Bienvenida", title: "KUN University AI", voice: "Te damos la bienvenida a KUN University AI, la universidad IA-Native con sede en Florida.", accent: "#E8735A" },
     { id: "online", menu: "100% online", title: "Estudia desde donde estés", voice: "Todo es cien por ciento online: estudias desde cualquier lugar del mundo y a tu ritmo.", accent: "#3D6FD9" },
     { id: "numbers", menu: "Programas", title: `${stats.schools} escuelas · ${stats.programs} programas`, voice: `Tenemos ${stats.schools} escuelas, ${stats.programs} programas y ${stats.certifications} certificaciones en inteligencia artificial, con un currículo que se actualiza a la velocidad de la ciencia.`, accent: "#1E9C7E", extra: ["ESCUELAS", "PROGRAMAS", "CERTIF. IA", "% ONLINE"] },
-    { id: "steps", menu: "Cómo inscribirte", title: "Inscribirte son 3 pasos", voice: "Inscribirte es fácil: eliges tu programa, llenas el formulario y un asesor te contacta.", accent: "#FFC85C", extra: ["Elige tu programa", "Llena el formulario", "Habla con un asesor"] },
+    { id: "steps", menu: "Mantente informado", title: "3 pasos para enterarte", voice: "Eliges tu programa, te unes a la lista de interés y un asesor resuelve tus dudas. Te avisamos cuando abran las inscripciones.", accent: "#FFC85C", extra: ["Elige tu programa", "Únete a la lista", "Habla con un asesor"] },
     { id: "support", menu: "Becas y fechas", title: "Pregunta sin compromiso", voice: "Pregúntanos por becas y fechas de inicio. Te contamos todo, sin compromiso.", accent: "#C2387A" },
     { id: "trust", menu: "Acreditación", title: "Florida CIE · SACSCOC", voice: "KUN está registrada ante la Comisión de Educación Independiente de Florida, y la acreditación institucional SACSCOC está en proceso.", accent: "#7A4FD0" },
-    { id: "start", menu: "Empieza hoy", title: "Tu carrera arranca aquí", voice: `¿Listo? Inscríbete ahora o escríbenos a ${ADMISSIONS_EMAIL}.`, accent: "#FF8A4C" },
+    { id: "start", menu: "Empieza hoy", title: "Tu carrera arranca aquí", voice: `¿Quieres saber más? Únete a la lista de interés o escríbenos a ${ADMISSIONS_EMAIL}.`, accent: "#FF8A4C" },
   ];
 }
 
